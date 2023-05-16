@@ -184,6 +184,7 @@ def logoutR():
 
 ########################### LOGOVANJE KRAJ##############################################
 
+# primer dodatog komentara
 @app.route('/sada',methods=["POST","GET"])
 
 def kreirajTabelu():
