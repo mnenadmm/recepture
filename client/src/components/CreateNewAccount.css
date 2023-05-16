@@ -1,0 +1,41 @@
+#usernameValid{
+    border-radius: 5px;
+    border:solid;
+    border-color: green;
+}
+#usernameNoValid{
+    border-radius: 5px;
+    border:solid;
+    border-color: red;
+}
+#adresaValid{
+    border-radius: 5px;
+    border:solid;
+    border-color: green;
+}
+#adresaNoValid{
+    border-radius: 5px;
+    border:solid;
+    border-color: red;
+}
+#passwordValid{
+    border-radius: 5px;
+    border:solid;
+    border-color: green;
+}
+#passwordNoValid{
+    border-radius: 5px;
+    border:solid;
+    border-color: red; 
+}
+#passwordConfirn{
+    border-radius: 5px;
+    border:solid;
+    border-color: green;
+
+}
+#passwordNoConfirn{
+    border-radius: 5px;
+    border:solid;
+    border-color: red;
+}

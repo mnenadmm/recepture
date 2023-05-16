@@ -1,0 +1,117 @@
+version : '3.7'
+services:
+  postgres: 
+    container_name: postges_container
+    hostname: postgres
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: nenad
+      POSTGRES_PASSWORD: 781022Sone
+      POSTGRES_DB: app_magacin
+    ports:
+      - "5433:5432"
+    volumes: 
+      - ./baza/data:/var/lib/postgresql/data
+      #- ./baza:/postgres
+    networks:
+      - mreza2
+  
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile.novi
+    image: flask-backend
+    ports:
+      - '5000:5000'
+    volumes:
+       - ./backend:/app #celi folder backend prebacujemo u app u kontenjeru
+    links:
+      - postgres
+    depends_on:
+      - postgres
+    networks:
+      - mreza1 
+      - mreza2
+  
+  front: # sudo docker build -t react-front-image .
+    build: 
+      context: ./client
+      dockerfile: Dockerfile   #Dockerfile.txt  je bildovana verzija
+    image: react-front-image
+    ports:
+      - '3000:3000'    #- '8080:80' ovo koristimo za bildovanu verziju
+    restart: always
+    volumes: #mapirali smo src folder sa racunara u src kontenjara!!
+       - ./client/src:/app/src
+    networks:
+      - mreza1
+    depends_on:
+      - postgres
+      - backend
+    #environment: #ova varijabla se mora koristiti samo za windows
+    #  - WATCHPACK_POLLING=true
+
+  pgadmin:
+    image: dpage/pgadmin4
+    depends_on:
+      - postgres
+    ports:
+      - "5555:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: mnenadmm@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: 781022Sone
+    restart: always
+    networks:
+      - mreza2  
+
+networks:
+  mreza1:
+    name: mreza1
+  mreza2:
+    name: mreza2
+    
+  
+
+  
+      
+
+    
+
+  
+   
+  
+  
+
+  
+
+    
+
+
+
+
+
+
+
+
+   
+  
+    
+
+
+
+  
+
+    
+
+
+
+
+
+
+
+
+   
+  
+    
+
