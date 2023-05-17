@@ -2,12 +2,14 @@ import { useState } from 'react';
 import DobavljaciEdit from "./DobavljaciEdit";
 const AzurirajDobavljaca = ({props,token,role})=>{
     const[list, setList]=useState(2);
+    const[errorMesagges,setErrorMesagges]=useState('');
     const[mesages, setMesages]=useState('');//ispisuje poruku o promeni
     const promeni=()=>{
         const ime=document.getElementById('ime').value;
         const telefon = document.getElementById('telefon').value;
         const email = document.getElementById('email').value;
         const adresa = document.getElementById('adresa').value;
+       
         fetch('/azurirajDobavljacaReact', {
             method: 'POST',
 				headers: {
@@ -21,39 +23,34 @@ const AzurirajDobavljaca = ({props,token,role})=>{
                     adresa : adresa,
                     idDobavljaca : props.idDobavljaca
 				})
-			}).then((res) =>{
-            
-            if(res.status===200){ 
-                if(ime !== props.imeDobavljaca){
-                    setMesages(`Za dobavljaca ${props.imeDobavljaca} ste promenili ime  u ${ime}`) 
+			}).then((res) =>{  
+            if(res.status===200){return res.json()}}
+            ).then((response)=>{
+                if(response.error){return setErrorMesagges(response.poruka)}
+                else{
+                    if(ime !== props.imeDobavljaca){
+                      return  setMesages(response+` ime u ${ime}`) 
+                    }
+                    if(telefon !== props.telefon){
+                        return   setMesages(response+` telefon u ${telefon}.`)
+                    }
+                    if(email !== props.email){
+                        return  setMesages(response+` email u ${email}`)
+                    }
+                    if(adresa !== props.adresa){
+                        return   setMesages(response+` adresu u ${adresa}`)
+                    } 
                 }
-                if(telefon !== props.telefon){
-                    setMesages(`Za dobavljaca ${ime} ste promenili telefon u ${telefon}`)
-                }
-                if(email !== props.email){
-                    setMesages(`Za dobavljaca ${ime} ste promenili email u ${email}`)
-                }
-                if(adresa !== props.adresa){
-                    setMesages(`Za dobavljaca ${ime} ste promenili adresu u ${adresa}`)
-                }
-
-             }
-            if(res.status===401){return  setMesages('Vasa sessija je istekla, konektujte se ponovo ERROR: 401 ')}
-            if(res.status===422){return  setMesages('Doslo je do greske sa konekcijom ')}
-            if(res.status===10){return  setMesages('Nemate pristup ovom delu aplikacije')}
-    
-        });
-           
-            
-            
+            });
             setTimeout(function(){
                 setList(0)
-            },3000)
-            
+            },5000)    
     } 
     const Azuriraj =()=>{        
     return(
         <div >
+            {errorMesagges ==='' ? 
+                <> 
             <div >
             {mesages !== '' ? 
                     <div className="alert alert-success alert-dismissible">
@@ -110,9 +107,11 @@ const AzurirajDobavljaca = ({props,token,role})=>{
                     <button onClick={()=>promeni()} type='button' className='btn btn-primary'>Azuriraj</button>
                 </div>
             </div>
-           
-         
- 
+            </>:
+            <div className="alert alert-success alert-dismissible">
+            <p  className="close" data-dismiss="alert" aria-label="close">&times;</p>
+             {errorMesagges}</div> 
+             }
         </div>
     )
     }

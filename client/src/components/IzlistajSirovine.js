@@ -3,53 +3,43 @@ import Select from "./Select";
 function IzlistajSirovine({props,role}) {
     const[data, getData] = useState([])
     const[errorMesagges,setErrorMesagges]=useState('');
-    
-    
-    
     const URL_Dobavljac = '/dajImeDobavljacaIdReact';
     useEffect(() => {
-        
-            const URL = '/izlistaj/sirovine/react';
-            fetch(URL,{
+            fetch('/izlistaj/sirovine/react',{
                 method: "GET",
                 headers: {   
                 }
             })
                 .then((res) =>{
-                    if(res.status===200){ return res.json()}
-                    if(res.status===401){return  setErrorMesagges('Vasa sessija je istekla, konektujte se ponovo ERROR: 401 ')}
-                    if(res.status===422){return  setErrorMesagges('Neregularna konakcija, molimo Vas da se ispravno konektujete konektujete  ERROR: 422 ')}
-                    if(res.status===10){return  setErrorMesagges('Nemate pristup ovom delu aplikacije')}
+                    if(res.status===200){ return res.json()}    
                 })   
                 .then((response) => {  
-                  getData(response);
+                   if(response.error){
+                    return setErrorMesagges(response.poruka)
+                   }
+                        getData(response);
                 })
                 .catch(error=>{
                     console.log('ovo je greska ',error)
                     setErrorMesagges('Neuspela konekcija sa bazom, proverite internet konekciju')
                 })
-        
     },[])//moramo dodati da seucitaju varijable u useEffect da ne bi izbacivalo uozorenje
-    
     // prikazuje sirovine po dobavljacima
     const promena =(id)=>{
         // mora biti intiger, da ne bi gresku u endpointu prijavljivao
         //odnosno salje upit samo ako je id string
         if(id >0 ){        
-        const URL_Sirovina = `/sirovinePoDobavljacuReact/${id}`;
-        fetch(URL_Sirovina,{
+        
+        fetch(`/sirovinePoDobavljacuReact/${id}`,{
             method: "GET"})
         .then((res) =>{
-            
             if(res.status===200){ return res.json()}
-           if(res.status===401){return  setErrorMesagges('Vasa sessija je istekla, konektujte se ponovo ERROR: 401 ')}
-           if(res.status===422){return  setErrorMesagges('Neregularna konakcija, molimo Vas da se ispravno konektujete konektujete  ERROR: 422 ')}
- 
         })
             .then((response) => { 
-                
-               getData(response); 
-             
+                if(response.error){ return setErrorMesagges(response.poruka)}
+                else{
+                    getData(response); 
+                } 
             })
             .catch(error=>{
                 console.log('ovo je greska ',error)

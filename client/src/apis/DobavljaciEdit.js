@@ -12,23 +12,17 @@ const DobavljaciEdit = ({role})=>{
     const[telefon, setTelefon]=useState('')
     const[email, setEmail]=useState('') 
     const[adresa, setAdresa]=useState('')
-
-    
-    const URL_Dobavljac = '/dajDobavljaceReact';
     useEffect(() => {
-        fetch(URL_Dobavljac,{
+        fetch('/dajDobavljaceReact',{
             method: "GET",
             headers: {
-                
               }
         })
             .then((res) =>{
                 if(res.status===200){ return res.json()}
-                if(res.status===401){return  setErrorMesagges('Vasa sessija je istekla, konektujte se ponovo ERROR: 401 ')}
-                if(res.status===10){return  setErrorMesagges('Nemate pristup ovom delu aplikacije')}
-                if(res.status===422){return  setErrorMesagges('Neregularna konakcija, molimo Vas da se ispravno konektujete konektujete  ERROR: 422 ')}
             })   
             .then((response) => { 
+                if(response.error){return setErrorMesagges(response.poruka)}
                 setData(response); 
             })
             .catch(error=>{

@@ -12,29 +12,29 @@ const SirovineEdit = ({props,role})=>{
     const[idDobavljaca, setIdDobavljaca]=useState(0)
     const[imeDobavljaca, setImeDobavljaca]=useState("")
     
-    const URL = '/izlistaj/sirovine/react';
+   
     useEffect(() => {
-        fetch(URL,{
+        fetch('/izlistaj/sirovine/react',{
             method: "GET",
             headers: {  
             }
         })
             .then((res) =>{
             if(res.status===200){ return res.json()}
-           if(res.status===401){return  setErrorMesagges('Vasa sessija je istekla, konektujte se ponovo ERROR: 401 ')}
-           if(res.status===10){return  setErrorMesagges('Nemate pristup ovom delu aplikacije')}
-           if(res.status===422){return  setErrorMesagges('Neregularna konakcija, molimo Vas da se ispravno konektujete konektujete  ERROR: 422 ')}
             })  
             .then((response) => { 
-                console.log('res', response)
-               getData(response);
+                if(response.error){return setErrorMesagges(response.poruka)}
+                else{
+                    getData(response);
                 setFilteredData(response);
+                }
+               
             })
             .catch(error=>{
                 console.log('ovo je greska ',error)
                 setErrorMesagges('Neuspela konekcija sa bazom, proverite internet konekciju')
             })
-    }, [role.rola_1,role.rola_2,role.rola_3,props.token,props.user])
+    }, [])
     const uredi = (idSirovine,nazivSirovine,imeDobavljac,cena,idDobavljaca)=>{  
         setIdSirovine(idSirovine);
         setImeSirovine(nazivSirovine);
@@ -65,7 +65,7 @@ const SirovineEdit = ({props,role})=>{
     const edit = ()=>{
        
         return(
-            <div>
+            <div>{errorMesagges === '' ? <>
         	    <ul className="nav nav-tabs actions-nav">
         		<li className="active"  >
                     <button className="btn btn-default">List</button>
@@ -105,6 +105,11 @@ const SirovineEdit = ({props,role})=>{
             </tbody>
             </table>
             <br /><br />
+            </>: <div className="alert alert-success alert-dismissible">
+            <p  className="close" data-dismiss="alert" aria-label="close">&times;</p>
+             {errorMesagges}</div>
+
+            }
             </div>
         )
     }
@@ -114,11 +119,7 @@ const SirovineEdit = ({props,role})=>{
             <div>
                 {stranica ===0 ? edit()  : null}
                 {stranica ===1 ?
-                   
                         <AzurirajSirovinu role={role} props={props}  azuriraj={{idSirovine,imeSirovine,cenaSirovine,idDobavljaca,imeDobavljaca}}  />
-                        
-                        
-                   
                  : null}
                  {stranica ===2 ?
                     

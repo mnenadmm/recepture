@@ -207,19 +207,29 @@ def kreirajTabelu():
 def izlistajSirovineReact():
 	if current_user.is_authenticated():
 		if current_user.rola_1() or current_user.rola_2() or current_user.rola_3():
-			baza = psycopg2.connect(**konekcija)
-			mycursor = baza.cursor()
-			mycursor.execute(f"""
+			try:
+				baza = psycopg2.connect(**konekcija)
+				mycursor = baza.cursor()
+				mycursor.execute(f"""
 				select  sirovine.id_sirovine,sirovine.naziv_sirovine,sirovine.cena_sirovine,dobavljaci.ime_dobavljaca,dobavljaci.id_dobavljaca
 					from sirovine
 					INNER JOIN dobavljaci
 					on sirovine.id_dobavljaci = dobavljaci.id_dobavljaca;
-			""")
-			rezultat = mycursor.fetchall()
-			baza.close()	
-			return jsonify(rezultat)
+				""")
+				rezultat = mycursor.fetchall()
+				baza.close()	
+				return jsonify(rezultat)
+			except:
+				msg={
+				'error': True,
+				'poruka': 'Nemate ovlascenje da pristupate sirovinama'
+				}
+				return jsonify(msg)
 		else:
-			msg=f" korisnik {current_user.username} nema pristup ovom delu aplikacije "
+			msg={
+				'error': True,
+				'poruka': 'Morate se ulogovati da bi ste pristupili sirovinama'
+			}
 			return jsonify(msg)
 @app.route('/dajImeDobavljacaIdReact')
 @login_required
@@ -236,44 +246,68 @@ def dajImeDobavljacaIdReact():
 	else:
 		rez="nemate pristup ovom delu aplikacjije"
 		return jsonify(rez)
+# daje sirovine po dobavljacu 
 @app.route('/sirovinePoDobavljacuReact/<int:idDobavljaca>',methods=['GET'])
 @login_required
 def sirovinePoDobavljacuReact(idDobavljaca):
 	if current_user.rola_1() or current_user.rola_2() or current_user.rola_3():	
-		baza=psycopg2.connect(**konekcija)
-		mycursor = baza.cursor()
-		mycursor.execute(f"""
+		try:
+			baza=psycopg2.connect(**konekcija)
+			mycursor = baza.cursor()
+			mycursor.execute(f"""
 					 select sirovine.id_sirovine, sirovine.naziv_sirovine,sirovine.cena_sirovine,dobavljaci.ime_dobavljaca
-					from sirovine
+					from sirovine 
 					inner JOIN dobavljaci
 					on sirovine.id_dobavljaci = dobavljaci.id_dobavljaca
 					where sirovine.id_dobavljaci = {idDobavljaca};
 					""")
-		rez = mycursor.fetchall()
-		baza.close()
-		return jsonify(rez)
+			rez = mycursor.fetchall()
+			baza.close()
+			return jsonify(rez)
+		except:
+			msg={
+				'error': True,
+				'poruka': 'Neuspela konekcija sa bazom'
+			}
+			return jsonify(msg)
+	else:
+		msg={
+				'error': True,
+				'poruka': 'Morate se ulogovati da bi ste pristupili sirovinama'
+			}
+		return jsonify(msg)
+
 @app.route('/dodajSirovinuReact',methods=['POST','GET'])
 @login_required
 def dodajSirovinuReact():
 	if current_user.rola_1() or current_user.rola_2():
-		data = request.get_json()
-		imeSirovine=data['imeSirovine']
-		cenaSirovine= data['cenaSirovine']
-		idDobavljaca = data['idDobavljaca']
-		baza = psycopg2.connect(**konekcija)
-		mycursor = baza.cursor()
-		mycursor.execute(f"""
+		try:
+			data = request.get_json()
+			imeSirovine=data['imeSirovine']
+			cenaSirovine= data['cenaSirovine']
+			idDobavljaca = data['idDobavljaca']
+			baza = psycopg2.connect(**konekcija)
+			mycursor = baza.cursor()
+			mycursor.execute(f"""
 					insert into public.sirovine(naziv_sirovine,cena_sirovine,id_dobavljaci)
 					values('{imeSirovine}',{cenaSirovine},{idDobavljaca});
-				""")
-		baza.commit()
-		baza.close()
-		print('sirovina ',imeSirovine,' je uspesno dodata.')
-		rez='sirovina ',imeSirovine,' je uspesno dodata.'
-		return jsonify(rez)
-		
+					""")
+			baza.commit()
+			baza.close()
+			msg='Uspesno ste dodali sirovinu ',imeSirovine,' sa cenom ',cenaSirovine,'.'
+			return jsonify(msg)
+		except:
+			msg={
+				'error': True,
+				'poruka': 'Neuspela konekcija sa bazom'
+			}
+			return jsonify(msg)
 	else:
-		return {"msg": "nemate pristup ovom delu aplikacijeeee"}
+		msg={
+			'error': True,
+			'poruka': ' Niste ovlasceni da dodajete sirovine sirovinama.'
+		}
+		return jsonify(msg)
 #lista dobavljaca
 @app.route('/dajDobavljaceReact',methods=['GET'])
 @login_required
@@ -288,11 +322,18 @@ def dajDobavljaceReact():
 				""") 
 			rez = mycursor.fetchall()
 			return jsonify(rez)
-		except :
-			msg='nema konekcije ka bazi'
+		except:
+			msg={
+				'error': True,
+				'poruka': 'Neuspela konekcija sa bazom'
+			}
 			return jsonify(msg)
 	else:
-		return {"msg": "nemate pristup ovom delu aplikacijeeee"},10
+		msg={
+				'error': True,
+				'poruka': 'Nemate pristup ovom delu aplikacije'
+			}
+		return jsonify(msg)
 @app.route('/dodajDobavljacaReact',methods=['POST'])
 @login_required
 def dodajDobavljacaReact():
@@ -311,44 +352,55 @@ def dodajDobavljacaReact():
 				""")
 			baza.commit()
 			baza.close()
-			rez='Dodali ste dobavljaca ',imeDobavljaca
+			rez='Dodali ste dobavljaca ',imeDobavljaca,'.'
 			return jsonify(rez)
 		except :
-			
-			rez="Doslo je do greske sa konekcijom"
-			return jsonify(rez),422
+			msg={
+				'error': True,
+				'poruka': 'Neuspela konekcija sa bazom'
+			}
+			return jsonify(msg)
 	else:
-		rez="Nemate pristup ovom delu aplikacije"
-		return jsonify(rez),10
+		msg={
+			'error': True,
+			'poruka': 'Nemate pristup ovom delu aplikacije.'
+		}
+		return jsonify(msg)
 @app.route('/azurirajDobavljacaReact',methods=['POST'])
 @login_required
 def azurirajDobavljacaReact():
-   if current_user.rola_1() or current_user.rola_2():
-      data = request.get_json()
-      idDobavljaca =data['idDobavljaca']
-      imeDobavljaca = data['imeDobavljaca']
-      telefon = data['telefon']
-      email = data['email']
-      adresa= data['adresa']
-      try:
-         baza = psycopg2.connect(**konekcija)
-         mycursor = baza.cursor()
-         mycursor.execute(f"""
+	if current_user.rola_1() or current_user.rola_2():
+		try:
+			data = request.get_json()
+			idDobavljaca =data['idDobavljaca']
+			imeDobavljaca = data['imeDobavljaca']
+			telefon = data['telefon']
+			email = data['email']
+			adresa= data['adresa']
+			baza = psycopg2.connect(**konekcija)
+			mycursor = baza.cursor()
+			mycursor.execute(f"""
 					UPDATE public.dobavljaci
 					set ime_dobavljaca='{imeDobavljaca}',email='{email}',
 					telefon='{telefon}',adresa='{adresa}'
-					where id_dobavljaca ={idDobavljaca}
-				""")
-         baza.commit()
-         baza.close()
-         rez ='uspesno ste azurirali dobavljaca ',imeDobavljaca
-         return jsonify(rez)	
-      except:
-         rez="Doslo je do greske sa konekcijom"
-         return jsonify(rez),422
-   else:
-      rez="Nemate pristup ovom delu aplikacije"
-      return jsonify(rez),10
+					where id_dobavljaca ={idDobavljaca};
+							""")
+			baza.commit()
+			baza.close()
+			msg='Za dobavljaca ' +imeDobavljaca+  ' ste promenili '
+			return jsonify(msg)	
+		except :
+			msg={
+					'error': True,
+					'poruka': 'Neuspela konekcija sa bazom '
+			 		}
+			return jsonify(msg)
+	else:
+		msg={
+		      'error': True,
+				'poruka': 'Nemate pristup ovom delu aplikacije.'
+			}
+		return jsonify(msg)
 #azuriranje sirovine
 @app.route('/azurirajSirovinuReact',methods=['POST'])
 @login_required

@@ -4,7 +4,7 @@ services:
     container_name: postges_container
     hostname: postgres
     image: postgres
-    restart: always
+    restart: unless-stopped
     environment:
       POSTGRES_USER: nenad
       POSTGRES_PASSWORD: 781022Sone
@@ -22,6 +22,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile.novi
     image: flask-backend
+    restart: unless-stopped
     ports:
       - '5000:5000'
     volumes:
@@ -41,7 +42,7 @@ services:
     image: react-front-image
     ports:
       - '3000:3000'    #- '8080:80' ovo koristimo za bildovanu verziju
-    restart: always
+    restart: unless-stopped
     volumes: #mapirali smo src folder sa racunara u src kontenjara!!
        - ./client/src:/app/src
     networks:
@@ -61,7 +62,7 @@ services:
     environment:
       PGADMIN_DEFAULT_EMAIL: mnenadmm@gmail.com
       PGADMIN_DEFAULT_PASSWORD: 781022Sone
-    restart: always
+    restart: unless-stopped
     networks:
       - mreza2  
 

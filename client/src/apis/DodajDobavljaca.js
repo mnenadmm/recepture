@@ -3,8 +3,8 @@ import DobavljaciEdit from "./DobavljaciEdit";
 
 const DodajDobavljaca=({token,role})=>{
     const[list, setList]=useState(1)
-    const[mesages, setMesages]=useState([])
-    const[poruka, setPoruka]=useState(0)
+    const[mesages, setMesages]=useState('')
+    const[errorMesagges,setErrorMesagges]=useState('');
     const[imeDobavljaca, setImeDobavljaca]=useState('')
     const[emailDobavljaca, setEmailDobavljaca]=useState('')
     const[adresa,setAdresa]=useState('')
@@ -22,17 +22,19 @@ const DodajDobavljaca=({token,role})=>{
                     telefonDobavljaca : telefonDobavljaca,
                     adresa : adresa
 				})
-			}).then((res) =>{
-            if(res.status===200){ return setMesages(`Dodali ste dobavljaca : ${imeDobavljaca}.`)}
-            if(res.status===401){return  setMesages('Vasa sessija je istekla, konektujte se ponovo ERROR: 401 ')}
-            if(res.status===422){return  setMesages('Doslo je do greske sa konekcijom')}
-            if(res.status===10){return  setMesages('Nemate pristup ovom delu aplikacije')}
-        });
+			}).then((res) =>{ //setMesages(`Dodali ste dobavljaca : ${imeDobavljaca}.`)
+            if(res.status===200){ return res.json()}
+            }).then((response)=>{
+                if(response.error){return setErrorMesagges(response.poruka)}
+                else{
+                    setMesages(response)
+                }
+            })
         setTimeout(function(){
             setList(0)
         },5000)
         
-        setPoruka(1)
+        
         
         
     }
@@ -40,13 +42,16 @@ const DodajDobavljaca=({token,role})=>{
     
         return(
             <div>
+                {errorMesagges ==='' ? 
+                <> 
                 <div className="row">
-                {poruka !== 0 ? 
+                {mesages !== '' ? 
                     <div className="alert alert-success alert-dismissible">
                         <p  className="close" data-dismiss="alert" aria-label="close">&times;</p>
                          {mesages}
                 </div> : null
             }
+
                     <div className="col-sm-12 text-center">
                         <h2>Dodaj dobavljaca</h2>
                     </div>
@@ -95,6 +100,10 @@ const DodajDobavljaca=({token,role})=>{
                     <button  onClick={()=>{snimi()}} type="button" className="btn btn-primary">Sacuvaj</button>
                 </div>
             </div> : null }
+            </>:
+            <div className="alert alert-success alert-dismissible">
+            <p  className="close" data-dismiss="alert" aria-label="close">&times;</p>
+             {errorMesagges}</div> }
             </div>     
         )
     }
