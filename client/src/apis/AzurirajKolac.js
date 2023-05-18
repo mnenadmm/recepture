@@ -21,27 +21,22 @@ const AzurirajKolac=({props,token,role})=>{
                     postupak : objasnjenje
 				})
 			}).then((res) =>{
-            
                 if(res.status===200){ return res.json()}
-               if(res.status===401){return  setErrorMessages('Vasa sessija je istekla, konektujte se ponovo ERROR: 401 ')}
-               if(res.status===422){return  setErrorMessages('Neregularna konakcija, molimo Vas da se ispravno konektujete konektujete  ERROR: 422 ')}
-               if(res.status===10){return setErrorMessages("Nemate ovlascenje da azurirate kolace")}
             }).then((response) => { 
-                if(response.status===200){console.log(response)}
-                
-                
+                if(response.error){return setErrorMessages(response.poruka)
+                }else{
+                    if(imeKolaca !== props.imeKolaca){
+                        setMesages(`Ime kolaca ${props.imeKolaca} ste promenili u ${imeKolaca}.`) 
+                    }
+                    if(objasnjenje !== props.objasnjenje){
+                        setMesages(response)
+                    }
+                }
             }).catch(error=>{
                 setErrorMessages('Nemate ovlascenje da azurirate kolace')
                 console.log('ovo je greska ',error)
-                
-            })
-            if(imeKolaca !== props.imeKolaca){
-                setMesages(`Promenili ste ime kolaca u ${imeKolaca}`)
-            }
-            if(objasnjenje !== props.objasnjenje){
-                setMesages(`Promenili ste postupak za kolac ${imeKolaca}`)
-            }
-            setPoruka(1)
+            });
+           setPoruka(1)
             setTimeout(function(){
                 setNazad(1) //vraca nas u listu kolaca
             },3000)

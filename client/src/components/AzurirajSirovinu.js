@@ -21,10 +21,7 @@ const AzurirajSirovinu = ({azuriraj,props,role})=>{
         const idSirovine =azuriraj.idSirovine;
         
         
-        if(ime !== azuriraj.imeSirovine){
-            setMessages(`ste promenili ime u ${ime}.`)
-           
-        }
+        
         if(Number(cena) !== azuriraj.cenaSirovine){
             setMessages(`ste premenili cenu u ${cena}`)
            
@@ -51,13 +48,23 @@ const AzurirajSirovinu = ({azuriraj,props,role})=>{
 			})
             .then((res) =>{
                 if(res.status===200){return res.json()}
-                if(res.status===10){return setErrorMessages('Nematepristup ovom delu aplikacije') }
-                if(res.status===401){return  setErrorMessages('Vasa sessija je istekla, konektujte se ponovo ERROR: 401 ')}
-                if(res.status===422){return  setErrorMessages('Neregularna konakcija, molimo Vas da se ispravno konektujete konektujete  ERROR: 422 ')}
+               
             })
             .then((response)=>{
-                console.log(response)
-
+                if(response.error){
+                    return setErrorMessages(response.poruka)}
+                else{
+                    if(ime !== azuriraj.imeSirovine){
+                        return setMessages(`Za sirovinu ${azuriraj.imeSirovine} ste promenili ime u  `+response)
+                    }
+                    if(Number(cena) !== azuriraj.cenaSirovine){
+                        return setMessages(`Za sirovinu ${response} ste promenili cenu u ${cena}.`)
+                    }
+                    if(idDobavljaca !== azuriraj.idDobavljaca){
+                        return setMessages(`Za sirovinu ${response} ste promenili dobavljaca. `)
+                    }
+                
+                }
             }).catch((error)=>{console.log("ERROR : ",error)});      
     }
     const vrati = ()=>{
@@ -69,7 +76,7 @@ const AzurirajSirovinu = ({azuriraj,props,role})=>{
                 {messages !== '' ? 
                     <div className="alert alert-success alert-dismissible">
                         <p  className="close" data-dismiss="alert" aria-label="close">&times;</p>
-                        Za sirovinu <strong> {azuriraj.imeSirovine}</strong> {messages}
+                       {messages}
                 </div> : null
             }            
                 <ul className="nav nav-tabs actions-nav">
@@ -106,7 +113,6 @@ const AzurirajSirovinu = ({azuriraj,props,role})=>{
                         className='form-control'
                             promena={promena}
                             options={URL_Dobavljac} 
-                            token={props.token}
                            ime={azuriraj.imeDobavljaca}
                         />
                     </div>

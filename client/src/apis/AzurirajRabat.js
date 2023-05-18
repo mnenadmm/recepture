@@ -23,11 +23,14 @@ const AzurirajRabat=({props,token,role,items})=>{
         fetch(urlPromeniRabat,optRabat)
         .then(res=>{
             if(res.status ===200){return res.json()}
-            if(res.status !==200){return setMessages('Doslo je do greske, proverite internet konekciju')}
+           
             })
         .then(response=>{
+            if(response.error){return setMessages(response.poruka)}
+            else{
+                 return  setMessages(response)
+            }
             
-            setMessages(response)
             })
         .catch(error=>{console.log(error)})
    setTimeout(function(){

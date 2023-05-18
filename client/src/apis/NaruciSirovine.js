@@ -18,20 +18,15 @@ const NaruciSirovine = ({role})=>{
         fetch(URL_Sirovina,{
             method: "GET",
             headers: {
-              
               }
         })
             .then((res) =>{
                 if(res.status===200){ return res.json()}
-           if(res.status===401){return  setErrorMesagges('Vasa sessija je istekla, konektujte se ponovo ERROR: 401 ')}
-           
-           if(res.status===422){return  setErrorMesagges('Neregularna konakcija, molimo Vas da se ispravno konektujete konektujete  ERROR: 422 ')}
-           if(res.status===10){return  setErrorMesagges('Nemate pristup ovom delu aplikacije ')}
-            })
-                
-            .then((response) => { 
-                getData(response);
-
+            }).then((response) => { 
+                if(response.error){return setErrorMesagges(response.poruka)
+                }else{
+                    return getData(response); 
+                }
             })
             .catch(error=>{
                 console.log('ovo je greska ',error)

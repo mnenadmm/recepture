@@ -6,6 +6,7 @@ const NapraviKolac=({token,role})=>{
     const[postupak, setPostupak]=useState('')
     const[poruka, setPoruka]=useState(0);
     const[mesages, setMesages]=useState('')
+    const[errorMesagges, setErrorMesagges]=useState('')
  
     const sacuvajKolac=()=>{
         
@@ -21,10 +22,13 @@ const NapraviKolac=({token,role})=>{
                     postupak : postupak
                 })})
                 .then((res) =>{
-                    if(res.status===200){ return res.json()}
-                    if(res.status!==200){ return setMesages(`Nesto nije uredu`)}
+                    if(res.status===200){ return res.json()} 
                 })
-                .then((response)=>{return setMesages(response)})
+                .then((response)=>{
+                    if(response.error){return setErrorMesagges(response.poruka)
+                    }else{
+                        return setMesages(response)
+                    } })
                 .catch((error)=>{return console.log(error)});
 			
         setTimeout(function(){
@@ -83,7 +87,14 @@ const NapraviKolac=({token,role})=>{
     }
     return(
         <div>
+            { errorMesagges === '' ? <>
             {nazad === 0? Kreiraj() : <KreirajKolac role={role} props={{token}} />}
+            </> :
+            <div className="alert alert-success alert-dismissible">
+                <p  className="close" data-dismiss="alert" aria-label="close">&times;</p>
+                    <strong>{errorMesagges}</strong>
+           </div> 
+            }
         </div>
     )
 }

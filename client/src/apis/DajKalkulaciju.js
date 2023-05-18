@@ -14,8 +14,8 @@ const DajKalkulaciju =({props,token,role})=>{
     
 
     useEffect(() => {
-        const URL =`/dajRecepturuReact/${props.idKolaca}`;
-        fetch(URL,{
+        
+        fetch(`/dajRecepturuReact/${props.idKolaca}`,{
             method: "GET",
             headers: {
               
@@ -23,23 +23,18 @@ const DajKalkulaciju =({props,token,role})=>{
         })
             .then((res) =>{
                 if(res.status===200){return res.json() }
-                if(res.status=== 10){return setErrorMessages('Nemate pristup ovom delu kalkulacije')}
-                if(res.status===401){return  setErrorMessages('Vasa sessija je istekla, konektujte se ponovo ERROR: 401 ')}
-               if(res.status===422){return  setErrorMessages('Neregularna konakcija, molimo Vas da se ispravno konektujete konektujete  ERROR: 422 ')}
-            })
-                
+            })  
             .then((response) => { 
-                
-                setData(response)
-                if(role.rola_1===true || role.user===1){
-                 
-                const cena=response.map(item => item[4]).reduce((saberi, sab)=>saberi+sab);
-                setZbir(cena.toFixed(2)) 
-                }else{
-                    setErrorMessages('Nemate pristup ovom delu kalkulacijeeeeeeeeeeeee') 
-                }   
+                if(response.error){return setErrorMessages(response.poruka)}
+                else{
+                    setData(response)
+                    if(role.rola_1===true || role.user===1){
+                        const cena=response.map(item => item[4]).reduce((saberi, sab)=>saberi+sab);
+                        setZbir(cena.toFixed(2)) 
+                    }
+                }  
             })
-    }, [])
+    }, []);
     
         
             

@@ -16,6 +16,7 @@ from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import InputRequired, Length, ValidationError
 from flask_session import Session
 from konekcija import *
+import sys
 
 
 app = Flask(__name__)
@@ -189,16 +190,17 @@ def logoutR():
 
 def kreirajTabelu():
 	
-	baza = psycopg2.connect(**konekcija)
-	mycursor = baza.cursor()
-	mycursor.execute(f"""
-				select id_kolaca,ime_kolaca,opis_kolaca
+			baza=psycopg2.connect(**konekcija)
+			mycursor = baza.cursor()
+			mycursor.execute(f"""
+					select id_kolaca,ime_kolaca,opis_kolaca
 					from kolaci
-					where dodata_receptura =true;
-			""")
-	rezultat = mycursor.fetchall() #fetchone()
-	baza.close()
-	return jsonify(rezultat)
+					where dodata_receptura =false;
+					
+				""")
+			rezultat=mycursor.fetchall()
+			baza.close()
+			return jsonify(rezultat)
 	
 
 #daje listu sirovina 
@@ -422,18 +424,23 @@ def azurirajSirovinuReact():
 				""")
 			baza.commit()
 			baza.close()
-			rez=f"Uspesno ste azurirali sirovinu {imeSirovine}"
+			rez=imeSirovine
 			return jsonify(rez)
-
 		except :
-			rez="Doslo je do greske sa konekcijom"
-			return jsonify(rez),422
-
+			msg={
+				'error': True,
+				'poruka': 'Neuspela konekcija sa bazom '
+				
+			}
+			return jsonify(msg)
 	else:
-		rez="Nemate pristup ovom delu aplikacije"
-		return jsonify(rez),10
+		msg={
+			'error': True,
+			'poruka': 'Nemate pristup ovom delu aplikacije'
+		}
+		return jsonify(msg)
 #za brisanje sirovine
-@app.route('/obrisiSirovinuReact',methods=['POST'])
+@app.route('/obrisiSirovinu',methods=['POST'])
 @login_required
 def obrisiSirovinuReact():
 	if current_user.rola_1():
@@ -448,16 +455,20 @@ def obrisiSirovinuReact():
 				""")
 			baza.commit()
 			baza.close()
-			rez='obrisali ste sirovinu ',idSirovine
+			rez='Obrisali ste sirovinu '
 			return jsonify(rez)
-
 		except :
-			rez="Doslo je do greske sa konekcijom"
-			return jsonify(rez),422
-
+			msg={
+				'error': True,
+				'poruka': 'Neuspela konekcija sa bazom '
+			}
+			return jsonify(msg)
 	else:
-		rez="Nemate pristup ovom delu aplikacije"
-		return jsonify(rez),10
+		msg={
+			'error': True,
+			'poruka': 'Nemate pristup ovom delu aplikacije. '
+		}
+		return jsonify(msg)
 @app.route('/dajlistuKolacaReact', methods=['GET'])
 @login_required
 def dajlistuKolacaReact():
@@ -468,19 +479,23 @@ def dajlistuKolacaReact():
 			mycursor.execute(f"""
 					select id_kolaca,ime_kolaca,opis_kolaca
 					from kolaci
-					where dodata_receptura =true;
-					
+					where dodata_receptura =true;	
 				""")
-			
-			rez=mycursor.fetchall()
-			return jsonify(rez),10
-
+			rezultat=mycursor.fetchall()
+			baza.close()
+			return jsonify(rezultat)
 		except :
-			rez='Neuspela konekcija sa bazom'
-			return jsonify(rez),10
+			msg={
+				'error': True,
+				'poruka': 'Neuspela konekcija sa bazom.'
+			}
+			return jsonify(msg)
 	else:
-		rez='Nemate pristup ovom delu aplikacijeeeeee'
-		return jsonify(rez)
+		msg={
+				'error': True,
+				'poruka': 'Nemate pristup ovom delu aplikacije.'
+			}
+		return jsonify(msg)
 @app.route('/napraviKolacReact' , methods=['POST'])
 @login_required
 def napraviKolacReact():
@@ -497,15 +512,20 @@ def napraviKolacReact():
 				""")
 			baza.commit()
 			baza.close()
-			rez ='uspesno ste kreirali kolac ',imeKolaca
+			rez ='Uspesno ste kreirali kolac ',imeKolaca
 			return jsonify(rez)
-        	
 		except :
-			rez='Nemate pristup ovom delu aplikacije'
-			return jsonify(rez)
+			msg={
+				'error': True,
+				'poruka': 'Neuspela konekcija sa bazom.'
+			}
+			return jsonify(msg)
 	else:
-		rez='Nemate pristup ovom delu aplikacije'
-		return jsonify(rez),10
+		msg={
+				'error': True,
+				'poruka': 'Nemate pristup ovom delu aplikacije'
+			}
+		return jsonify(msg)
 @app.route('/azurirajKolacReact',methods=['POST'])
 @login_required
 def azurirajKolacReact():
@@ -524,14 +544,20 @@ def azurirajKolacReact():
 				""")
 			baza.commit()
 			baza.close()
-			rez=f"Kolac {imeKolaca} je uspesno azuriran"
+			rez=f"Za kolac {imeKolaca} ste azurirali postupak rada."
 			return jsonify(rez)
 		except :
-			rez='Neuspela konekcija sa bazom'
-			return jsonify(rez)
+			msg={
+				'error': True,
+				'poruka': 'Neuspela konekcija sa bazom'
+			}
+			return jsonify(msg)
 	else:
-		rez='Nemate pristup ovom delu aplikacije'
-		return jsonify(rez),10
+		msg={
+				'error': True,
+				'poruka': 'Nemate pristup ovom delu aplikacije'
+			}
+		return jsonify(msg)
 @app.route('/obrisiKolacReact', methods=['POST'])
 @login_required
 def obrisiKolacReact():
@@ -547,14 +573,20 @@ def obrisiKolacReact():
 				""")
 			baza.commit()
 			baza.close()
-			rez=f"Uspesno ste obrisali kolac sa id-em: {idKolaca}"
+			rez="Uspesno ste obrisali kolac "
 			return jsonify(rez)
 		except :
-			rez='Neuspela konekcija sa bazom'
-			return jsonify(rez)
+			msg={
+				'error': True,
+				'poruka': 'Neuspela konekcija sa bazom'
+			}
+			return jsonify(msg)
 	else:
-		rez='Nemate pristup ovom delu aplikacije'
-		return jsonify(rez),10
+		msg={
+				'error': True,
+				'poruka': 'Nemate pristup ovom delu aplikacije'
+			}
+		return jsonify(msg)
 #lista kolaca bez recepture
 @app.route('/dajlistuKolacaBezReceptureReact')
 @login_required
@@ -680,11 +712,17 @@ def listaKolacaNaslovReact():
 			rez=mycursor.fetchall() #fetchall() fetchone()
 			return jsonify(rez)
 		except:
-			rez='Neuspela konekcija sa bazom'
-			return jsonify(rez)
+			msg={
+				'error': True,
+				'poruka' : 'Neuspela konekcija sa bazom'
+			}
+			return jsonify(msg)
 	else:
-		rez='Nemate pristup ovom delu aplikacije'
-		return jsonify(rez),10
+		msg={
+				'error': True,
+				'poruka' : 'Nemate pristup ovom delu aplikacije'
+			}
+		return jsonify(msg)
 @app.route('/dajRecepturuReact/<int:idKolaca>')
 @login_required
 def dajRecepturuReact(idKolaca):
@@ -704,11 +742,17 @@ def dajRecepturuReact(idKolaca):
 			baza.close()
 			return jsonify(rez)
 		except:
-			rez='Neuspela konekcija sa bazom'
-			return jsonify(rez)
+			msg={
+				'error': True,
+				'poruka': 'Neuspela konekcija sa bazom'
+			}
+			return jsonify(msg)
 	else:
-		rez='Nemate pristup ovom delu aplikacije'
-		return jsonify(rez),10
+		msg={
+				'error': True,
+				'poruka': 'Nemate pristup ovom delu aplikacije'
+			}
+		return jsonify(msg)
 #za azuriranje recepture
 @app.route('/azurirajKolicinuRecepturaReact', methods=['POST'])
 @login_required
@@ -805,11 +849,17 @@ def dajPostupakZaRecepturu(idKolaca):
 			baza.close()
 			return jsonify(rez)
 		except :
-			rez='Nesto nije u redu sa konekcijom ka bazi'
-			return jsonify(rez)
+			msg={
+				'error': True,
+				'poruka': 'Neuspela konekcija sa bazom.'
+			}
+			return jsonify(msg)
 	else:
-		rez='Nemate pristup ovom delu aplikacije'
-		return jsonify(rez),10
+		msg={
+				'error': True,
+				'poruka': 'Nemate pristup ovom delu aplikcije.'
+			}
+		return jsonify(msg)
 @app.route('/azurirajRabat', methods=['POST'])
 @login_required
 def azuriraRabat():
@@ -833,11 +883,17 @@ def azuriraRabat():
 			rez=f'Za recepturu kolaca {imeKolaca} ste promenili rabat za sirovinu {imeSirovine} u {rabat} %'
 			return jsonify(rez)
 		except:
-			rez='Nesto nije u redu sa konekcijom ka bazi'
-			return jsonify(rez)
+			msg={
+				'error': True,
+				'poruka': 'Neuspela konekcija sa bazom'
+			}
+			return jsonify(msg)
 	else:
-		rez="Nemate pristup ovom delu aplikacije"
-		return jsonify(rez)
+		msg={
+				'error': True,
+				'poruka': 'Niste ovlasceni da obracunavate rabat'
+			}
+		return jsonify(msg)
 
 #administrator
 

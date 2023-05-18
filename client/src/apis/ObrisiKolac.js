@@ -6,11 +6,9 @@ const ObrisiKolac=({props,token,role})=>{
     const[mesages, setMesages]=useState('')
     const[errorMesssages,setErrorMessages]=useState('')
     const ukloniKolac=()=>{
-        
         fetch('/obrisiKolacReact', {
             method: 'POST',
 				headers: {
-                    
 					'Accept': 'application/json, text/plain, */*',
 					'Content-Type': 'application/json'
 				},
@@ -18,21 +16,21 @@ const ObrisiKolac=({props,token,role})=>{
 					idKolaca : props.idKolaca
 				})
 			}).then((res) =>{
-            
-            if(res.status===200){return setMesages(`Obrisali ste kolac ${props.imeKolaca}`)}
-               if(res.status===401){return  setErrorMessages('Vasa sessija je istekla, konektujte se ponovo ERROR: 401 ')}
-               if(res.status===422){return  setErrorMessages('Neregularna konakcija, molimo Vas da se ispravno konektujete konektujete  ERROR: 422 ')}
-               if(res.status===10){return setErrorMessages("Nemate pristup ovom delu aplikacije")}
-            }).catch(error=>{
+            if(res.status===200){return res.json()} 
+            }).then((response)=>{
+                if(response.error){return setErrorMessages(response.poruka)
+                }else{
+                    return setMesages(`${response} ${props.imeKolaca}.`)
+                }
+            })
+            .catch(error=>{
                 console.log('ovo je greska ',error)
                 setErrorMessages('Neuspela konekcija sa bazom, proverite internet konekciju')
             })
-            
             setPoruka(1)
             setTimeout(function(){
                 setList(1) //vraca nas u listu kolaca
-            },3000)
-            
+            },3000)      
     }
     const obrisi =()=>{
         return(

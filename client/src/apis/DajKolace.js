@@ -8,34 +8,22 @@ const DajKolace = ({role})=>{
     const[stranica,setStranica]=useState(0);
     const[idKolaca, setIdKolaca]=useState(0);
     const[imeKolaca,setImeKolaca]=useState('');
-               
- 
     useEffect(()=>{
-        fetch('/dajlistuKolacaReact',{
-            method: "GET",
-            headers: {
-               
+        fetch(`/dajlistuKolacaReact`,{
+           method: "GET" 
+        }).then((res)=>{
+            if(res.status ===200){return res.json()}
+        }).then((response)=>{
+            if(response.error){setErrorMesagges(response.poruka)
+            }else{
+                setKolac(response);
+                setFilteredData(response)
             }
-        })
-        .then((res) =>{
-            res.json()
-            if(res.status===200){ return res.json()}
-            if(res.status===10){return res.json() }
-        })
-        .then((response) => { 
-            console.log(response)
-         // setKolac(response);
-           // setFilteredData(response);
-            
-        })
-        .catch(error=>{
+        }).catch(error=>{
             console.log('ovo je greskaaaa ',error)
             setErrorMesagges('Neuspela konekcija sa bazom, proverite internet konekciju')
         })
-    },[URL]);
-      
-            
-        
+    },[]);  
     const postupak=(id,imeKolaca)=>{
         setImeKolaca(imeKolaca)
         setIdKolaca(id)
@@ -78,6 +66,7 @@ const DajKolace = ({role})=>{
                 </tbody>
                 </table>
                 <br />
+               
             </div>
         );
     }

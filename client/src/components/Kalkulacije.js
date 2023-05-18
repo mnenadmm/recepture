@@ -7,22 +7,22 @@ const Kalkulacije = ({role})=>{
     const [filteredData,setFilteredData] = useState(ime); //ovo je pocetno stanje kolaca i dobija vrednost iz search
     const[imeKolaca, setImeKolaca]=useState('');
     const[idKolaca, setIdKolaca]=useState(0);
-    const URL ='/listaKolacaNaslovReact';
+   
     useEffect(() => {
-        fetch(URL,{
+        fetch('/listaKolacaNaslovReact',{
             method: "GET",
             headers: {
                  
               }
         })
         .then((res) =>{
-            if(res.status===200){ return res.json()}
-            if(res.status===401){return  setErrorMesagges('Vasa sessija je istekla, konektujte se ponovo ERROR: 401 ')}
-            if(res.status===422){return  setErrorMesagges('Neregularna konakcija, molimo Vas da se ispravno konektujete konektujete  ERROR: 422 ')}
+            if(res.status===200){ return res.json()} 
         })
             .then((response) => { 
+                if(response.error){return setErrorMesagges(response.poruka)
+                }else{
                 setIme(response)
-                setFilteredData(response)
+                setFilteredData(response)}
             })
             .catch(error=>{
                 console.log('ovo je greska ',error)

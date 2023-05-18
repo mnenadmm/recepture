@@ -2,11 +2,12 @@ import { useState } from "react"
 import SirovineEdit from "../components/SirovineEdit"
 const ObrisiSirovinu=({props,role,azuriraj})=>{
     const[errorMessages,setErrorMessages]=useState('')
+    const[messages, setMessages]=useState('')
     const[stranica, setStranica]=useState(0)
     const[poruka, setPoruka]=useState(0);   
     const obrisi=()=>{
         const ukloni =()=>{
-            fetch('/obrisiSirovinuReact', {
+            fetch('/obrisiSirovinu', {
              method: 'POST',
                  headers: {
                    
@@ -18,11 +19,13 @@ const ObrisiSirovinu=({props,role,azuriraj})=>{
                  })
              }).then((res)=>{
                 if(res.status===200){return res.json()}
-                if(res.status===401){return  setErrorMessages('Vasa sessija je istekla, konektujte se ponovo ERROR: 401 ')}
-                if(res.status===10){return  setErrorMessages('Nemate pristup ovom delu aplikacije')}
-                if(res.status===422){return  setErrorMessages('Neregularna konakcija, molimo Vas da se ispravno konektujete konektujete  ERROR: 422 ')}
              }).then((response)=>{
-                console.log(response)
+                if(response.error){
+                    return setErrorMessages(response.poruka)
+                }else{
+                    return setMessages(`${response} ${azuriraj.imeSirovine}.`)
+                }
+                
              }).catch((error)=>{console.log('ERROR: ',error)})
              setPoruka(1);//ispisuje alertporuku
              setTimeout(function(){ 
@@ -37,7 +40,7 @@ const ObrisiSirovinu=({props,role,azuriraj})=>{
             {poruka !== 0 ? 
                     <div className="alert alert-danger">
                         <p className="close" data-dismiss="alert" aria-label="close">&times;</p>
-                        Obrisali ste  <strong>{azuriraj.imeSirovine} !!! </strong> 
+                        {messages} 
                 </div> : null
             }
                 <ul className="nav nav-tabs actions-nav">

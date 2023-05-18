@@ -14,49 +14,38 @@ const DajPostupak = ({props,token,role})=>{
     useEffect(()=>{
         fetch(`/dajRecepturuReact/${props.idKolaca}`,{
             method: "GET",
-            headers: {
-                
+            headers: {  
             }
         })
         .then((res) =>{
           if(res.status===200){return res.json()}
-          if(res.status===401){return  setErrorMessages('Vasa sessija je istekla, konektujte se ponovo ERROR: 401 ')}
-          if(res.status===10){return  setErrorMessages('Nemate pristup ovom delu aplikacije')}
-          if(res.status===422){return  setErrorMessages('Neregularna konakcija, molimo Vas da se ispravno konektujete konektujete  ERROR: 422 ')}
-        
         })
         .then((response) => { 
-          
-          setRecept(response)  
-              
+            if(response.error){return setErrorMessages(response.poruka)
+            }else{
+                return setRecept(response)
+            }  
         }).catch((error)=>{
             console.log('ERROR: ',error)
         });
         fetch(`/dajPostupakZaRecepturu/${props.idKolaca}`,{
             method: "GET",
             headers: {
-                
               }
         })
         .then((res) =>{
          if(res.status===200){return res.json()}   
-        // if(res.status===401){return  setErrorMessages('Vasa sessija je istekla, konektujte se ponovo ERROR: 401 ')}
-         //if(res.status===10){return  setErrorMessages('Nemate pristup ovom delu aplikacije')}
-         //if(res.status===422){return  setErrorMessages('Neregularna konakcija, molimo Vas da se ispravno konektujete konektujete  ERROR: 422 ')}  
         })
         .then((response) => { 
-
-            // if(response.error){ setErromMesages(response.poruka)}
-            // else:
-                //  setObjasnjenje(response);
-            setObjasnjenje(response);
-            
-            
+             if(response.error){return setErrorMessages(response.poruka)
+            }else{
+                return setObjasnjenje(response);
+            }  
         }).catch((error)=>{
             console.log('ERROR: ',error)
         })
        
-    },[props.idKolaca]);
+    },[]);
    
   
     const pokazi = ()=>{
