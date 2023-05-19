@@ -15,10 +15,10 @@ const NapraviRecepturu = ({role})=>{
     const URL ='/dajlistuKolacaBezReceptureReact';
     
     const dajKolac=(id)=>{
-        const URL_KOLAC=`/dajImeKolacaReact/${id}`;
+        
         setIdKolaca(Number(id));
         
-           fetch(URL_KOLAC,{
+           fetch(`/dajImeKolacaReact/${id}`,{
                 method: "GET",
                 headers: {
                     
@@ -68,16 +68,14 @@ const NapraviRecepturu = ({role})=>{
                 idKolaca : idKolaca,
                 kolicina: kolicina,
                 idSirovine : idSirovine
-
             })
         }).then((res) =>{
-            
             if(res.status===200){ return res.json()}
-            if(res.status===401){return  setErrorMesagges('Vasa sessija je istekla, konektujte se ponovo ERROR: 401 ')}
-            if(res.status===422){return  setErrorMesagges('Neregularna konakcija, molimo Vas da se ispravno konektujete konektujete  ERROR: 422 ')}
-            if(res.status===10){return  setErrorMesagges('Nemate pristup ovom delu aplikacije ')}                           
             }).then((response=>{
-                console.log(response)
+                if(response.error){return setErrorMesagges(response.poruka)}
+            else{
+                 
+            }
             }))
         
     }

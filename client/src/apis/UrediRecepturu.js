@@ -13,7 +13,7 @@ const[errorMessages,setErrorMessages]=useState('');
 
 
 const promeni =()=>{
-    console.log(kolicina)
+    
     fetch('/azurirajKolicinuRecepturaReact', {
             method: 'POST',
 				headers: {
@@ -29,15 +29,14 @@ const promeni =()=>{
 				})
 			}).then((res)=>{
                 if(res.status===200){return res.json()}
-                if(res.status===10){return  setErrorMessages('Nemate pristup ovom delu aplikacije ')}
-                if(res.status===20){return  setErrorMessages('Nesto nije u redu sa konekcijom ka bazi ')}
-                if(res.status===401){return  setErrorMessages('Vasa sessija je istekla, konektujte se ponovo ERROR: 401 ')}
-                if(res.status===422){return  setErrorMessages('Neregularna konakcija, molimo Vas da se ispravno konektujete konektujete  ERROR: 422 ')}
             }).then((response)=>{
-                console.log(response)
+                if(response.error){return setErrorMessages(response.poruka)
+                }else{
+                    setMesages(response)
+                }
             }).catch((error)=>{console.log('ERROR: ',error)})
             setPoruka(1)
-            setMesages(`Za sirovinu ${props.imeSirovine} je promenjena kolicina u ${kolicina}`)
+            
             setTimeout(function(){
                 setStranica(0)
             },3000)

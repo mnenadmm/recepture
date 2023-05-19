@@ -237,17 +237,27 @@ def izlistajSirovineReact():
 @login_required
 def dajImeDobavljacaIdReact():
 	if current_user.rola_1() or current_user.rola_2() or current_user.rola_3():
-		baza = psycopg2.connect(**konekcija)
-		mycursor = baza.cursor()
-		mycursor.execute(f"""
+		try:
+			baza = psycopg2.connect(**konekcija)
+			mycursor = baza.cursor()
+			mycursor.execute(f"""
 				select id_dobavljaca, ime_dobavljaca from public.dobavljaci;
 			""")
-		rez=mycursor.fetchall()
-		baza.close()
-		return jsonify(rez)
+			rez=mycursor.fetchall()
+			baza.close()
+			return jsonify(rez)
+		except:
+			msg={
+				'error': True,
+				'poruka': 'Neuspela konekcija sa bazom cod 252'
+			}
+			return jsonify(msg)
 	else:
-		rez="nemate pristup ovom delu aplikacjije"
-		return jsonify(rez)
+		msg={
+				'error': True,
+				'poruka': 'Nemate pristup ovom delu aplikacije cod 258'
+			}
+		return jsonify(msg)
 # daje sirovine po dobavljacu 
 @app.route('/sirovinePoDobavljacuReact/<int:idDobavljaca>',methods=['GET'])
 @login_required
@@ -604,12 +614,17 @@ def dajlistuKolacaBezReceptureReact():
 			baza.close()
 			return jsonify(rez)
 		except:
-			rez='Neuspela konekcija sa bazom'
-			return jsonify(rez)
+			msg={
+				'error': True,
+				'poruka': 'Neuspela konekcija sa bazom code 619'
+			}
+			return jsonify(msg)
 	else:
-		print('nismo')
-		rez="Nemate pristup ovom delu aplikacije"
-		return jsonify(rez)
+		msg={
+				'error': True,
+				'poruka': 'Neuspela konekcija sa bazom code 626'
+			}
+		return jsonify(msg)
 #daje ime kolaca za prikaz u recepturama
 @app.route('/dajImeKolacaReact/<int:idKolaca>')
 @login_required
@@ -641,7 +656,6 @@ def napraviRecepturuReact():
 		idKolaca = data['idKolaca']
 		kolicina= data['kolicina']
 		idSirovine = data['idSirovine']
-		
 		try:
 			baza= psycopg2.connect(**konekcija)
 			mycursor=baza.cursor()
@@ -651,10 +665,14 @@ def napraviRecepturuReact():
 				""")
 			baza.commit()
 			baza.close()
-			
+			msg=kolicina
+			return jsonify(msg)
 		except:
-			e='Neuspela konekcija sa bazom'
-			print(e)
+			msg={
+				'error': True,
+				'poruka': 'Neuspela konekcija sa bazom cod:658'
+			}
+			return jsonify(msg)
 		
 		try:
 			baza= psycopg2.connect(**konekcija)
@@ -668,13 +686,17 @@ def napraviRecepturuReact():
 			baza.close()
 
 		except:
-			e='Neuspela konekcija sa bazom'
-			print(e)
-		rez="sirovine je uspesno dodata u recepturu"
-		return jsonify(rez)
+			msg={
+				'error': True,
+				'poruka': 'Neuspela konekcija sa bazom cod:676'
+			}
+			return jsonify(msg)
 	else:
-		rez="Nemate pristup ovom delu aplikacije"
-		return jsonify(rez)
+		msg={
+				'error': True,
+				'poruka': 'Neuspela konekcija sa bazom cod:658'
+			}
+		return jsonify(msg)
 #daje cenu  jedne sirovinu na osnovu id-a koristi se za recepture
 @app.route('/dajJednuSirovinuReact/<int:idSirovine>')
 @login_required
@@ -700,7 +722,7 @@ def dajJednuSirovinuReact(idSirovine):
 @app.route('/listaKolacaNaslovReact')
 @login_required
 def listaKolacaNaslovReact():
-	if current_user.rola_1() or current_user.rola_2() or current_user.rola_3():
+	if current_user.rola_1() or current_user.rola_2():
 		try:
 			baza=psycopg2.connect(**konekcija)
 			mycursor = baza.cursor()
@@ -726,7 +748,7 @@ def listaKolacaNaslovReact():
 @app.route('/dajRecepturuReact/<int:idKolaca>')
 @login_required
 def dajRecepturuReact(idKolaca):
-	if current_user.rola_1() or current_user.rola_2():
+	if current_user.rola_1():
 		try:
 			baza=psycopg2.connect(**konekcija)
 			mycursor = baza.cursor()
@@ -776,11 +798,17 @@ def azurirajKolicinuRecepturaReact():
 			rez=f'Za sirovinu {imeSirovine} ste promenili kolicinu u {kolicina}. '
 			return jsonify(rez)
 		except:
-			rez='Nesto nije u redu sa konekcijom ka bazi'
-			return jsonify(rez),20
+			msg={
+				'error': True,
+				'poruka': 'Neuspela konekcija sa bazom cod 788'
+			}
+			return jsonify(msg)
 	else:
-		rez ="Nemate pristup ovom delu aplikacije"
-		return jsonify(rez),10
+		msg={
+				'error': True,
+				'poruka': 'Neuspela konekcija sa bazom cod 794'
+			}
+		return jsonify(msg)
 #brise sirovinu iz recepture
 @app.route('/ukloniSirovinuRecepturaReact', methods=['POST'])
 @login_required
@@ -802,12 +830,17 @@ def ukloniSirovinuRecepturaReact():
 			rez=f'Uklonili ste sirovinu {imeSirovine} iz recepture.'
 			return jsonify(rez)
 		except :
-			
-			rez='Nesto nije u redu sa konekcijom ka bazi'
-			return jsonify(rez),20
+			msg={
+				'error': True,
+				'poruka': 'Neuspela konekcija sa bazom cod 821'
+			}
+			return jsonify(msg)
 	else:
-		rez='Nemate pristup ovom delu aplikacije'
-		return jsonify(rez),10
+		msg={
+				'error': True,
+				'poruka': 'Neuspela konekcija sa bazom cod 826'
+			}
+		return jsonify(msg)
 #dodaje sirovinu u potojiecu recepturu
 @app.route('/dodajSirovinuURecepturu', methods=['POST'])
 @login_required
@@ -829,11 +862,17 @@ def dodajSirovinuURecepturu():
 			rez='Uspesno ste dodali sirovinu'
 			return jsonify(rez)
 		except:
-			rez='Nesto nije u redu sa konekcijom ka bazi'
-			return jsonify(rez),20
+			msg={
+				'error': True,
+				'poruka' : 'Neuspela konekcija sa bazom cod: 852'
+			}
+			return jsonify(msg)
 	else:
-		rez='Nemate pristup ovom delu aplikacije'
-		return jsonify(rez),10
+		msg={
+				'error': True,
+				'poruka' : 'Nemate pristup ovom delu aplikacije cod: 858'
+			}
+		return jsonify(msg)
 @app.route('/dajPostupakZaRecepturu/<int:idKolaca>')
 @login_required
 def dajPostupakZaRecepturu(idKolaca):
@@ -914,8 +953,11 @@ def administrator():
 			rez = mycursor.fetchall()
 			baza.close()
 		except :
-			rez='Nesto nije u redu sa konekcijom ka bazi'
-			return jsonify(rez)
+			msg={
+			'error': True,
+			'poruka': 'Nemate pristup ovom delu aplikacije cod 943'
+		}
+			return jsonify(msg)
 		try:
 			baza= psycopg2.connect(**konekcija)
 			mycursor=baza.cursor()
@@ -929,8 +971,11 @@ def administrator():
 			
 			baza.close()
 		except :
-			rez='Nesto nije u redu sa konekcijom ka bazi'
-			return jsonify(rez)
+			msg={
+			'error': True,
+			'poruka': 'Neuspela konekcija sa bazom cod 961'
+				}
+			return jsonify(msg)
 		try:
 			baza= psycopg2.connect(**konekcija)
 			mycursor=baza.cursor()
@@ -943,12 +988,18 @@ def administrator():
 			bezVerifikacije=mycursor.fetchall()
 			baza.close()
 		except:
-			rez='Nesto nije u redu sa konekcijom ka bazi'
+			msg={
+			'error': True,
+			'poruka': 'Neuspela konekcija sa bazom cod 972'
+		}
 			return jsonify(rez)
 		return jsonify(rez,block,bezVerifikacije)
 	else:
-		rez='Nemate pristup ovom delu aplikacije'
-		return jsonify(rez),10
+		msg={
+			'error': True,
+			'poruka': 'Nemate pristup ovom delu aplikacije cod 976'
+		}
+		return jsonify(msg)
 #za azuriranje korisnika
 @app.route('/adminAzurirajKorisnika',methods=['POST'])
 @login_required
@@ -973,45 +1024,20 @@ def adminAzurirajKorisnika():
 			baza.commit()
 			baza.close()
 			rez=f"Za korisnika {username} ste azurirali pristupne role."
-
 			return jsonify(rez)
 		except :
-			rez='Nesto nije u redu sa konekcijom ka bazi'
-			return jsonify(rez)
+			msg={
+			'error': True,
+			'poruka': 'Neuspela konekcija sa bazom cod 1017'
+		}
+			return jsonify(msg)
 	else:
-		rez='Nemate pristup ovom delu aplikacije'
-		return jsonify(rez),10
-#blokiraj-odblokiraj korisnika
-@app.route('/adminBlokirajKorisnika',methods=['POST'])
-@login_required
-def adminBlokirajKorisnika():
-	if current_user.get_id() == 1:
-		data= request.get_json()
-		username=data['username']
-		idKorisnika=data['idKorisnika']
-		block_user=data['block_user']
-		try:
-			baza= psycopg2.connect(**konekcija)
-			mycursor=baza.cursor()
-			mycursor.execute(f"""
-				update korisnici
-				set block_user={block_user}
-				where id_korisnika={idKorisnika};
-				""")
-			baza.commit()
-			baza.close()
-			if block_user==True:
-				rez=f"Korisnik {username} je blokiran."
-			else:
-				rez=f"Korisnik {username} je odblokiran."
-			return jsonify(rez)
-		except:
-			rez='Nesto nije u redu sa konekcijom ka bazi'
-			return jsonify(rez)
+		msg={
+			'error': True,
+			'poruka': 'Nemate pristup ovom delu aplikacije cod 1023'
+		}
+		return jsonify(msg)
 
-	else:
-		rez='Nemate pristup ovom delu aplikacije'
-		return jsonify(rez),10
 #odblokiraj korisnika
 @app.route('/adminVratiKorisnika',methods=['POST'])
 @login_required
@@ -1025,7 +1051,7 @@ def adminVratiKorisnika():
 			baza= psycopg2.connect(**konekcija)
 			mycursor=baza.cursor()
 			mycursor.execute(f"""
-				update korisnici
+				update korisnici 
 				set block_user=false
 				where id_korisnika={idKorisnika};
 				""")
@@ -1036,17 +1062,22 @@ def adminVratiKorisnika():
 			return jsonify(rez)
 			
 		except:
-			rez='Nesto nije u redu sa konekcijom ka bazi'
-			return jsonify(rez)
-
+			msg={
+				'error': True,
+				'poruka' : 'Nesto nije u redu sa konekcijom ka bazi cod 1052'
+			}
+			return jsonify(msg)
 	else:
-		rez='Nemate pristup ovom delu aplikacije'
-		return jsonify(rez),10
+		msg={
+				'error': True,
+				'poruka' : 'Nemate pristup ovom delu aplikacije cod 1058'
+			}
+		return jsonify(msg)
 #za brisanje korisnika
 @app.route('/obrisiKorisnikaAdmin',methods=['POST'])
 @login_required
 def obrisiKorisnikaAdmin():
-	if current_user.get_id() == 1:
+	if current_user.get_id() == 2:
 		data =request.get_json()
 		idKorisnika=data['idKorisnika']
 		username=data['username']
@@ -1062,11 +1093,17 @@ def obrisiKorisnikaAdmin():
 			rez=f'Obrisali ste korisnika  {username}'
 			return jsonify(rez)
 		except :
-			rez='Nesto nije u redu sa konekcijom ka bazi'
-			return jsonify(rez)
+			msg={
+				'error': True,
+				'poruka' : 'Nesto nije u redu sa konekcijom ka bazi cod 1083'
+			}
+			return jsonify(msg)
 	else:
-		rez='Nemate pristup ovom delu aplikacije'
-		return jsonify(rez),10
+		msg={
+				'error': True,
+				'poruka' : 'Nesto nije u redu sa konekcijom ka bazi cod 108'
+			}
+		return jsonify(msg)
 
 
  ####################################################################

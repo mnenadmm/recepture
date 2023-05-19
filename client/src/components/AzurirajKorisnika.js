@@ -1,23 +1,19 @@
 import React,{useState} from "react";
 import Administrator from "./Administrator";
 const AzurirajKorisnika=({props,azuriraj})=>{
-    
+    const [errorMesagges, setErrorMesagges] = useState('')
     const[messages,setMessages]=useState('')
     const[stranica,setStranica]=useState(1)
     const[rola_1,setRola_1]=useState(azuriraj.rola_1)
     const[rola_2,setRola_2]=useState(azuriraj.rola_2)
     const[rola_3,setRola_3]=useState(azuriraj.rola_3)
     const[block, setBlock]=useState(azuriraj.block_user)
-    
     const changeBlock=()=>{
-        setBlock(!block)
-        
-        
-}
+        setBlock(!block)     
+            }
    const handleRola_1Change=()=>{
-        setRola_1(!rola_1)
-        
-    }
+        setRola_1(!rola_1)  
+         }
     const handleRola_2Change=()=>{
         setRola_2(!rola_2);
     }
@@ -45,9 +41,11 @@ const AzurirajKorisnika=({props,azuriraj})=>{
     .then(resp =>{ 
         if(resp.status===200){ return resp.json()}   
     })
-    .then(data=>{
-        setMessages(data)
-        
+    .then(response=>{
+        if(response.error){return setErrorMesagges(response.poruka)
+        }else{
+            setMessages(response)
+        }
     })
     .catch(error=>{
         console.log('Error: ',error)
@@ -62,6 +60,7 @@ const AzurirajKorisnika=({props,azuriraj})=>{
         return(
             <div className="container">
                 <br />
+                {errorMesagges === '' ? <>
                 <div className="row">
                     <div className="col-sm-12 text-center">
                         <h3>User: {azuriraj.user}</h3>
@@ -126,20 +125,13 @@ const AzurirajKorisnika=({props,azuriraj})=>{
                         <span className="glyphicon glyphicon-arrow-left"></span>Back</p> 
                    
                </div>
-               </div> 
-                    
-                    
-                   
-                
-                
-                
-
-
-                
-                
-               
-                    
-                
+               </> : 
+                    <div className="alert alert-success alert-dismissible">
+                    <p className="close" data-dismiss="alert" aria-label="close">&times;</p>
+                    <strong>{errorMesagges}</strong>
+                </div>
+                }
+               </div>        
         )
     }
     return(

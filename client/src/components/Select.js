@@ -8,25 +8,29 @@ const Select = ({options,ime, promena,setErrorMesagges})=>{
         })
         .then((res) =>{
            if(res.status===200){return res.json()} 
-           if(res.status===401){return  setErrorMesagges('Vasa sessija je istekla, konektujte se ponovo ERROR: 401 ')}
-            if(res.status===10){return setErrorMesagges('nemate pristup ovom delu aplikacije')}
+           
         })
             
         .then((response) => {
-           
-            setState(response);  
+            if(response.error){
+                setErrorMesagges(response.poruka)
+              
+            }else{ 
+                setState(response);
+            }
+              
         })
         .catch(error=>{
             setErrorMesagges('Neuspela konekcija sa bazom, proverite internet konekciju')
             console.log('ovo je greska ',error)
             
         })
-    },[options,setErrorMesagges]);
+    },[]);
     
         return(
             
             <div>
-                
+                {setErrorMesagges !=='' ? 
                 <select 
                     className="form-control" 
                     onChange={(e)=>{promena(e.target.value)}}   
@@ -40,6 +44,14 @@ const Select = ({options,ime, promena,setErrorMesagges})=>{
             </option>
             ))}
                 </select>  
+                : 
+               
+                <div className="alert alert-success alert-dismissible">
+                <p  className="close" data-dismiss="alert" aria-label="close">&times;</p>
+                   <strong>Nemate pristup ovom delu aplikacije select</strong>
+               </div>
+               
+                }
                 
             </div>
 

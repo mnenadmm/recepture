@@ -28,13 +28,12 @@ const DajKalkulaciju =({props,token,role})=>{
                 if(response.error){return setErrorMessages(response.poruka)}
                 else{
                     setData(response)
-                    if(role.rola_1===true || role.user===1){
-                        const cena=response.map(item => item[4]).reduce((saberi, sab)=>saberi+sab);
-                        setZbir(cena.toFixed(2)) 
-                    }
+                 // sabira vrednostri    
+                const cena=response.map(item => item[4]).reduce((saberi, sab)=>saberi+sab);
+                 setZbir(cena.toFixed(2)) 
                 }  
             })
-    }, []);
+    },[]);
     
         
             

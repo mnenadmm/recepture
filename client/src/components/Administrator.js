@@ -1,48 +1,44 @@
-import React,{useState,  useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import AdminKorisnici from "./AdminKorisnici";
 import AzurirajKorisnika from "./AzurirajKorisnika";
 import BezVerifikacije from "./BezVerifikacije";
-import BlokiraniKorisnici from "./BlokiraniKorisnici";
 
-
-const Administrator = ({props,role})=>{
-    
-    const[stranica,setStranica]=useState(0)
-    const [errorMesagges, setErrorMesagges]=useState('')
-    //const[azuriraj,setAzuriraj]=useState({})
-   
-    const[data,getData]=useState([])
-    
-    const[blockUser, setBlockUser]=useState([])
-    const[noVerification, setNoVerification]=useState([])
+const Administrator = ({ props, role }) => {
+    const [stranica, setStranica] = useState(0)
+    const [errorMesagges, setErrorMesagges] = useState('')
+    const [data, getData] = useState([])
+    const [blockUser, setBlockUser] = useState([])
+    const [noVerification, setNoVerification] = useState([])
     useEffect(() => {
-        fetch('/administrator',{
+        fetch('/administrator', {
             method: "GET",
             headers: {
-               
             }
         })
-            .then((res) =>{
-                    if(res.status===200){ return res.json()}
-                    if(res.status===401){ return setErrorMesagges('nemate pristup ovoj stranici') }
-            })   
-            .then((response) => {  
-                getData(response[0]); 
-                setBlockUser(response[1]) 
-                setNoVerification(response[2])  
+            .then((res) => {
+                if (res.status === 200) { return res.json() }
             })
-            .catch(error=>{
-                console.log('ERROR: ',error)
-               // setErrorMesagges('Neuspela konekcija sa bazom, proverite internet konekciju')
+            .then((response) => {
+                if(response.error){return setErrorMesagges(response.poruka)
+                }else{
+                    getData(response[0]);
+                    setBlockUser(response[1]);
+                    setNoVerification(response[2]);
+                }
+                
+            })
+            .catch(error => {
+                console.log('ERROR: ', error)
             })
     }, [])
-    const PocetnaAdmin=()=>{
-        return(
-            <div className="container"> 
+    const PocetnaAdmin = () => {
+        return (
+            <div className="container">
+                {errorMesagges === '' ? <>
                 <div className="row">
                     <div className="col-sm-4"></div>
                     <div className="col-sm-4">
-                        <button onClick={()=>setStranica(2)} className='btn btn-default btn-lg  btn-block'>
+                        <button onClick={() => setStranica(2)} className='btn btn-default btn-lg  btn-block'>
                             Korisnici
                         </button>
                     </div>
@@ -50,27 +46,28 @@ const Administrator = ({props,role})=>{
                 <div className="row">
                     <div className="col-sm-4"></div>
                     <div className="col-sm-4">
-                        <button onClick={()=>setStranica(3)} className='btn btn-default btn-lg  btn-block'>
+                        <button onClick={() => setStranica(3)} className='btn btn-default btn-lg  btn-block'>
                             Korisnici bez verifikacije
                         </button>
                     </div>
                 </div><br />
+                </> : 
+                    <div className="alert alert-success alert-dismissible">
+                    <p className="close" data-dismiss="alert" aria-label="close">&times;</p>
+                    <strong>{errorMesagges}</strong>
+                </div>
+                }
+
             </div>
         )
     }
-    
-    return(
+
+    return (
         <div>
-           
-            {stranica===0? PocetnaAdmin() : null }
-            {stranica===2? <AdminKorisnici func={{data,errorMesagges}}  props={props}  /> : null }
-            {stranica ===1 ? <AzurirajKorisnika props={props} azuriraj={role}  /> : null }
-            {stranica ===3 ? <BezVerifikacije func={{blockUser,errorMesagges,noVerification}} props={props} />: null}
-            {stranica ===4 ? <BlokiraniKorisnici props={props}  /> : null}
-            
-            
-           
-           
+            {stranica === 0 ? PocetnaAdmin() : null}
+            {stranica === 2 ? <AdminKorisnici func={{ data, errorMesagges }} props={props} /> : null}
+            {stranica === 1 ? <AzurirajKorisnika props={props} azuriraj={role} /> : null}
+            {stranica === 3 ? <BezVerifikacije func={{ blockUser, errorMesagges, noVerification }} props={props} /> : null}
             
         </div>
     )

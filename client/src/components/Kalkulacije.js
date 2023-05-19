@@ -30,9 +30,6 @@ const Kalkulacije = ({role})=>{
             })
         
     }, [])
-    
-       
-    
     const dajId=(e)=>{
         setIdKolaca(e.target.value)
         setImeKolaca(e.target.innerHTML)
@@ -79,7 +76,6 @@ const Kalkulacije = ({role})=>{
                </div>
             }
         </div>
-        
     )
 }
 export default Kalkulacije;

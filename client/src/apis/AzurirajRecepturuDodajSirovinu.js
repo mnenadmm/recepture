@@ -30,19 +30,18 @@ const AzurirajRecepturuDodajSirovinu = ({props,token,role})=>{
             body: JSON.stringify({ //moramo poslati u JSON formatu
                 idKolaca : idKolaca,
                 kolicina: kolicina,
-                idSirovine : idSirovine,
-                
+                idSirovine : idSirovine,  
             })
         })
         .then((res=>{
             if(res.status===200){return res.json()}
-            if(res.status===10){return  setErrorMessages('Nemate pristup ovom delu aplikacijeeeee ')}
-            if(res.status===20){return  setErrorMessages('problem konekcije sa bazom ')}
-            if(res.status===401){return  setErrorMessages('Vasa sessija je istekla, konektujte se ponovo ERROR: 401 ')}
-            if(res.status===422){return  setErrorMessages('Neregularna konakcija, molimo Vas da se ispravno konektujete konektujete  ERROR: 422 ')}
         }))
         .then((response=>{
-            setMesages(response)
+            if(response.error){return setErrorMessages(response.poruka)
+            }else{
+                return setMesages(response)
+            }
+            
            
         }))
         .catch((error)=>console.log(error))
@@ -66,7 +65,7 @@ const AzurirajRecepturuDodajSirovinu = ({props,token,role})=>{
             <div className="row">
                 <div className="col-sm-12 text-center">
                     <h2>{props.imeKolaca}</h2>
-                    <h2 style={{color:'red'}}>{errorMessages}</h2>
+                    
                 </div>  
             </div><br />
             <div className="col-sm-4" > 
@@ -78,7 +77,8 @@ const AzurirajRecepturuDodajSirovinu = ({props,token,role})=>{
     )
 }
  return(
-    <div>
+    <div>{errorMessages === '' ? <>
+        
         {stranica===5 ? novaReceptura () :null}
             {stranica===5 ? <DodajURecepturu role={role} token={token}  props={{dodajSirovinu,vrednost}} /> :null }
         {stranica===5 && kolicina !==0 ? 
@@ -87,6 +87,13 @@ const AzurirajRecepturuDodajSirovinu = ({props,token,role})=>{
             </div>
          : null} 
          {stranica  === 0 ? <AzuriajRecKolac role={role} token={token} props={{idKolaca,imeKolaca}} /> :null} 
+         </>:
+         <div className="alert alert-success alert-dismissible">
+         <p  className="close" data-dismiss="alert" aria-label="close">&times;</p>
+             <strong>{errorMessages}</strong>
+             </div>
+
+         }
     </div>
  )}
 export default AzurirajRecepturuDodajSirovinu;

@@ -4,6 +4,7 @@ const ObrisiKorisnika=({props,azuriraj})=>{
     const[stranica,setStranica]=useState(5)
     const[messages,setMessages]=useState('')
     const[messagesOdbl,setMessagesOdbl]=useState('')
+    const [errorMesagges, setErrorMesagges] = useState('')
     const Obrisi=()=>{
        const odblokirajKorisnika=()=>{
         const opt={
@@ -17,9 +18,12 @@ const ObrisiKorisnika=({props,azuriraj})=>{
                 .then(res=>{
                     if(res.status===200){return res.json()}
                 })
-                .then(data=>{
+                .then((response)=>{
+                    if(response.error){ setErrorMesagges(response.poruka)
+                    }else{
+                        setMessagesOdbl(response)
+                    }
                     
-                    setMessagesOdbl(data)
                 })
                 .catch(error=>{console.log(error)})
                 setTimeout(function(){
@@ -44,9 +48,11 @@ const ObrisiKorisnika=({props,azuriraj})=>{
             .then(res=>{
                 if(res.status===200){return res.json()}
             })
-            .then(data=>{
-                
-                setMessages(data)
+            .then((response)=>{
+                if(response.error){ setErrorMesagges(response.poruka)
+                }else{
+                    setMessages(response)
+                }
             })
             .catch(error=>{console.log(error)})
             setTimeout(function(){
@@ -55,6 +61,7 @@ const ObrisiKorisnika=({props,azuriraj})=>{
         }
         return(
             <div className="container">
+                {errorMesagges === '' ? <>
                 <div className="row">
                     <div className="col-sm-4"></div>
                     <div className="col-sm-4 text-center">
@@ -112,7 +119,12 @@ const ObrisiKorisnika=({props,azuriraj})=>{
                     </div>
                     <div className="col-sm-4"></div>
                 </div>
-                
+                </> : 
+                    <div className="alert alert-success alert-dismissible">
+                    <p className="close" data-dismiss="alert" aria-label="close">&times;</p>
+                    <strong>{errorMesagges}</strong>
+                </div>
+                }
                 
                 
             </div>

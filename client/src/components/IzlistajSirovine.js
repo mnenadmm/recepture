@@ -4,6 +4,9 @@ function IzlistajSirovine({props,role}) {
     const[data, getData] = useState([])
     const[errorMesagges,setErrorMesagges]=useState('');
     const URL_Dobavljac = '/dajImeDobavljacaIdReact';
+    const[showSelect, setshowSelect]=useState(0) // javlja se problem sa selektom
+    //moze se prikazati samo ako korisnik im pravo pristupa
+    
     useEffect(() => {
             fetch('/izlistaj/sirovine/react',{
                 method: "GET",
@@ -18,6 +21,7 @@ function IzlistajSirovine({props,role}) {
                     return setErrorMesagges(response.poruka)
                    }
                         getData(response);
+                        setshowSelect(1); // prikazuje select
                 })
                 .catch(error=>{
                     console.log('ovo je greska ',error)
@@ -53,8 +57,10 @@ function IzlistajSirovine({props,role}) {
         
     return(
         <div className="col-sm-12">
-            
-             
+            {errorMesagges === '' ? <> 
+            {showSelect === 1 ? 
+            <Select  role={role} promena={promena} options={URL_Dobavljac}setErrorMesagges={setErrorMesagges} ime='Izlistaj po Dobavljacu...' />
+               : null }
             <br></br>
            
             <table className="table table-hover">
@@ -77,27 +83,20 @@ function IzlistajSirovine({props,role}) {
                 ))}
             </tbody>
             </table><br />
+            </>:
+                <div className="alert alert-success alert-dismissible">
+                <p  className="close" data-dismiss="alert" aria-label="close">&times;</p>
+                   <strong>{errorMesagges}</strong>
+               </div>
+            }
+           
         </div>
     );
     };
 
 return(
     <div>
-        <div>
-            {errorMesagges === "" ? 
-            <Select 
-                    role={role}
-                    promena={promena} 
-                    options={URL_Dobavljac}
-                   
-                    setErrorMesagges={setErrorMesagges}
-                    ime='Izlistaj po Dobavljacu...' 
-            /> : <div className="alert alert-success alert-dismissible">
-                 <p  className="close" data-dismiss="alert" aria-label="close">&times;</p>
-                    <strong>{errorMesagges}</strong>
-                </div>}
-            </div>
-        {data !==[] && errorMesagges === "" ? lista() : null}
+        {data !==[]  ? lista() : null}
     </div>
 )
 }

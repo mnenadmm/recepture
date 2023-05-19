@@ -9,6 +9,8 @@ const DodajSirovinu = ({props,role})=>{
     const[cena, setCena]=useState([]);
     const[ime, setIme]=useState('');
     const[idDobavljaca, setIdDobavljaca]=useState(0);
+    const[showSelect, setshowSelect]=useState(0) // javlja se problem sa selektom
+    //moze se prikazati samo ako korisnik im pravo pristupa
     const URL_Dobavljac = '/dajImeDobavljacaIdReact';
     let istorija = useNavigate();
     //funkcija koja je prosledjena u Select i koja vracaselektovani id dobavljaca
@@ -36,9 +38,10 @@ const DodajSirovinu = ({props,role})=>{
                 if(res.status===200){ return res.json()}  
             })
             .then((response)=>{
-                if(response.error){return setErrorMesagges(response.poruka)}
+                if(response.error){ setErrorMesagges(response.poruka)}
                 else{
-                  return  setMessages(response) 
+                  setMessages(response) 
+                  
                 }
             });
             setPoruka(1)
@@ -78,14 +81,14 @@ const DodajSirovinu = ({props,role})=>{
                     </div>
                     <br></br><br></br>
                     <div className="row">
-                        <div className="col-sm-4"></div>    
-                        <div className="col-sm-4">
-                            { ime !== '' && cena !== 0 ? 
+                          
+                        <div className="col-sm-12">
+                            { ime !== '' && cena !== 0   ? 
                                 <Select  
-                                    role={role} 
+                                   
                                     promena={promena} //prosledjujemo funkciju
                                     options={URL_Dobavljac} //prosledjujemo endpoint
-                                    token={props.token}
+                                    
                                     setErrorMesagges={setErrorMesagges}
                                     ime='Izaberite dobavljaca...'//prosledjujemo ime
                                 />
