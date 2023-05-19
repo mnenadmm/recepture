@@ -641,11 +641,17 @@ def dajImeKolacaReact(idKolaca):
 			baza.close()
 			return jsonify(rez)
 		except:
-			rez='Neuspela konekcija sa bazom'
-			return jsonify(rez)
+			msg={
+				'error': True,
+				'poruka': 'Neuspela konekcija sa bazom code 646'
+			}
+			return jsonify(msg)
 	else:
-		rez="Nemate pristup ovom delu aplikacije"
-		return jsonify(rez)
+		msg={
+				'error': True,
+				'poruka': 'Neuspela konekcija sa bazom code 652'
+			}
+		return jsonify(msg)
 #1pravljenje recepture
 #2dodavanje potvrde da je receptura napravljena u kolace
 @app.route('/napraviRecepturuReact', methods=['POST'])
@@ -714,11 +720,17 @@ def dajJednuSirovinuReact(idSirovine):
 			baza.close()
 			return jsonify(rez)
 		except :
-			rez='Neuspela konekcija sa bazom'
-			return jsonify(rez)
+			msg={
+				'error': True,
+				'poruka': 'Neuspela konekcija sa bazom cod:725'
+			}
+			return jsonify(msg)
 	else:
-		rez="Nemate pristup ovom delu aplikacije"
-		return jsonify(rez)
+		msg={
+				'error': True,
+				'poruka': 'Neuspela konekcija sa bazom cod:731'
+			}
+		return jsonify(msg)
 @app.route('/listaKolacaNaslovReact')
 @login_required
 def listaKolacaNaslovReact():
@@ -1106,14 +1118,6 @@ def obrisiKorisnikaAdmin():
 		return jsonify(msg)
 
 
- ####################################################################
-@app.route('/', methods=['GET', 'POST'])
-def pocetna():
-	
-	
-	return 'hello from flask'
-
-
 
 
 
@@ -1164,59 +1168,6 @@ def kreirajKorisnikaReact():
    rez=f'Poslat vam je email {username} '
    print(rez)
    return  jsonify(username)
-
-
-	
-   
-
-    	
-
-
-	#odgovor=False
-	#try:
-	#	baza =psycopg2.connect(**konekcija) 
-	#	mycursor = baza.cursor()
-	#	mycursor.execute(f"""
-	#		SELECT password,id_korisnika,user_name,prva_rola, druga_rola,
-	#				treca_rola,verification
-	#				FROM public.korisnici
-	#				WHERE user_name='{username}' and block_user = False;
-	#		""")
-	#	rezultat = mycursor.fetchone()
-	#	print(rezultat)
-	#	if rezultat:#ako postoji mailu bazi
-	#		provera=check_password_hash(rezultat[0], password)#uporedjuje oassword
-	#		
-	#		if provera :#ako jepassword ispravan
-	#			odgovor = True
-	#			print('ispravan password ',provera)
-	#		else:#password nije isprava
-	#			print('uneli ste pogresno korisnicko ime ili lozinku ',provera)
-	#	else:#nema rezultata
-	#		print('uneli ste pogresno korisnicko ime ili lozinku ', rezultat)
-	#except Error as e:
-	#	print('ovo je greska ',e)
-	#if odgovor:
-	#	if rezultat[6]==1:
-	#		
-	#		id = rezultat[1]
-	#		korisnik=rezultat[2]
-	#		rola_1=rezultat[3]
-	#		rola_2=rezultat[4]
-	#		rola_3=rezultat[5]
-	#		access_token = create_access_token(identity=korisnik)
-	#		print('responseeeeeeeeee')
-	#		response = {"access_token":access_token,
-    #            "id":id,"korisnik":korisnik,"rola_1":rola_1,"rola_2":rola_2,"rola_3":rola_3}
-	#		return response
-	#	else:
-	#		msg='Vas nalog nije verifikovan '
-	#		return jsonify(msg),800
-	#else:
-	#	return jsonify({"msg": "Pogresno korisnicko ime ili lozinka"}), 401
-
-
-
 #za verifikaciju tokena
 @app.route('/verifikujNalog/<token>', methods=['POST','GET'])
 def verifikujNalog(token):
@@ -1239,8 +1190,8 @@ def verifikujNalog(token):
 			baza.close()
 			msg ='Nalog je verifokovan'
 			return jsonify(msg)
-		except Error as e:
-			print(e)
+		except:
+			print('nema konekcije cod 1194')
 		rez="Nesto nije u redu"
 		return jsonify(rez)
 #metoda za proveru verifikacije
@@ -1263,8 +1214,8 @@ def proveriToken(email):
 		else:
 			odgovor=False
 			return odgovor
-	except Error as e:
-		print(e)
+	except :
+		print('greska')
 
 #ukoliko istekne vreme zaverifikaciju
 @app.route('/posaljiDrugiToken/<token>',methods=['POST','GET'])
@@ -1330,30 +1281,10 @@ def noviPassword(token):
 		baza.close()
 		msg=f'Uspesno ste promenili password za korisnika {mail}'
 		return jsonify(msg)
-	except Error as e:
-		print(e)
+	except :
+		print('error cod 1285')
 
-
-
-   
-
-
-
-
-
-	
-
-	
-	
-	
-
-		
-
-
-
-
-
-   
+   #ne radiiiii
 @app.route('/obrisiDobavljacaReact', methods=['POST'])
 @jwt_required() #new line
 def obrisiDobavljacaReact():
@@ -1371,133 +1302,12 @@ def obrisiDobavljacaReact():
 			baza.close()
 			rez="Uspesno ste obrisali dobavljaca",idDobavljaca
 			return jsonify(rez)
-		except Error as e:
-			print(e)
-		
-		
+		except :
+			print('error cod 1306')	
 	else:
 		rez="Nemate pristup ovom delu aplikacije"
 		return jsonify(rez),10
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-		
-
-@app.route('/dodajPodsetnik', methods=['POST','GET'])
-@jwt_required() #new line
-def dodajPodsetnik():
-	if request.headers.get('IdKorisnika')=='1'or request.headers.get('rola_1')=='1' or request.headers.get('rola_2')=='1' or request.headers.get('rola_3')=='1':
-		data =request.get_json()
-		idKorisnika=data['idKorisnika']
-		datum=data['datum']
-		mesec=data['mesec']
-		godina=data['godina']
-		text=data['text']
-		boja=data['boja']
-		try:
-			baza= psycopg2.connect(**konekcija)
-			mycursor=baza.cursor()
-			mycursor.execute(f"""
-					INSERT INTO podsetnik(idKorisnika,datum,mesec,godina,text,boja)
-					values({idKorisnika},{datum},'{mesec}',{godina},'{text}','{boja}');
-				""")
-			baza.commit()
-			baza.close()
-			
-			rez=f'Uspesno ste dodali podsetnik'
-			return jsonify(rez),200
-		except Error as e:
-			print('Greska u bazi ',e)
-	else:
-		rez='Nemate pristup ovom delu aplikacije'
-		return jsonify(rez),10
-@app.route('/dajPodsetnik/<int:datum>/<mesec>/<int:godina>/<int:idKorisnika>')
-@jwt_required() 
-def dajPodsetnik(datum,mesec,godina,idKorisnika):
-	try:
-		baza= psycopg2.connect(**konekcija)
-		mycursor=baza.cursor()
-		mycursor.execute(f"""
-			select text,boja,idPodsetnika from podsetnik
-			where datum={datum} and mesec='{mesec}' and godina={godina} and idKorisnika={idKorisnika};
-			""")
-		rez=mycursor.fetchall()
-		baza.close()
-		print(rez)
-		return jsonify(rez)
-	except Error as e:
-		print(e)
-@app.route('/obrisiPodsetnik', methods=['POST'])
-@jwt_required()
-def obrisiPodsetnik():
-	if request.headers.get('IdKorisnika')=='1'or request.headers.get('rola_1')=='1' or request.headers.get('rola_2')=='1' or request.headers.get('rola_3')=='1':
-		data =request.get_json()
-		idKorisnika=data['idKorisnika']
-		idPodsetnika=data['idPodsetnika']
-		try:
-			baza= psycopg2.connect(**konekcija)
-			mycursor=baza.cursor()
-			mycursor.execute(f"""
-					delete from podsetnik
-					where idPodsetnika={idPodsetnika} and idKorisnika={idKorisnika};
-				""")
-			baza.commit()
-			baza.close()
-
-			print(f'Obrisali ste podsetnik br:{idPodsetnika} br.{idPodsetnika}')
-			return jsonify(f'Obrisali ste podsetnik  br:idPodsetnika')
-		except Error as e:
-			print(e)
-	else:
-		rez='Nemate pristup ovom delu aplikacije'
-		return jsonify(rez),10
-@app.route('/AdminDodajPodsetnik',methods=['GET','POST'])
-@jwt_required()
-def AdminDodajPodsetnik():
-	if request.headers.get('IdKorisnika')=='1':
-		data =request.get_json()
-		idKorisnika=data['idKorisnika']
-		datum=data['datum']
-		mesec=data['mesec']
-		godina=data['godina']
-		text=data['text']
-		boja=data['boja']
-		imeKomercijaliste=data['imeKomercijaliste']
-		komercijalista=data['komercijalista']
-		try:
-			baza= psycopg2.connect(**konekcija)
-			mycursor=baza.cursor()
-			mycursor.execute(f"""
-					INSERT INTO podsetnik(idKorisnika,datum,mesec,godina,text,boja)
-					values({komercijalista},{datum},'{mesec}',{godina},'{text}','{boja}');
-
-				""")
-			baza.commit()
-			baza.close()
-			return jsonify(f'Dodali ste podsetnik korisniku {imeKomercijaliste}'),200
-		except Error as e:
-			print(e)	
-	else:
-		rez='Nemate pristup ovom delu aplikacije'
-		return jsonify(rez),10
 if __name__ == '__main__':
     # moze da se podesi IP adresa, port i mogucnost za automatsko cuvanje i usvajanje promena (koda)
     app.run('0.0.0.0', 5000, debug=True)
