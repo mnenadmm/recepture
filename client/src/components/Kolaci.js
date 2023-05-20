@@ -13,6 +13,8 @@ const Kolaci = ({role})=>{
                         </button>
                         </Link>
                 </div>
+                {role.rola_1===true   ?
+                <>
                 <div className='row'></div>
                 <br></br>
                 <br></br>
@@ -25,8 +27,8 @@ const Kolaci = ({role})=>{
                     </Link>
 
                 </div>
-                {role.rola_1===true   ?
-                <>
+                
+                
                 <div className='row'></div>
                 <br></br>
                 <br></br>
@@ -40,8 +42,7 @@ const Kolaci = ({role})=>{
                     </Link>
 
                 </div>
-                 </> 
-                : null}
+                 
                 <div className='row'></div>
                 <br></br>
                 <br></br>
@@ -64,6 +65,8 @@ const Kolaci = ({role})=>{
                         </button>
                         </Link>
                 </div>
+                </> 
+                : null}
                 
                 <br /><br />
         </div>

@@ -35,17 +35,11 @@ const App = () =>{
   const[idKorisnika, setIdKorisnika]=useState(secureLocalStorage.getItem('idKorisnika'))
   //dodeljuje ime korisniku
   const[korisnik,setKorisnik]=useState(secureLocalStorage.getItem('korisnik'))
-  // dodeljuje rolu 1
+  // dodeljuje rolu 1 rolu 2 rolu 3
   const[rola_1,setRola_1]=useState(secureLocalStorage.getItem('rola_1'));
   const[rola_2,setRola_2]=useState(secureLocalStorage.getItem('rola_2'));
   const[rola_3,setRola_3]=useState(secureLocalStorage.getItem('rola_3'));
-  
- 
- 
-
-
-  // bila je linija koda 29
-  // <Route path="/kalendar" element={<Kalendar  role={{rola_1,rola_2,rola_3,user}} props={{token}}/>}></Route>
+  console.log(rola_1)
     return(
       <div  className="container">
         
@@ -63,7 +57,7 @@ const App = () =>{
         
         <Routes> 
           <Route path="/" element={<Pocetna/>}/>
-          <Route path="/sirovine" element={<Sirovine />} />
+          <Route path="/sirovine" element={<Sirovine role={{rola_1,rola_2,rola_3,idKorisnika}} />} />
           <Route path="/kolaci" element={<Kolaci role={{rola_1,rola_2,rola_3,idKorisnika}} />} />
           <Route path="/izlistajSirovine" element={<IzlistajSirovine role={{rola_1,rola_2,rola_3}}  props={{idKorisnika}} />}></Route>
           <Route path="/dodajSirovinu" element={<DodajSirovinu role={{rola_1,rola_2,rola_3}} props={{idKorisnika}} />}></Route>

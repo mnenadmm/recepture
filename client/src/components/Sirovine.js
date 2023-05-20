@@ -2,10 +2,11 @@ import { Link } from 'react-router-dom';
 import React from "react";
 
 
-const Sirovine = ()=>{
+const Sirovine = ({role})=>{
     
     const SirovineMenu=()=>{return(
         <div className="container">
+       
             <div className='row'></div>
             <br></br>
             <div className="col-sm-4">
@@ -17,6 +18,8 @@ const Sirovine = ()=>{
                         </button>
                     </Link>
                 </div>
+                 {/*  */}
+            {role.rola_1 ? <>
                 <div className='row'></div>
                 <br></br>
                 <br></br>
@@ -29,6 +32,7 @@ const Sirovine = ()=>{
                     </Link>
 
                 </div>
+                </>: null}
                 <div className='row'></div>
                 <br></br>
                 <br></br>
@@ -41,6 +45,7 @@ const Sirovine = ()=>{
                     </Link>
 
                 </div>
+                {role.rola_1 === true ? <>
                 <div className='row'></div>
                 <br></br>
                 <br></br>
@@ -52,6 +57,7 @@ const Sirovine = ()=>{
                         </button>
                     </Link>
                 </div>
+                </>:null}
                 <div className='row'></div>
                 <br></br>
                 <br></br>

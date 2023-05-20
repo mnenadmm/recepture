@@ -150,7 +150,10 @@ def login():
 		if check_password_hash(user.password, password):
 			#proverava da li je user blokiran
 			if user.block_user:
-				msg=f'Korisnik {user.username} je blokiran'
+				msg={
+					'error': True,
+					'poruka': f'Nalog za korisnika {user.username} je blokiran.'
+				}
 				return jsonify(msg)
 			# proverava verifikacijue za tog korisnika
 			if user.verification == True: # Proverava da li je user verifikovan u bazi
@@ -161,17 +164,29 @@ def login():
 				response={'prijava': True,
 	      				  'idKorisnika': current_user.get_id(),
 						  'username' : current_user.username,
-						  'rola_1'   : current_user.rola_1()
+						  'rola_1'   : current_user.rola_1(),
+						  'rola_2'   : current_user.rola_2(),
+						  'rola_3'   : current_user.rola_3()
 						  
 						}
 				return jsonify(response)
 			else:
-				msg=f'Nalog za korisnika {user.username} nije verifokovan.'
+				msg={
+					'error' : True,
+					'poruka': f'Nalog za korisnika {user.username} nije verifokovan.'
+				}
+				
 				return jsonify(msg)
 
-		msg=f'Uneli ste pogresno korisnicko ime ili lozinku'
+		msg={
+			'error': True,
+			'poruka' : 'Uneli ste pogresno korisnicko ime ili lozinku'
+		}
 		return jsonify(msg) 
-	msg=f'Uneli ste pogresno korisnicko ime ili lozinku'
+	msg={
+			'error': True,
+			'poruka' : 'Uneli ste pogresno korisnicko ime ili lozinku'
+		}
 	return jsonify(msg) 
 @app.route("/logoutR", methods=["POST","GET"])
 @login_required # zakljucava ako korisnik nije ulogovan
@@ -509,7 +524,7 @@ def dajlistuKolacaReact():
 @app.route('/napraviKolacReact' , methods=['POST'])
 @login_required
 def napraviKolacReact():
-	if current_user.rola_1() or current_user.rola_2():
+	if current_user.rola_1():
 		data = request.get_json()
 		imeKolaca = data['imeKolaca']
 		postupak = data['postupak']
@@ -672,15 +687,6 @@ def napraviRecepturuReact():
 			baza.commit()
 			baza.close()
 			msg=kolicina
-			return jsonify(msg)
-		except:
-			msg={
-				'error': True,
-				'poruka': 'Neuspela konekcija sa bazom cod:658'
-			}
-			return jsonify(msg)
-		
-		try:
 			baza= psycopg2.connect(**konekcija)
 			mycursor=baza.cursor()
 			mycursor.execute(f"""
@@ -690,11 +696,11 @@ def napraviRecepturuReact():
 					""")
 			baza.commit()
 			baza.close()
-
+			return jsonify(msg)
 		except:
 			msg={
 				'error': True,
-				'poruka': 'Neuspela konekcija sa bazom cod:676'
+				'poruka': 'Neuspela konekcija sa bazom cod:658'
 			}
 			return jsonify(msg)
 	else:
@@ -760,7 +766,7 @@ def listaKolacaNaslovReact():
 @app.route('/dajRecepturuReact/<int:idKolaca>')
 @login_required
 def dajRecepturuReact(idKolaca):
-	if current_user.rola_1():
+	if current_user.rola_1() or current_user.rola_2():
 		try:
 			baza=psycopg2.connect(**konekcija)
 			mycursor = baza.cursor()

@@ -1,7 +1,7 @@
 import React, {useState, useEffect } from "react";
 import DajKolace from "./DajKolace";
 
-const DajPostupak = ({props,token,role})=>{
+const DajPostupak = ({props,role})=>{
     
     const[nazad,setNazad]=useState(0);// vraca nazad
     const[errorMessages,setErrorMessages]=useState('');
@@ -123,7 +123,7 @@ const DajPostupak = ({props,token,role})=>{
     }
     return(
         <div>
-            {nazad===0 ? Receptura() : <DajKolace role={role} props={{token}} />}   
+            {nazad===0 ? Receptura() : <DajKolace role={role}  />}   
         </div>
     )
 }

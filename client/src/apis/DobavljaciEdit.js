@@ -44,12 +44,15 @@ const DobavljaciEdit = ({role})=>{
                         <li className="active">
                             <button className="btn btn-default"  onClick={()=>setList(0)}>Lista</button>
                         </li>
+                        {/* samo prva rola moze da azurira i brise dobavljace*/}
+                        {role.rola_1 ===true ? <>
                         <li>
                             <button className="btn btn-default" onClick={()=>setList(3)} >Azuriraj</button>
                         </li>
                         <li>
                             <button className="btn btn-default" style={{'color':'red'}} onClick={()=>setList(4)}>Obrisi </button>
                         </li>
+                        </>:null}
                     </ul>
                 </div>
             </div>
@@ -120,9 +123,12 @@ const DobavljaciEdit = ({role})=>{
                         <li className="active">
                             <button className="btn btn-default">Lista</button>
                         </li>
+                        {/* prva i druga rola mogu da kreiraju dobavljaca*/}
+                        {role.rola_1===true || role.rola_2===true ? 
                         <li>
                             <button className="btn btn-default" onClick={()=>setList(1)}>Kreiraj</button>
                         </li>
+                        : null}
                     </ul>
                 </div>
             </div>

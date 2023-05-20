@@ -37,16 +37,12 @@ const Login=({props})=>{
         fetch('/login',opt) // dodao sam proxy i package.json
         .then(resp =>{ 
             if(resp.status===200){ return resp.json()}
-            if(resp.status===401){return  setErrorMesagges('Uneli ste pogresno korisnicko ime ili lozinku  ')}
-           if(resp.status===422){return  setErrorMesagges('Neregularna konakcija, molimo Vas da se ispravno konektujete konektujete  ERROR: 422 ')}
-           if(resp.status===500){return  setErrorMesagges('Uneli ste pogresno korisnicko ime ili lozinku  ')}
-           if(resp.status===800){return  setErrorMesagges('Nalog nije verifikovan  ')}
-            
         }) 
         .then(response=>{
           if(response){
-
-            //dodeljuje da je nalog verifikovan
+            if(response.error){return setErrorMesagges(response.poruka) }
+            else{
+              //dodeljuje da je nalog verifikovan
             secureLocalStorage.setItem('verifikacija',response.prijava) 
             props.setVerifikacija(secureLocalStorage.getItem('verifikacija'))
             //dodeljuje id korisnika
@@ -58,15 +54,14 @@ const Login=({props})=>{
             // dodeljuje rolu 1
             secureLocalStorage.setItem('rola_1',response.rola_1)
             props.setRola_1(secureLocalStorage.getItem('rola_1')) 
-   //       secureLocalStorage.setItem('rola_2',response.rola_2)
-   //       secureLocalStorage.setItem('rola_3',response.rola_3)
-   //         props.setKorisnik(secureLocalStorage.getItem('korisnik'))//dajemo sessiji vrednost
-           // props.setToken(secureLocalStorage.getItem('token'))
-   //         props.setUser(secureLocalStorage.getItem('user'))
-    //        props.setRola_1(secureLocalStorage.getItem('rola_1'))
-    //        props.setRola_2(secureLocalStorage.getItem('rola_2'))
-    //        props.setRola_3(secureLocalStorage.getItem('rola_3')) 
+            // dodeljuje rolu 2
+            secureLocalStorage.setItem('rola_2',response.rola_2)
+            props.setRola_2(secureLocalStorage.getItem('rola_2')) 
+            // dodeljuje rolu 3
+            secureLocalStorage.setItem('rola_3',response.rola_3)
+            props.setRola_3(secureLocalStorage.getItem('rola_3')) 
             navigate('/');//preusmerava napocetnu stranu
+            }
           }  
         })
         .catch(error=>{
