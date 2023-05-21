@@ -951,10 +951,39 @@ def azuriraRabat():
 				'poruka': 'Niste ovlasceni da obracunavate rabat'
 			}
 		return jsonify(msg)
+   #ne radiiiii
+@app.route('/obrisiDobavljacaReact', methods=['POST'])
+@login_required
+def obrisiDobavljacaReact():
+	if current_user.rola_1():
+		data=request.get_json()
+		idDobavljaca = data['idDobavljaca']
+		imeDobavljaca = data['imeDobavljaca']
+		try:
+			baza=psycopg2.connect(**konekcija)
+			mycursor = baza.cursor()
+			mycursor.execute(f"""
+					delete from public.dobavljaci
+					where id_dobavljaca={idDobavljaca}
+				""")
+			baza.commit()
+			baza.close()
+			rez="Uspesno ste obrisali dobavljaca ",imeDobavljaca
+			return jsonify(rez)
+		except :
+			msg={
+				'error': True,
+				'poruka': 'Neuspela konekcija sa bazom cod 976'
+			}
+			return jsonify(msg)
+	else:
+		msg={
+				'error': True,
+				'poruka': 'Nemate pristup ovom delu aplikacije cod 982'
+			}
+		return jsonify(msg)
 
 #administrator
-
-
 @app.route('/administrator', methods=['GET'])
 @login_required
 def administrator():
@@ -1290,29 +1319,7 @@ def noviPassword(token):
 	except :
 		print('error cod 1285')
 
-   #ne radiiiii
-@app.route('/obrisiDobavljacaReact', methods=['POST'])
-@jwt_required() #new line
-def obrisiDobavljacaReact():
-	if request.headers.get('rola_1')==True or request.headers.get('rola_2')==True or   request.headers.get('IdKorisnika')=='1':
-		data=request.get_json()
-		idDobavljaca = data['idDobavljaca']
-		try:
-			baza=psycopg2.connect(**konekcija)
-			mycursor = baza.cursor()
-			mycursor.execute(f"""
-					delete from public.dobavljaci
-					where id_dobavljaca={idDobavljaca}
-				""")
-			baza.commit()
-			baza.close()
-			rez="Uspesno ste obrisali dobavljaca",idDobavljaca
-			return jsonify(rez)
-		except :
-			print('error cod 1306')	
-	else:
-		rez="Nemate pristup ovom delu aplikacije"
-		return jsonify(rez),10
+
 
 if __name__ == '__main__':
     # moze da se podesi IP adresa, port i mogucnost za automatsko cuvanje i usvajanje promena (koda)

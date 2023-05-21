@@ -1,0 +1,52 @@
+create table korisnici(
+	id_korisnika serial primary key,
+	username character varying not null,
+	email character varying not null,
+	telefon character varying,
+	adresa character varying,
+	password character varying,
+	prva_rola BOOLEAN NOT NULL DEFAULT FALSE ,
+	druga_rola BOOLEAN NOT NULL DEFAULT FALSE,
+	treca_rola BOOLEAN NOT NULL DEFAULT FALSE,
+	verification BOOLEAN NOT NULL DEFAULT FALSE,
+	block_user BOOLEAN NOT NULL DEFAULT FALSE
+);
+create table dobavljaci(
+	id_dobavljaca serial primary key,
+	ime_dobavljaca character varying not null,
+	email character varying,
+	telefon character varying,
+	adresa character varying
+);
+create table sirovine(
+	id_sirovine serial primary key,
+	naziv_sirovine character varying not null,
+	cena_sirovine double precision,
+	id_dobavljaci integer	
+);
+// daje sirovine sa cenama i imenom dobavljaca 
+select sirovine.id_sirovine,sirovine.naziv_sirovine,sirovine.cena_sirovine,dobavljaci.ime_dobavljaca,dobavljaci.id_dobavljaca
+from sirovine
+INNER JOIN dobavljaci
+on sirovine.id_dobavljaci = dobavljaci.id_dobavljaca;
+// daje sve sirovine od jednom dobavljaca
+select sirovine.id_sirovine, sirovine.naziv_sirovine,sirovine.cena_sirovine,dobavljaci.ime_dobavljaca
+from sirovine
+inner JOIN dobavljaci
+on sirovine.id_dobavljaci = dobavljaci.id_dobavljaca
+where sirovine.id_dobavljaci=1;
+create table kolaci(
+ime_kolaca character varying not null,
+opis_kolaca character varying,
+proizvodna_cena_kolaca double precision,
+id_kolaca serial primary key,
+dodata_receptura BOOLEAN NOT NULL DEFAULT FALSE
+);
+//creira recepturu\
+create table recepture(
+	id_recepture serial primary key,
+	id_kolaca integer not null,
+	id_sirovine integer not null,
+	kolicina double precision,
+	rabat double precision DEFAULT  0  
+);

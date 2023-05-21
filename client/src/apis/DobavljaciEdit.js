@@ -170,7 +170,7 @@ const DobavljaciEdit = ({role})=>{
                 : null
                 }
                 {list ===4 ?
-                        <ObrisiDobavljaca role={role}  props={{idDobavljaca, imeDobavljaca}} />
+                        <ObrisiDobavljaca role={role}  props={{idDobavljaca, imeDobavljaca, adresa}} />
 
                  : null} 
             </div> 
