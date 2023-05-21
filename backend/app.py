@@ -73,6 +73,8 @@ class Korisnici(db.Model, UserMixin):
 		return self.druga_rola
 	def rola_3(self):
 		return self.treca_rola
+	def block(self):
+		return self.block_user
 	# ovo su metode koje dolaze uz biblioteku
 	# oznacava da je korisnik verifikovan
 	def is_authenticated(self):
@@ -223,31 +225,39 @@ def kreirajTabelu():
 @login_required
 def izlistajSirovineReact():
 	if current_user.is_authenticated():
-		if current_user.rola_1() or current_user.rola_2() or current_user.rola_3():
-			try:
-				baza = psycopg2.connect(**konekcija)
-				mycursor = baza.cursor()
-				mycursor.execute(f"""
-				select  sirovine.id_sirovine,sirovine.naziv_sirovine,sirovine.cena_sirovine,dobavljaci.ime_dobavljaca,dobavljaci.id_dobavljaca
-					from sirovine
-					INNER JOIN dobavljaci
-					on sirovine.id_dobavljaci = dobavljaci.id_dobavljaca;
-				""")
-				rezultat = mycursor.fetchall()
-				baza.close()	
-				return jsonify(rezultat)
-			except:
+		if current_user.block()== False:
+			if current_user.rola_1() or current_user.rola_2() or current_user.rola_3()  :
+				try:
+					baza = psycopg2.connect(**konekcija)
+					mycursor = baza.cursor()
+					mycursor.execute(f"""
+						select  sirovine.id_sirovine,sirovine.naziv_sirovine,sirovine.cena_sirovine,dobavljaci.ime_dobavljaca,dobavljaci.id_dobavljaca
+						from sirovine
+						INNER JOIN dobavljaci
+						on sirovine.id_dobavljaci = dobavljaci.id_dobavljaca;
+						""")
+					rezultat = mycursor.fetchall()
+					baza.close()	
+					return jsonify(rezultat)
+				except:
+					msg={
+					'error': True,
+					'poruka': 'Nemate ovlascenje da pristupate sirovinama '
+					}
+					return jsonify(msg)
+			else:
 				msg={
-				'error': True,
-				'poruka': 'Nemate ovlascenje da pristupate sirovinama'
+					'error': True,
+					'poruka': 'Morate se ulogovati da bi ste pristupili sirovinama'
 				}
 				return jsonify(msg)
 		else:
 			msg={
-				'error': True,
-				'poruka': 'Morate se ulogovati da bi ste pristupili sirovinama'
-			}
+					'error': True,
+					'poruka': f'Blokirani ste {current_user.block()}'
+				}
 			return jsonify(msg)
+
 @app.route('/dajImeDobavljacaIdReact')
 @login_required
 def dajImeDobavljacaIdReact():
