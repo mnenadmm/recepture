@@ -226,7 +226,7 @@ def kreirajTabelu():
 @login_required
 def izlistajSirovineReact():
 	if current_user.is_authenticated():
-		if current_user.block():
+		if current_user.block()==False:
 			if current_user.rola_1() or current_user.rola_2() or current_user.rola_3()  :
 				try:
 					baza = psycopg2.connect(**konekcija)
