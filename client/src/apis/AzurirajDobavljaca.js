@@ -29,16 +29,16 @@ const AzurirajDobavljaca = ({props,token,role})=>{
                 if(response.error){return setErrorMesagges(response.poruka)}
                 else{
                     if(ime !== props.imeDobavljaca){
-                      return  setMesages(response+` ime u ${ime}`) 
+                      return  setMesages(response+`ime dobavljaca u ${ime}.`) 
                     }
                     if(telefon !== props.telefon){
-                        return   setMesages(response+` telefon u ${telefon}.`)
+                        return   setMesages(response+` broj  telefona za dobavljaca ${ime} u ${telefon}.`)
                     }
                     if(email !== props.email){
-                        return  setMesages(response+` email u ${email}`)
+                        return  setMesages(response+` email za dobavljaca ${ime} u ${email}`)
                     }
                     if(adresa !== props.adresa){
-                        return   setMesages(response+` adresu u ${adresa}`)
+                        return   setMesages(response+` adresu za dobavljaca ${ime} u ${adresa}`)
                     } 
                 }
             });

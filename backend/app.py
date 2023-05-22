@@ -255,427 +255,524 @@ def izlistajSirovineReact():
 		else:
 			msg={
 					'error': True,
-					'poruka': f'Blokirani ste rezultatv: {current_user.block()}'
+					'poruka': 'Vas nalog je blokiran'
 				}
 			return jsonify(msg)
-
 @app.route('/dajImeDobavljacaIdReact')
 @login_required
 def dajImeDobavljacaIdReact():
-	if current_user.rola_1() or current_user.rola_2() or current_user.rola_3():
-		try:
-			baza = psycopg2.connect(**konekcija)
-			mycursor = baza.cursor()
-			mycursor.execute(f"""
-				select id_dobavljaca, ime_dobavljaca from public.dobavljaci;
-			""")
-			rez=mycursor.fetchall()
-			baza.close()
-			return jsonify(rez)
-		except:
+	if current_user.block()==False:
+		if current_user.rola_1() or current_user.rola_2() or current_user.rola_3():
+			try:
+				baza = psycopg2.connect(**konekcija)
+				mycursor = baza.cursor()
+				mycursor.execute(f"""
+					select id_dobavljaca, ime_dobavljaca from public.dobavljaci;
+				""")
+				rez=mycursor.fetchall()
+				baza.close()
+				return jsonify(rez)
+			except:
+				msg={
+					'error': True,
+					'poruka': 'Neuspela konekcija sa bazom cod 252'
+					}
+				return jsonify(msg)
+		else:
 			msg={
 				'error': True,
-				'poruka': 'Neuspela konekcija sa bazom cod 252'
-			}
+				'poruka': 'Nemate pristup ovom delu aplikacije cod 258'
+				}
 			return jsonify(msg)
 	else:
 		msg={
-				'error': True,
-				'poruka': 'Nemate pristup ovom delu aplikacije cod 258'
+			'error': True,
+			'poruka': 'Vas nalog je blokiran'
 			}
 		return jsonify(msg)
 # daje sirovine po dobavljacu 
 @app.route('/sirovinePoDobavljacuReact/<int:idDobavljaca>',methods=['GET'])
 @login_required
 def sirovinePoDobavljacuReact(idDobavljaca):
-	if current_user.rola_1() or current_user.rola_2() or current_user.rola_3():	
-		try:
-			baza=psycopg2.connect(**konekcija)
-			mycursor = baza.cursor()
-			mycursor.execute(f"""
+	if current_user.block()==False:
+		if current_user.rola_1() or current_user.rola_2() or current_user.rola_3():	
+			try:
+				baza=psycopg2.connect(**konekcija)
+				mycursor = baza.cursor()
+				mycursor.execute(f"""
 					 select sirovine.id_sirovine, sirovine.naziv_sirovine,sirovine.cena_sirovine,dobavljaci.ime_dobavljaca
 					from sirovine 
 					inner JOIN dobavljaci
 					on sirovine.id_dobavljaci = dobavljaci.id_dobavljaca
 					where sirovine.id_dobavljaci = {idDobavljaca};
 					""")
-			rez = mycursor.fetchall()
-			baza.close()
-			return jsonify(rez)
-		except:
+				rez = mycursor.fetchall()
+				baza.close()
+				return jsonify(rez)
+			except:
+				msg={
+					'error': True,
+					'poruka': 'Neuspela konekcija sa bazom'
+				}
+				return jsonify(msg)
+		else:
 			msg={
 				'error': True,
-				'poruka': 'Neuspela konekcija sa bazom'
-			}
+				'poruka': 'Morate se ulogovati da bi ste pristupili sirovinama'
+				}
 			return jsonify(msg)
 	else:
 		msg={
-				'error': True,
-				'poruka': 'Morate se ulogovati da bi ste pristupili sirovinama'
+			'error': True,
+			'poruka': 'Vas nalog je blokiran'
 			}
 		return jsonify(msg)
 
 @app.route('/dodajSirovinuReact',methods=['POST','GET'])
 @login_required
 def dodajSirovinuReact():
-	if current_user.rola_1() or current_user.rola_2():
-		try:
-			data = request.get_json()
-			imeSirovine=data['imeSirovine']
-			cenaSirovine= data['cenaSirovine']
-			idDobavljaca = data['idDobavljaca']
-			baza = psycopg2.connect(**konekcija)
-			mycursor = baza.cursor()
-			mycursor.execute(f"""
+	if current_user.block()==False:
+		if current_user.rola_1() or current_user.rola_2():
+			try:
+				data = request.get_json()
+				imeSirovine=data['imeSirovine']
+				cenaSirovine= data['cenaSirovine']
+				idDobavljaca = data['idDobavljaca']
+				baza = psycopg2.connect(**konekcija)
+				mycursor = baza.cursor()
+				mycursor.execute(f"""
 					insert into public.sirovine(naziv_sirovine,cena_sirovine,id_dobavljaci)
 					values('{imeSirovine}',{cenaSirovine},{idDobavljaca});
 					""")
-			baza.commit()
-			baza.close()
-			msg='Uspesno ste dodali sirovinu ',imeSirovine,' sa cenom ',cenaSirovine,'.'
-			return jsonify(msg)
-		except:
+				baza.commit()
+				baza.close()
+				msg='Uspesno ste dodali sirovinu ',imeSirovine,' sa cenom ',cenaSirovine,'.'
+				return jsonify(msg)
+			except:
+				msg={
+					'error': True,
+					'poruka': 'Neuspela konekcija sa bazom'
+					}
+				return jsonify(msg)
+		else:
 			msg={
 				'error': True,
-				'poruka': 'Neuspela konekcija sa bazom'
-			}
+				'poruka': ' Niste ovlasceni da dodajete sirovine sirovinama.'
+				}
 			return jsonify(msg)
 	else:
 		msg={
 			'error': True,
-			'poruka': ' Niste ovlasceni da dodajete sirovine sirovinama.'
-		}
+			'poruka': 'Vas nalog je blokiran'
+			}
 		return jsonify(msg)
 #lista dobavljaca
 @app.route('/dajDobavljaceReact',methods=['GET'])
 @login_required
 def dajDobavljaceReact():
-	if current_user.rola_1() or current_user.rola_2() or current_user.rola_3():
-		try:
-			baza = psycopg2.connect(**konekcija)
-			mycursor = baza.cursor()
-			mycursor.execute(f"""
+	if current_user.block()==False:
+		if current_user.rola_1() or current_user.rola_2() or current_user.rola_3():
+			try:
+				baza = psycopg2.connect(**konekcija)
+				mycursor = baza.cursor()
+				mycursor.execute(f"""
 					select id_dobavljaca, ime_dobavljaca, telefon, email,adresa
 					from dobavljaci;
 				""") 
-			rez = mycursor.fetchall()
-			return jsonify(rez)
-		except:
+				rez = mycursor.fetchall()
+				return jsonify(rez)
+			except:
+				msg={
+					'error': True,
+					'poruka': 'Neuspela konekcija sa bazom'
+				}
+				return jsonify(msg)
+		else:
 			msg={
 				'error': True,
-				'poruka': 'Neuspela konekcija sa bazom'
-			}
+				'poruka': 'Nemate pristup ovom delu aplikacije'
+				}
 			return jsonify(msg)
 	else:
 		msg={
-				'error': True,
-				'poruka': 'Nemate pristup ovom delu aplikacije'
+			'error': True,
+			'poruka': 'Vas nalog je blokiran'
 			}
 		return jsonify(msg)
 @app.route('/dodajDobavljacaReact',methods=['POST'])
 @login_required
 def dodajDobavljacaReact():
-	if current_user.rola_1() or current_user.rola_2():
-		data = request.get_json()
-		imeDobavljaca = data['imeDobavljaca']
-		emailDobavljaca=data['emailDobavljaca']
-		telefonDobavljaca=data['telefonDobavljaca']
-		adresa=data['adresa']
-		try:
-			baza = psycopg2.connect(**konekcija)
-			mycursor = baza.cursor()
-			mycursor.execute(f"""
+	if current_user.block()==False:
+		if current_user.rola_1() or current_user.rola_2():
+			data = request.get_json()
+			imeDobavljaca = data['imeDobavljaca']
+			emailDobavljaca=data['emailDobavljaca']
+			telefonDobavljaca=data['telefonDobavljaca']
+			adresa=data['adresa']
+			try:
+				baza = psycopg2.connect(**konekcija)
+				mycursor = baza.cursor()
+				mycursor.execute(f"""
 					insert into dobavljaci(ime_dobavljaca,email,telefon,adresa)
 					values('{imeDobavljaca}','{emailDobavljaca}','{telefonDobavljaca}','{adresa}')
-				""")
-			baza.commit()
-			baza.close()
-			rez='Dodali ste dobavljaca ',imeDobavljaca,'.'
-			return jsonify(rez)
-		except :
+					""")
+				baza.commit()
+				baza.close()
+				rez='Dodali ste dobavljaca ',imeDobavljaca,'.'
+				return jsonify(rez)
+			except :
+				msg={
+					'error': True,
+					'poruka': 'Neuspela konekcija sa bazom'
+					}
+				return jsonify(msg)
+		else:
 			msg={
 				'error': True,
-				'poruka': 'Neuspela konekcija sa bazom'
+				'poruka': 'Nemate pristup ovom delu aplikacije.'
 			}
 			return jsonify(msg)
 	else:
 		msg={
 			'error': True,
-			'poruka': 'Nemate pristup ovom delu aplikacije.'
-		}
+			'poruka': 'Vas nalog je blokiran'
+			}
 		return jsonify(msg)
 @app.route('/azurirajDobavljacaReact',methods=['POST'])
 @login_required
 def azurirajDobavljacaReact():
-	if current_user.rola_1() or current_user.rola_2():
-		try:
-			data = request.get_json()
-			idDobavljaca =data['idDobavljaca']
-			imeDobavljaca = data['imeDobavljaca']
-			telefon = data['telefon']
-			email = data['email']
-			adresa= data['adresa']
-			baza = psycopg2.connect(**konekcija)
-			mycursor = baza.cursor()
-			mycursor.execute(f"""
+	if current_user.block()==False:
+		if current_user.rola_1() or current_user.rola_2():
+			try:
+				data = request.get_json()
+				idDobavljaca =data['idDobavljaca']
+				imeDobavljaca = data['imeDobavljaca']
+				telefon = data['telefon']
+				email = data['email']
+				adresa= data['adresa']
+				baza = psycopg2.connect(**konekcija)
+				mycursor = baza.cursor()
+				mycursor.execute(f"""
 					UPDATE public.dobavljaci
 					set ime_dobavljaca='{imeDobavljaca}',email='{email}',
 					telefon='{telefon}',adresa='{adresa}'
 					where id_dobavljaca ={idDobavljaca};
 							""")
-			baza.commit()
-			baza.close()
-			msg='Za dobavljaca ' +imeDobavljaca+  ' ste promenili '
-			return jsonify(msg)	
-		except :
-			msg={
+				baza.commit()
+				baza.close()
+				msg='Promenili ste  '
+				return jsonify(msg)	
+			except :
+				msg={
 					'error': True,
 					'poruka': 'Neuspela konekcija sa bazom '
 			 		}
+				return jsonify(msg)
+		else:
+			msg={
+		      'error': True,
+				'poruka': 'Nemate pristup ovom delu aplikacije.'
+				}
 			return jsonify(msg)
 	else:
 		msg={
-		      'error': True,
-				'poruka': 'Nemate pristup ovom delu aplikacije.'
+			'error': True,
+			'poruka': 'Vas nalog je blokiran'
 			}
 		return jsonify(msg)
 #azuriranje sirovine
 @app.route('/azurirajSirovinuReact',methods=['POST'])
 @login_required
 def azurirajSirovinuReact():
-	if current_user.rola_1() or current_user.rola_2():
-		data = request.get_json()
-		imeSirovine = data['imeSirovine']
-		cenaSirovine = data['cenaSirovine']
-		idDobavljaca = data['idDobavljaca']
-		idSirovine = data['idSirovine']
-		try:
-			baza = psycopg2.connect(**konekcija)
-			mycursor = baza.cursor()
-			mycursor.execute(f"""
+	if current_user.block()==False:
+		if current_user.rola_1() or current_user.rola_2():
+			data = request.get_json()
+			imeSirovine = data['imeSirovine']
+			cenaSirovine = data['cenaSirovine']
+			idDobavljaca = data['idDobavljaca']
+			idSirovine = data['idSirovine']
+			try:
+				baza = psycopg2.connect(**konekcija)
+				mycursor = baza.cursor()
+				mycursor.execute(f"""
 					update public.sirovine
 					set naziv_sirovine='{imeSirovine}',cena_sirovine={cenaSirovine},
 					id_dobavljaci={idDobavljaca}
 					where id_sirovine={idSirovine}
-				""")
-			baza.commit()
-			baza.close()
-			rez=imeSirovine
-			return jsonify(rez)
-		except :
+					""")
+				baza.commit()
+				baza.close()
+				rez=imeSirovine
+				return jsonify(rez)
+			except :
+				msg={
+					'error': True,
+					'poruka': 'Neuspela konekcija sa bazom '
+				
+					}
+				return jsonify(msg)
+		else:
 			msg={
 				'error': True,
-				'poruka': 'Neuspela konekcija sa bazom '
-				
-			}
+				'poruka': 'Nemate pristup ovom delu aplikacije'
+				}
 			return jsonify(msg)
 	else:
 		msg={
 			'error': True,
-			'poruka': 'Nemate pristup ovom delu aplikacije'
-		}
+			'poruka': 'Vas nalog je blokiran'
+			}
 		return jsonify(msg)
 #za brisanje sirovine
 @app.route('/obrisiSirovinu',methods=['POST'])
 @login_required
 def obrisiSirovinuReact():
-	if current_user.rola_1():
-		data = request.get_json()
-		idSirovine=data['idSirovine']
-		try:
-			baza = psycopg2.connect(**konekcija)
-			mycursor = baza.cursor()
-			mycursor.execute(f"""
+	if current_user.block()==False:
+		if current_user.rola_1():
+			data = request.get_json()
+			idSirovine=data['idSirovine']
+			try:
+				baza = psycopg2.connect(**konekcija)
+				mycursor = baza.cursor()
+				mycursor.execute(f"""
 					delete from public.sirovine
 					where id_sirovine={idSirovine};
-				""")
-			baza.commit()
-			baza.close()
-			rez='Obrisali ste sirovinu '
-			return jsonify(rez)
-		except :
+					""")
+				baza.commit()
+				baza.close()
+				rez='Obrisali ste sirovinu '
+				return jsonify(rez)
+			except :
+				msg={
+					'error': True,
+					'poruka': 'Neuspela konekcija sa bazom '
+				}
+				return jsonify(msg)
+		else:
 			msg={
 				'error': True,
-				'poruka': 'Neuspela konekcija sa bazom '
+				'poruka': 'Nemate pristup ovom delu aplikacije. '
 			}
 			return jsonify(msg)
 	else:
 		msg={
 			'error': True,
-			'poruka': 'Nemate pristup ovom delu aplikacije. '
-		}
+			'poruka': 'Vas nalog je blokiran'
+			}
 		return jsonify(msg)
 @app.route('/dajlistuKolacaReact', methods=['GET'])
 @login_required
 def dajlistuKolacaReact():
-	if current_user.rola_1() or current_user.rola_2() or current_user.rola_3():
-		try:
-			baza=psycopg2.connect(**konekcija)
-			mycursor = baza.cursor()
-			mycursor.execute(f"""
+	if current_user.block()==False:
+		if current_user.rola_1() or current_user.rola_2() or current_user.rola_3():
+			try:
+				baza=psycopg2.connect(**konekcija)
+				mycursor = baza.cursor()
+				mycursor.execute(f"""
 					select id_kolaca,ime_kolaca,opis_kolaca
 					from kolaci
 					where dodata_receptura =true;	
-				""")
-			rezultat=mycursor.fetchall()
-			baza.close()
-			return jsonify(rezultat)
-		except :
+					""")
+				rezultat=mycursor.fetchall()
+				baza.close()
+				return jsonify(rezultat)
+			except :
+				msg={
+					'error': True,
+					'poruka': 'Neuspela konekcija sa bazom.'
+					}
+				return jsonify(msg)
+		else:
 			msg={
 				'error': True,
-				'poruka': 'Neuspela konekcija sa bazom.'
-			}
+				'poruka': 'Nemate pristup ovom delu aplikacije.'
+				}
 			return jsonify(msg)
 	else:
 		msg={
-				'error': True,
-				'poruka': 'Nemate pristup ovom delu aplikacije.'
+			'error': True,
+			'poruka': 'Vas nalog je blokiran'
 			}
 		return jsonify(msg)
 @app.route('/napraviKolacReact' , methods=['POST'])
 @login_required
 def napraviKolacReact():
-	if current_user.rola_1():
-		data = request.get_json()
-		imeKolaca = data['imeKolaca']
-		postupak = data['postupak']
-		try:
-			baza=psycopg2.connect(**konekcija)
-			mycursor = baza.cursor()
-			mycursor.execute(f"""
+	if current_user.block()==False:
+		if current_user.rola_1():
+			data = request.get_json()
+			imeKolaca = data['imeKolaca']
+			postupak = data['postupak']
+			try:
+				baza=psycopg2.connect(**konekcija)
+				mycursor = baza.cursor()
+				mycursor.execute(f"""
 					insert into kolaci(ime_kolaca, opis_kolaca)
                     values('{imeKolaca}','{postupak}');
-				""")
-			baza.commit()
-			baza.close()
-			rez ='Uspesno ste kreirali kolac ',imeKolaca
-			return jsonify(rez)
-		except :
+					""")
+				baza.commit()
+				baza.close()
+				rez ='Uspesno ste kreirali kolac ',imeKolaca
+				return jsonify(rez)
+			except :
+				msg={
+					'error': True,
+					'poruka': 'Neuspela konekcija sa bazom.'
+				}
+				return jsonify(msg)
+		else:
 			msg={
 				'error': True,
-				'poruka': 'Neuspela konekcija sa bazom.'
-			}
+				'poruka': 'Nemate pristup ovom delu aplikacije'
+				}
 			return jsonify(msg)
 	else:
 		msg={
-				'error': True,
-				'poruka': 'Nemate pristup ovom delu aplikacije'
+			'error': True,
+			'poruka': 'Vas nalog je blokiran'
 			}
 		return jsonify(msg)
 @app.route('/azurirajKolacReact',methods=['POST'])
 @login_required
 def azurirajKolacReact():
-	if current_user.rola_1():
-		data = request.get_json()
-		idKolaca = data['idKolaca']
-		imeKolaca = data['imeKolaca']
-		postupak = data['postupak']
-		try:
-			baza = psycopg2.connect(**konekcija)
-			mycursor = baza.cursor()
-			mycursor.execute(f"""
-				update kolaci
-				set ime_kolaca='{imeKolaca}',opis_kolaca='{postupak}'
-				where id_kolaca={idKolaca};
-				""")
-			baza.commit()
-			baza.close()
-			rez=f"Za kolac {imeKolaca} ste azurirali postupak rada."
-			return jsonify(rez)
-		except :
+	if current_user.block()==False:
+		if current_user.rola_1():
+			data = request.get_json()
+			idKolaca = data['idKolaca']
+			imeKolaca = data['imeKolaca']
+			postupak = data['postupak']
+			try:
+				baza = psycopg2.connect(**konekcija)
+				mycursor = baza.cursor()
+				mycursor.execute(f"""
+					update kolaci
+					set ime_kolaca='{imeKolaca}',opis_kolaca='{postupak}'
+					where id_kolaca={idKolaca};
+					""")
+				baza.commit()
+				baza.close()
+				rez=f"Za kolac {imeKolaca} ste azurirali postupak rada."
+				return jsonify(rez)
+			except :
+				msg={
+					'error': True,
+					'poruka': 'Neuspela konekcija sa bazom'
+					}
+				return jsonify(msg)
+		else:
 			msg={
 				'error': True,
-				'poruka': 'Neuspela konekcija sa bazom'
-			}
+				'poruka': 'Nemate pristup ovom delu aplikacije'
+				}
 			return jsonify(msg)
 	else:
 		msg={
-				'error': True,
-				'poruka': 'Nemate pristup ovom delu aplikacije'
+			'error': True,
+			'poruka': 'Vas nalog je blokiran'
 			}
 		return jsonify(msg)
 @app.route('/obrisiKolacReact', methods=['POST'])
 @login_required
 def obrisiKolacReact():
-	if current_user.rola_1():
-		data = request.get_json()
-		idKolaca = data['idKolaca']
-		try:
-			baza=psycopg2.connect(**konekcija)
-			mycursor = baza.cursor()
-			mycursor.execute(f"""
+	if current_user.block()==False:
+		if current_user.rola_1():
+			data = request.get_json()
+			idKolaca = data['idKolaca']
+			try:
+				baza=psycopg2.connect(**konekcija)
+				mycursor = baza.cursor()
+				mycursor.execute(f"""
 					delete from kolaci
 					where id_kolaca={idKolaca};
-				""")
-			baza.commit()
-			baza.close()
-			rez="Uspesno ste obrisali kolac "
-			return jsonify(rez)
-		except :
+					""")
+				baza.commit()
+				baza.close()
+				rez="Uspesno ste obrisali kolac "
+				return jsonify(rez)
+			except :
+				msg={
+					'error': True,
+					'poruka': 'Neuspela konekcija sa bazom'
+				}
+				return jsonify(msg)
+		else:
 			msg={
 				'error': True,
-				'poruka': 'Neuspela konekcija sa bazom'
-			}
+				'poruka': 'Nemate pristup ovom delu aplikacije'
+				}
 			return jsonify(msg)
 	else:
 		msg={
-				'error': True,
-				'poruka': 'Nemate pristup ovom delu aplikacije'
+			'error': True,
+			'poruka': 'Vas nalog je blokiran'
 			}
 		return jsonify(msg)
 #lista kolaca bez recepture
 @app.route('/dajlistuKolacaBezReceptureReact')
 @login_required
 def dajlistuKolacaBezReceptureReact():
-	if current_user.rola_1() or current_user.rola_2():
-		try:
-			baza = psycopg2.connect(**konekcija)
-			mycursor=baza.cursor()
-			mycursor.execute(f"""
-				select id_kolaca,ime_kolaca,opis_kolaca
-				from kolaci
-				where dodata_receptura =false;
-				""")
-			rez=mycursor.fetchall()
-			baza.close()
-			return jsonify(rez)
-		except:
+	if current_user.block()==False:
+		if current_user.rola_1() or current_user.rola_2():
+			try:
+				baza = psycopg2.connect(**konekcija)
+				mycursor=baza.cursor()
+				mycursor.execute(f"""
+					select id_kolaca,ime_kolaca,opis_kolaca
+					from kolaci
+					where dodata_receptura =false;
+					""")
+				rez=mycursor.fetchall()
+				baza.close()
+				return jsonify(rez)
+			except:
+				msg={
+					'error': True,
+					'poruka': 'Neuspela konekcija sa bazom code 619'
+				}
+				return jsonify(msg)
+		else:
 			msg={
 				'error': True,
-				'poruka': 'Neuspela konekcija sa bazom code 619'
-			}
+				'poruka': 'Neuspela konekcija sa bazom code 626'
+				}
 			return jsonify(msg)
 	else:
 		msg={
-				'error': True,
-				'poruka': 'Neuspela konekcija sa bazom code 626'
+			'error': True,
+			'poruka': 'Vas nalog je blokiran'
 			}
 		return jsonify(msg)
 #daje ime kolaca za prikaz u recepturama
 @app.route('/dajImeKolacaReact/<int:idKolaca>')
 @login_required
 def dajImeKolacaReact(idKolaca):
-	if current_user.rola_1() or current_user.rola_2() or current_user.rola_3():
-		try:
-			baza = psycopg2.connect(**konekcija)
-			mycursor=baza.cursor()
-			mycursor.execute(f"""
-				select ime_kolaca from kolaci
-				where id_kolaca={idKolaca};
-				""")
-			rez=mycursor.fetchall()
-			baza.close()
-			return jsonify(rez)
-		except:
+	if current_user.block()==False:
+		if current_user.rola_1() or current_user.rola_2() or current_user.rola_3():
+			try:
+				baza = psycopg2.connect(**konekcija)
+				mycursor=baza.cursor()
+				mycursor.execute(f"""
+					select ime_kolaca from kolaci
+					where id_kolaca={idKolaca};
+					""")
+				rez=mycursor.fetchall()
+				baza.close()
+				return jsonify(rez)
+			except:
+				msg={
+					'error': True,
+					'poruka': 'Neuspela konekcija sa bazom code 646'
+				}
+				return jsonify(msg)
+		else:
 			msg={
 				'error': True,
-				'poruka': 'Neuspela konekcija sa bazom code 646'
-			}
+				'poruka': 'Neuspela konekcija sa bazom code 652'
+				}
 			return jsonify(msg)
 	else:
 		msg={
-				'error': True,
-				'poruka': 'Neuspela konekcija sa bazom code 652'
+			'error': True,
+			'poruka': 'Vas nalog je blokiran'
 			}
 		return jsonify(msg)
 #1pravljenje recepture
@@ -683,314 +780,384 @@ def dajImeKolacaReact(idKolaca):
 @app.route('/napraviRecepturuReact', methods=['POST'])
 @login_required
 def napraviRecepturuReact():
-	if current_user.rola_1():
-		data = request.get_json()
-		idKolaca = data['idKolaca']
-		kolicina= data['kolicina']
-		idSirovine = data['idSirovine']
-		try:
-			baza= psycopg2.connect(**konekcija)
-			mycursor=baza.cursor()
-			mycursor.execute(f"""
-				insert into recepture(id_kolaca,id_sirovine,kolicina)
-				values({idKolaca},{idSirovine},{kolicina});
-				""")
-			baza.commit()
-			baza.close()
-			msg=kolicina
-			baza= psycopg2.connect(**konekcija)
-			mycursor=baza.cursor()
-			mycursor.execute(f"""
+	if current_user.block()==False:
+		if current_user.rola_1():
+			data = request.get_json()
+			idKolaca = data['idKolaca']
+			kolicina= data['kolicina']
+			idSirovine = data['idSirovine']
+			try:
+				baza= psycopg2.connect(**konekcija)
+				mycursor=baza.cursor()
+				mycursor.execute(f"""
+					insert into recepture(id_kolaca,id_sirovine,kolicina)
+					values({idKolaca},{idSirovine},{kolicina});
+					""")
+				baza.commit()
+				baza.close()
+				msg=kolicina
+				baza= psycopg2.connect(**konekcija)
+				mycursor=baza.cursor()
+				mycursor.execute(f"""
 						update kolaci
 						set dodata_receptura=True
 						where id_kolaca={idKolaca};
 					""")
-			baza.commit()
-			baza.close()
-			return jsonify(msg)
-		except:
+				baza.commit()
+				baza.close()
+				return jsonify(msg)
+			except:
+				msg={
+					'error': True,
+					'poruka': 'Neuspela konekcija sa bazom cod:658'
+				}
+				return jsonify(msg)
+		else:
 			msg={
 				'error': True,
 				'poruka': 'Neuspela konekcija sa bazom cod:658'
-			}
+				}
 			return jsonify(msg)
 	else:
 		msg={
-				'error': True,
-				'poruka': 'Neuspela konekcija sa bazom cod:658'
+			'error': True,
+			'poruka': 'Vas nalog je blokiran'
 			}
 		return jsonify(msg)
 #daje cenu  jedne sirovinu na osnovu id-a koristi se za recepture
 @app.route('/dajJednuSirovinuReact/<int:idSirovine>')
 @login_required
 def dajJednuSirovinuReact(idSirovine):
-	if current_user.rola_1():
-		try:
-			baza= psycopg2.connect(**konekcija)
-			mycursor=baza.cursor()
-			mycursor.execute(f"""
-				select id_sirovine,cena_sirovine
-				from sirovine
-				where id_sirovine={idSirovine};
-				""")
-			rez=mycursor.fetchone()
-			baza.close()
-			return jsonify(rez)
-		except :
+	if current_user.block()==False:
+		if current_user.rola_1():
+			try:
+				baza= psycopg2.connect(**konekcija)
+				mycursor=baza.cursor()
+				mycursor.execute(f"""
+					select id_sirovine,cena_sirovine
+					from sirovine
+					where id_sirovine={idSirovine};
+					""")
+				rez=mycursor.fetchone()
+				baza.close()
+				return jsonify(rez)
+			except :
+				msg={
+					'error': True,
+					'poruka': 'Neuspela konekcija sa bazom cod:725'
+				}
+				return jsonify(msg)
+		else:
 			msg={
 				'error': True,
-				'poruka': 'Neuspela konekcija sa bazom cod:725'
-			}
+				'poruka': 'Neuspela konekcija sa bazom cod:731'
+				}
 			return jsonify(msg)
 	else:
 		msg={
-				'error': True,
-				'poruka': 'Neuspela konekcija sa bazom cod:731'
+			'error': True,
+			'poruka': 'Vas nalog je blokiran'
 			}
 		return jsonify(msg)
 @app.route('/listaKolacaNaslovReact')
 @login_required
 def listaKolacaNaslovReact():
-	if current_user.rola_1() or current_user.rola_2():
-		try:
-			baza=psycopg2.connect(**konekcija)
-			mycursor = baza.cursor()
-			mycursor.execute(f"""
+	if current_user.block()==False:
+		if current_user.rola_1() or current_user.rola_2():
+			try:
+				baza=psycopg2.connect(**konekcija)
+				mycursor = baza.cursor()
+				mycursor.execute(f"""
 					select id_kolaca,ime_kolaca,opis_kolaca
 					from kolaci
 					where dodata_receptura =true;
 				""")
-			rez=mycursor.fetchall() #fetchall() fetchone()
-			return jsonify(rez)
-		except:
+				rez=mycursor.fetchall() #fetchall() fetchone()
+				return jsonify(rez)
+			except:
+				msg={
+					'error': True,
+					'poruka' : 'Neuspela konekcija sa bazom'
+				}
+				return jsonify(msg)
+		else:
 			msg={
 				'error': True,
-				'poruka' : 'Neuspela konekcija sa bazom'
-			}
+				'poruka' : 'Nemate pristup ovom delu aplikacije'
+				}
 			return jsonify(msg)
 	else:
 		msg={
-				'error': True,
-				'poruka' : 'Nemate pristup ovom delu aplikacije'
+			'error': True,
+			'poruka': 'Vas nalog je blokiran'
 			}
 		return jsonify(msg)
 @app.route('/dajRecepturuReact/<int:idKolaca>')
 @login_required
 def dajRecepturuReact(idKolaca):
-	if current_user.rola_1() or current_user.rola_2():
-		try:
-			baza=psycopg2.connect(**konekcija)
-			mycursor = baza.cursor()
-			mycursor.execute(f"""
+	if current_user.block()==False:
+		if current_user.rola_1() or current_user.rola_2():
+			try:
+				baza=psycopg2.connect(**konekcija)
+				mycursor = baza.cursor()
+				mycursor.execute(f"""
 					select sirovine.naziv_sirovine,sirovine.id_sirovine,recepture.kolicina,sirovine.cena_sirovine,
 					round(cast(recepture.kolicina*(sirovine.cena_sirovine-sirovine.cena_sirovine*recepture.rabat/100)as numeric),2):: double precision,recepture.rabat
 					from recepture
 					INNER JOIN sirovine
 					on recepture.id_sirovine=sirovine.id_sirovine
 					where recepture.id_kolaca={idKolaca};
-				""")
-			rez=mycursor.fetchall()
-			baza.close()
-			return jsonify(rez)
-		except:
+					""")
+				rez=mycursor.fetchall()
+				baza.close()
+				return jsonify(rez)
+			except:
+				msg={
+					'error': True,
+					'poruka': 'Neuspela konekcija sa bazom'
+				}
+				return jsonify(msg)
+		else:
 			msg={
 				'error': True,
-				'poruka': 'Neuspela konekcija sa bazom'
-			}
+				'poruka': 'Nemate pristup ovom delu aplikacije'
+				}
 			return jsonify(msg)
 	else:
 		msg={
-				'error': True,
-				'poruka': 'Nemate pristup ovom delu aplikacije'
+			'error': True,
+			'poruka': 'Vas nalog je blokiran'
 			}
 		return jsonify(msg)
 #za azuriranje recepture
 @app.route('/azurirajKolicinuRecepturaReact', methods=['POST'])
 @login_required
 def azurirajKolicinuRecepturaReact():
-	if current_user.rola_1():
-		data =request.get_json()
-		idKolaca= data['idKolaca']
-		idSirovine = data['idSirovine']
-		kolicina = data['kolicina']
-		imeSirovine=data['imeSirovine']
-		try:
-			baza = psycopg2.connect(**konekcija)
-			mycursor=baza.cursor()
-			mycursor.execute(f"""
-				update recepture
-				set kolicina={kolicina}
-				where id_kolaca={idKolaca} and id_sirovine={idSirovine};
-				""")
-			baza.commit()
-			baza.close()
-			rez=f'Za sirovinu {imeSirovine} ste promenili kolicinu u {kolicina}. '
-			return jsonify(rez)
-		except:
+	if current_user.block()==False:
+		if current_user.rola_1():
+			data =request.get_json()
+			idKolaca= data['idKolaca']
+			idSirovine = data['idSirovine']
+			kolicina = data['kolicina']
+			imeSirovine=data['imeSirovine']
+			try:
+				baza = psycopg2.connect(**konekcija)
+				mycursor=baza.cursor()
+				mycursor.execute(f"""
+					update recepture
+					set kolicina={kolicina}
+					where id_kolaca={idKolaca} and id_sirovine={idSirovine};
+					""")
+				baza.commit()
+				baza.close()
+				rez=f'Za sirovinu {imeSirovine} ste promenili kolicinu u {kolicina}. '
+				return jsonify(rez)
+			except:
+				msg={
+					'error': True,
+					'poruka': 'Neuspela konekcija sa bazom cod 788'
+				}
+				return jsonify(msg)
+		else:
 			msg={
 				'error': True,
-				'poruka': 'Neuspela konekcija sa bazom cod 788'
-			}
+				'poruka': 'Neuspela konekcija sa bazom cod 794'
+				}
 			return jsonify(msg)
 	else:
 		msg={
-				'error': True,
-				'poruka': 'Neuspela konekcija sa bazom cod 794'
+			'error': True,
+			'poruka': 'Vas nalog je blokiran'
 			}
 		return jsonify(msg)
 #brise sirovinu iz recepture
 @app.route('/ukloniSirovinuRecepturaReact', methods=['POST'])
 @login_required
 def ukloniSirovinuRecepturaReact():
-	if current_user.rola_1():
-		data =request.get_json()
-		idKolaca=data['idKolaca']
-		idSirovine=data['idSirovine']
-		imeSirovine=data['imeSirovine']
-		try:
-			baza= psycopg2.connect(**konekcija)
-			mycursor=baza.cursor()
-			mycursor.execute(f"""
-				delete from recepture
-				where id_kolaca={idKolaca} and id_sirovine={idSirovine};
-				""")
-			baza.commit()
-			baza.close()
-			rez=f'Uklonili ste sirovinu {imeSirovine} iz recepture.'
-			return jsonify(rez)
-		except :
+	if current_user.block()==False:
+		if current_user.rola_1():
+			data =request.get_json()
+			idKolaca=data['idKolaca']
+			idSirovine=data['idSirovine']
+			imeSirovine=data['imeSirovine']
+			try:
+				baza= psycopg2.connect(**konekcija)
+				mycursor=baza.cursor()
+				mycursor.execute(f"""
+					delete from recepture
+					where id_kolaca={idKolaca} and id_sirovine={idSirovine};
+					""")
+				baza.commit()
+				baza.close()
+				rez=f'Uklonili ste sirovinu {imeSirovine} iz recepture.'
+				return jsonify(rez)
+			except :
+				msg={
+					'error': True,
+					'poruka': 'Neuspela konekcija sa bazom cod 821'
+				}
+				return jsonify(msg)
+		else:
 			msg={
 				'error': True,
-				'poruka': 'Neuspela konekcija sa bazom cod 821'
-			}
+				'poruka': 'Neuspela konekcija sa bazom cod 826'
+				}
 			return jsonify(msg)
 	else:
 		msg={
-				'error': True,
-				'poruka': 'Neuspela konekcija sa bazom cod 826'
+			'error': True,
+			'poruka': 'Vas nalog je blokiran'
 			}
 		return jsonify(msg)
 #dodaje sirovinu u potojiecu recepturu
 @app.route('/dodajSirovinuURecepturu', methods=['POST'])
 @login_required
 def dodajSirovinuURecepturu():
-	if current_user.rola_1():
-		data =request.get_json()
-		idKolaca=data['idKolaca']
-		kolicina=data['kolicina']
-		idSirovine=data['idSirovine']
-		try:
-			baza= psycopg2.connect(**konekcija)
-			mycursor=baza.cursor()
-			mycursor.execute(f"""
-				insert into recepture(id_kolaca,id_sirovine,kolicina)
-				values({idKolaca},{idSirovine},{kolicina});
-				""")
-			baza.commit()
-			baza.close()
-			rez='Uspesno ste dodali sirovinu'
-			return jsonify(rez)
-		except:
+	if current_user.block()==False:
+		if current_user.rola_1():
+			data =request.get_json()
+			idKolaca=data['idKolaca']
+			kolicina=data['kolicina']
+			idSirovine=data['idSirovine']
+			try:
+				baza= psycopg2.connect(**konekcija)
+				mycursor=baza.cursor()
+				mycursor.execute(f"""
+					insert into recepture(id_kolaca,id_sirovine,kolicina)
+					values({idKolaca},{idSirovine},{kolicina});
+					""")
+				baza.commit()
+				baza.close()
+				rez='Uspesno ste dodali sirovinu'
+				return jsonify(rez)
+			except:
+				msg={
+					'error': True,
+					'poruka' : 'Neuspela konekcija sa bazom cod: 852'
+				}
+				return jsonify(msg)
+		else:
 			msg={
 				'error': True,
-				'poruka' : 'Neuspela konekcija sa bazom cod: 852'
-			}
+				'poruka' : 'Nemate pristup ovom delu aplikacije cod: 858'
+				}
 			return jsonify(msg)
 	else:
 		msg={
-				'error': True,
-				'poruka' : 'Nemate pristup ovom delu aplikacije cod: 858'
+			'error': True,
+			'poruka': 'Vas nalog je blokiran'
 			}
 		return jsonify(msg)
 @app.route('/dajPostupakZaRecepturu/<int:idKolaca>')
 @login_required
 def dajPostupakZaRecepturu(idKolaca):
-	if current_user.rola_1() or current_user.rola_2():
-		try:
-			baza=psycopg2.connect(**konekcija)
-			mycursor = baza.cursor()
-			mycursor.execute(f"""
+	if current_user.block()==False:
+		if current_user.rola_1() or current_user.rola_2():
+			try:
+				baza=psycopg2.connect(**konekcija)
+				mycursor = baza.cursor()
+				mycursor.execute(f"""
 					select opis_kolaca from public.kolaci
                     where id_kolaca ={idKolaca};
-				""")
-			rez=mycursor.fetchall()
-			baza.close()
-			return jsonify(rez)
-		except :
+					""")
+				rez=mycursor.fetchall()
+				baza.close()
+				return jsonify(rez)
+			except :
+				msg={
+					'error': True,
+					'poruka': 'Neuspela konekcija sa bazom.'
+				}
+				return jsonify(msg)
+		else:
 			msg={
 				'error': True,
-				'poruka': 'Neuspela konekcija sa bazom.'
-			}
+				'poruka': 'Nemate pristup ovom delu aplikcije.'
+				}
 			return jsonify(msg)
 	else:
 		msg={
-				'error': True,
-				'poruka': 'Nemate pristup ovom delu aplikcije.'
+			'error': True,
+			'poruka': 'Vas nalog je blokiran'
 			}
 		return jsonify(msg)
 @app.route('/azurirajRabat', methods=['POST'])
 @login_required
 def azuriraRabat():
-	if current_user.rola_1():
-		data =request.get_json()
-		imeKolaca=data['imeKolaca']
-		imeSirovine=data['imeSirovine']
-		rabat=data['rabat']
-		idSirovine=data['idSirovine']
-		idKolaca=data['idKolaca']
-		try:
-			baza= psycopg2.connect(**konekcija)
-			mycursor = baza.cursor()
-			mycursor.execute(f"""
-				update recepture
-				set rabat ={rabat}
-				where id_kolaca={idKolaca} and id_sirovine={idSirovine};
-				""")
-			baza.commit()
-			baza.close()
-			rez=f'Za recepturu kolaca {imeKolaca} ste promenili rabat za sirovinu {imeSirovine} u {rabat} %'
-			return jsonify(rez)
-		except:
+	if current_user.block()==False:
+		if current_user.rola_1():
+			data =request.get_json()
+			imeKolaca=data['imeKolaca']
+			imeSirovine=data['imeSirovine']
+			rabat=data['rabat']
+			idSirovine=data['idSirovine']
+			idKolaca=data['idKolaca']
+			try:
+				baza= psycopg2.connect(**konekcija)
+				mycursor = baza.cursor()
+				mycursor.execute(f"""
+					update recepture
+					set rabat ={rabat}
+					where id_kolaca={idKolaca} and id_sirovine={idSirovine};
+					""")
+				baza.commit()
+				baza.close()
+				rez=f'Za recepturu kolaca {imeKolaca} ste promenili rabat za sirovinu {imeSirovine} u {rabat} %'
+				return jsonify(rez)
+			except:
+				msg={
+					'error': True,
+					'poruka': 'Neuspela konekcija sa bazom'
+				}
+				return jsonify(msg)
+		else:
 			msg={
 				'error': True,
-				'poruka': 'Neuspela konekcija sa bazom'
-			}
+				'poruka': 'Niste ovlasceni da obracunavate rabat'
+				}
 			return jsonify(msg)
 	else:
 		msg={
-				'error': True,
-				'poruka': 'Niste ovlasceni da obracunavate rabat'
+			'error': True,
+			'poruka': 'Vas nalog je blokiran'
 			}
 		return jsonify(msg)
-   #ne radiiiii
+
 @app.route('/obrisiDobavljacaReact', methods=['POST'])
 @login_required
 def obrisiDobavljacaReact():
-	if current_user.rola_1():
-		data=request.get_json()
-		idDobavljaca = data['idDobavljaca']
-		imeDobavljaca = data['imeDobavljaca']
-		try:
-			baza=psycopg2.connect(**konekcija)
-			mycursor = baza.cursor()
-			mycursor.execute(f"""
+	if current_user.block()==False:
+		if current_user.rola_1():
+			data=request.get_json()
+			idDobavljaca = data['idDobavljaca']
+			imeDobavljaca = data['imeDobavljaca']
+			try:
+				baza=psycopg2.connect(**konekcija)
+				mycursor = baza.cursor()
+				mycursor.execute(f"""
 					delete from public.dobavljaci
 					where id_dobavljaca={idDobavljaca}
-				""")
-			baza.commit()
-			baza.close()
-			rez="Uspesno ste obrisali dobavljaca ",imeDobavljaca
-			return jsonify(rez)
-		except :
+					""")
+				baza.commit()
+				baza.close()
+				rez="Uspesno ste obrisali dobavljaca ",imeDobavljaca
+				return jsonify(rez)
+			except :
+				msg={
+					'error': True,
+					'poruka': 'Neuspela konekcija sa bazom cod 976'
+				}
+				return jsonify(msg)
+		else:
 			msg={
 				'error': True,
-				'poruka': 'Neuspela konekcija sa bazom cod 976'
-			}
+				'poruka': 'Nemate pristup ovom delu aplikacije cod 982'
+				}
 			return jsonify(msg)
 	else:
 		msg={
-				'error': True,
-				'poruka': 'Nemate pristup ovom delu aplikacije cod 982'
+			'error': True,
+			'poruka': 'Vas nalog je blokiran'
 			}
 		return jsonify(msg)
 
