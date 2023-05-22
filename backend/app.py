@@ -75,6 +75,7 @@ class Korisnici(db.Model, UserMixin):
 		return self.treca_rola
 	def block(self):
 		return self.block_user
+		
 	# ovo su metode koje dolaze uz biblioteku
 	# oznacava da je korisnik verifikovan
 	def is_authenticated(self):
@@ -225,7 +226,7 @@ def kreirajTabelu():
 @login_required
 def izlistajSirovineReact():
 	if current_user.is_authenticated():
-		if current_user.block()== False:
+		if current_user.block():
 			if current_user.rola_1() or current_user.rola_2() or current_user.rola_3()  :
 				try:
 					baza = psycopg2.connect(**konekcija)
@@ -254,7 +255,7 @@ def izlistajSirovineReact():
 		else:
 			msg={
 					'error': True,
-					'poruka': f'Blokirani ste {current_user.block()}'
+					'poruka': f'Blokirani ste rezultatv: {current_user.block()}'
 				}
 			return jsonify(msg)
 
