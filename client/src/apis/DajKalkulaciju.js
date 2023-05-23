@@ -14,7 +14,7 @@ const DajKalkulaciju =({props,token,role})=>{
     
 
     useEffect(() => {
-        
+        const proba=()=>{
         fetch(`/dajRecepturuReact/${props.idKolaca}`,{
             method: "GET",
             headers: {
@@ -32,8 +32,9 @@ const DajKalkulaciju =({props,token,role})=>{
                 const cena=response.map(item => item[4]).reduce((saberi, sab)=>saberi+sab);
                  setZbir(cena.toFixed(2)) 
                 }  
-            })
-    },[]);
+            })}
+        proba()
+    },[props.idKolaca]);
     
         
             

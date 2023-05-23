@@ -3,6 +3,7 @@ const Select = ({options,ime, promena,setErrorMesagges})=>{
     const [state, setState]=useState([]);
    
     useEffect(()=>{
+        const proba=()=>{
         fetch(options,{
             method: "GET"
         })
@@ -25,7 +26,9 @@ const Select = ({options,ime, promena,setErrorMesagges})=>{
             console.log('ovo je greska ',error)
             
         })
-    },[]);
+    } 
+    proba()
+    },[options,setErrorMesagges,setState]);
     
         return(
             

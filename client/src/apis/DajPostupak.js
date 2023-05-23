@@ -12,6 +12,7 @@ const DajPostupak = ({props,role})=>{
     
     
     useEffect(()=>{
+        const proba=()=>{// pokusavam d otklonim error
         fetch(`/dajRecepturuReact/${props.idKolaca}`,{
             method: "GET",
             headers: {  
@@ -44,8 +45,9 @@ const DajPostupak = ({props,role})=>{
         }).catch((error)=>{
             console.log('ERROR: ',error)
         })
-       
-    },[]);
+       }//kraj proba
+       proba()
+    },[props.idKolaca]);
    
   
     const pokazi = ()=>{

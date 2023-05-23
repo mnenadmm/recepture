@@ -9,8 +9,7 @@ const DodajSirovinu = ({props,role})=>{
     const[cena, setCena]=useState([]);
     const[ime, setIme]=useState('');
     const[idDobavljaca, setIdDobavljaca]=useState(0);
-    const[showSelect, setshowSelect]=useState(0) // javlja se problem sa selektom
-    //moze se prikazati samo ako korisnik im pravo pristupa
+   
     const URL_Dobavljac = '/dajImeDobavljacaIdReact';
     let istorija = useNavigate();
     //funkcija koja je prosledjena u Select i koja vracaselektovani id dobavljaca

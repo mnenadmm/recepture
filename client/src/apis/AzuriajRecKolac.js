@@ -16,6 +16,7 @@ const AzuriajRecKolac=({props,token,role})=>{
     const idKolaca=props.idKolaca;
     
     useEffect(()=>{
+        const proba =()=>{
         fetch(`/dajRecepturuReact/${props.idKolaca}`,{
             method: "GET",
             headers: {
@@ -36,7 +37,9 @@ const AzuriajRecKolac=({props,token,role})=>{
         }).catch((error)=>{
             console.log('ERROR: ',error)
         })
-    },[]);
+    }
+    proba()
+    },[props.idKolaca,setData,setFilteredData]);
    
    
         
