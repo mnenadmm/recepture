@@ -1,131 +1,40 @@
-from flask import Flask,redirect, request,render_template, jsonify, url_for, session 
+from flask import request, jsonify, url_for, session 
 from flask_cors import CORS
-from datetime import datetime, timedelta, timezone
-from flask_jwt_extended import create_access_token,get_jwt_identity,jwt_required,JWTManager,unset_jwt_cookies,get_jwt
-from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
-from flask_sqlalchemy import SQLAlchemy
-from itsdangerous import URLSafeTimedSerializer, SignatureExpired
+from flask_jwt_extended import JWTManager
+from flask_login import login_user, LoginManager, login_required, logout_user, current_user
 from flask_mail import Mail, Message
 import psycopg2
 from werkzeug.security import generate_password_hash, check_password_hash
-from sqlalchemy.orm import Session
-from sqlalchemy import create_engine
-import sqlalchemy
-from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import InputRequired, Length, ValidationError
-from flask_session import Session
+
+import applicationSetup
+
 from konekcija import *
-import sys
+import sql as sqlQuery
 
+import metode
 
-app = Flask(__name__)
-app.config["JWT_SECRET_KEY"] = "super-secret"
-													
-
-s = URLSafeTimedSerializer('Thisisasecret!')
-app.config['MAIL_SERVER']='smtp.gmail.com'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USERNAME'] = 'mnenadmm@gmail.com'
-# use the app password created 
-app.config['MAIL_PASSWORD'] = 'wognlvxeopcbdnid'#ovo je sifra koju smo pokupili sa googla i radi samo za racunare
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USE_SSL'] = False
-sender = 'mnenadmm@gmail.com'
-# instantiating the mail service only after the 'app.config' to avoid error   
+[app,db] = applicationSetup.create_app()
+  
 mail = Mail(app)
 jwt = JWTManager(app)
-app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=48)#token ce trajati 100 sati i nakon toga se se uz pomoc funkcije osveziti
-engine = create_engine('postgresql://nenad:781022Sone@postgres/app_magacin')
-app.permanent_session_lifetime = timedelta(minutes=1000)
-
-#CORS(app)
-CORS(app, supports_credentials=True)
-
-
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
+#
+# Mora da se proveri ova metoda, za sada je pod komentarima
+#
+#@login_manager.user_loader
+#def load_user(user_id):
+#    return Korisnici.query.get(int(user_id))
 
-app.config['SQLALCHEMY_DATABASE_URI'] =string_za_konekciju
-app.config["SECRET_KEY"] = "thisisseacretkey"
-db = SQLAlchemy(app)
-
-class Korisnici(db.Model, UserMixin):
-	__tablename__ = 'korisnici'
-
-	id_korisnika = db.Column(db.Integer, primary_key=True)
-	username = db.Column(db.String(250),nullable=False,  unique=True)
-	password = db.Column(db.String(250), nullable=False)
-	email = db.Column(db.String(250),  unique=True)
-	prva_rola = db.Column(db.Boolean)
-	druga_rola = db.Column(db.Boolean)
-	treca_rola = db.Column(db.Boolean)
-	verification = db.Column(db.Boolean)
-	block_user = db.Column(db.Boolean)
-	
-	def rola_1(self): #ime funkcije se mora razlikovati od vrednosti
-		return self.prva_rola # prva_rola se povlaci iz baze
-	def rola_2(self):
-		return self.druga_rola
-	def rola_3(self):
-		return self.treca_rola
-	def block(self):
-		return self.block_user
-		
-	# ovo su metode koje dolaze uz biblioteku
-	# oznacava da je korisnik verifikovan
-	def is_authenticated(self):
-		return True
-	# korisnik je aktivan
-	def is_active(self): 
-		return True 
-	# id korisnika
-	def get_id(self):
-		return self.id_korisnika
-
-@login_manager.user_loader
-def load_user(user_id):
-    return Korisnici.query.get(int(user_id))
-def proveriEmail(email):
-	try:
-		baza = psycopg2.connect(**konekcija)
-		mycursor = baza.cursor()
-		mycursor.execute(f"""select email from public.korisnici where email = '{email}'; """)
-		rezultat = mycursor.fetchall()
-		baza.close()
-		if rezultat :
-			odgovor = True
-		else:
-			odgovor = False
-	except :
-		print('ovo je greska ')
-	return odgovor
-#proverava da li je user zauzet
-def proveriUser(username):
-   try:
-      baza = psycopg2.connect(**konekcija)
-      mycursor = baza.cursor()
-      mycursor.execute(f"""select username from public.korisnici where username = '{username}' """)
-      rezultat = mycursor.fetchone()
-      baza.close()
-      if rezultat:
-         odgovor = True
-      else:
-         odgovor = False
-   except :
-      print('ovo je greska ')
-   return odgovor
 
 #############stefaaaaa#####	
 #kreiranje modela koje je definisan u bazi
 with app.app_context():
     #create_schemas()
     db.create_all()
-   # db.session.commit() sa Gita 
 
 
 @app.teardown_request
@@ -137,9 +46,7 @@ def session_clear(exception=None):
 
 
 
-    
 
-		
 
 ####################### LOGOVANJE ##################################	
 @app.route('/login', methods=['GET', 'POST'])
@@ -1355,8 +1262,8 @@ def kreirajKorisnikaReact():
    email= data['email']
    adresa= data['adresa']
    telefon= data['telefon']
-   proveraEmail=proveriEmail(email) #Proverava da li je email zauzet
-   proveraUser =proveriUser(username)#Proverava da li je user zauzet
+   proveraEmail = metode.proveriEmail(email) #Proverava da li je email zauzet
+   proveraUser = metode.proveriUser(username) #Proverava da li je user zauzet
    if proveraUser ==True:
       return jsonify({"msg": "User je zauzet"}), 10
    if proveraEmail == True:
@@ -1455,7 +1362,7 @@ def posaljiDrugiToken(token):
 def forgotPassword():
 	data =request.get_json()
 	email=data['email']
-	rezultat=proveriEmail(email)
+	rezultat = metode.proveriEmail(email)
 	if rezultat== True:
 		recipient =email
 		token = s.dumps(email, salt='kljuc_za_token')
