@@ -3,7 +3,7 @@ services:
   postgres: 
     container_name: postges_container
     hostname: postgres
-    image: postgres
+    image: postgres:15
     restart: unless-stopped
     environment:
       POSTGRES_USER: nenad
@@ -34,7 +34,7 @@ services:
     networks:
       - mreza1 
       - mreza2
-  
+
   front: # sudo docker build -t react-front-image .
     build: 
       context: ./client
