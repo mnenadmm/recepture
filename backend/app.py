@@ -8,13 +8,16 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 import applicationSetup
 
+
+
 from konekcija import *
 import sql as sqlQuery
 
 import metode
 
+# metoda create_app() napravi instancu aplikacije i napravi model u bazi podataka
 [app,db] = applicationSetup.create_app()
-  
+
 mail = Mail(app)
 jwt = JWTManager(app)
 
