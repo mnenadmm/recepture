@@ -19,12 +19,14 @@ const Administrator = ({ props, role }) => {
                 if (res.status === 200) { return res.json() }
             })
             .then((response) => {
-                if(response.error){return setErrorMesagges(response.poruka)
-                }else{
+               if(response[0].error){return setErrorMesagges(response[0].poruka)
+               }else if(response[1].error){return setErrorMesagges(response[1].poruka)
+               }else if(response[2].error){return setErrorMesagges(response[2].poruka)
+               }else{
                     getData(response[0]);
                     setBlockUser(response[1]);
                     setNoVerification(response[2]);
-                }
+               }
                 
             })
             .catch(error => {

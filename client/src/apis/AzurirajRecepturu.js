@@ -20,17 +20,17 @@ const AzurirajRecepturu = ({role})=>{
         .then((res) =>{
             if(res.status===200){ return res.json()}
         })     
-        .then((response) => { 
-            if(response.error){return setErrorMesagges(response.poruka)}
+        .then((response) => {
+           if(response.error){return setErrorMesagges(response.poruka)}
             else{
                 setKolac(response);
-                setFilteredData(response); 
-            }
+               setFilteredData(response); 
+           }
              
         })
         .catch(error=>{
             console.log('ovo je greska ',error)
-            setErrorMesagges('Neuspela konekcija sa bazom, proverite internet konekciju')
+            setErrorMesagges('Neuspela konekcija sa bazom, proverite internet konekcijue')
         })
     },[]);
         

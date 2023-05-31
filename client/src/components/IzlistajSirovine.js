@@ -17,7 +17,7 @@ function IzlistajSirovine({props,role}) {
                     if(res.status===200){ return res.json()}    
                 })   
                 .then((response) => {  
-                   if(response.error){
+                   if(response.error){console.log(response)
                     return setErrorMesagges(response.poruka)
                    }
                         getData(response);
@@ -25,7 +25,7 @@ function IzlistajSirovine({props,role}) {
                 })
                 .catch(error=>{
                     console.log('ovo je greska ',error)
-                    setErrorMesagges('Neuspela konekcija sa bazom, proverite internet konekciju')
+                
                 })
     },[])//moramo dodati da seucitaju varijable u useEffect da ne bi izbacivalo uozorenje
     // prikazuje sirovine po dobavljacima
@@ -47,7 +47,7 @@ function IzlistajSirovine({props,role}) {
             })
             .catch(error=>{
                 console.log('ovo je greska ',error)
-                setErrorMesagges('Neuspela konekcija sa bazom, proverite internet konekciju')
+                
             })
         }else{
             getData([])

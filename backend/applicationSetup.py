@@ -32,4 +32,4 @@ def create_app():
     from modeli import db
     db.init_app(app)
 
-    return [app, db]
+    return [app, db,s,sender]

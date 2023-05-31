@@ -131,18 +131,19 @@ const kreiraj=()=>{
                 fetch('/kreirajKorisnikaReact',opt)
                 .then((res) =>{
                     if(res.status===200){return res.json()}
-                   if(res.status===10){return  setErrorMesaggesUser(`Korisnicko ime ${userName}  je zauzeto`)}
-                   if(res.status===20){return  setErrorMesaggesEmail(`Email ${email}  je zauzet`)}
+                  
                 })
                 .then((response)=>{
-                    
-                    if(response){
-                        console.log(response)
-                        setMessages(`Na email ${email} poslali smo verifikaciju korisnickog naloga.Molimo Vas da potvrdite verifikaciju`)
+                    if(response.errorUser){
+                        setErrorMesaggesUser(response.poruka)
+                        
+                    }else if (response.errorEmail){
+                        setErrorMesaggesEmail(response.poruka)
+                    }else{
+                        setMessages(response.poruka)
                         setTimeout(function(){ 
                             setStranica(1) },5000);
                     }
-      
                 }).catch((error)=>{console.log('ovo je greska ',error)})
             }else if (confirm ===false){
                 setErrorMesaggesConfirm('Niste potvrdili password')
@@ -242,7 +243,7 @@ const kreiraj=()=>{
                     <label>
                         <p>Telefon:</p>
                     </label>
-                    <input className='form-control' type="tel"
+                    <input className='form-control' type="number"
                         onChange={e => setTelefon(e.target.value)}
                     />  
                 </div>
