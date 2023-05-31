@@ -1,3 +1,30 @@
-{
-    "poruke":"Verifikijte svoj nalog  http://localhost:3000/verifikujNalog?token=" 
+{   
+    "error":{
+        "neuspelaKonekcija":{
+            "error" : true,
+            "poruka": "Neuspela konekcija sa bazom"
+            },
+        "nemaPristupa":{
+            "error" : true,
+            "poruka": "Nemate pristupa ovom delu aplikacije ."
+            },
+        "blockUser":{
+            "error" : true,
+            "poruka": "Vas nalog je blokiran"
+            },
+        "nemaVrifikacije" : {
+            "error": true,
+            "poruka": "Vas nalog nije verifikovan, molimo vas da potvrdite verifikaciju."
+            }
+        },
+    "sirovine":{
+        "commitSirovina": "Uspesno ste dodali  sirovinu ",
+        "azurirajSirovinu": "Uspesno ste azurirali sirovinu"
+        },
+    
+    "kolaci":{
+        "porukaKolaci" : "Ovo je poruka za kolace"
+        }
+    
 }
+   
