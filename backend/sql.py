@@ -23,10 +23,15 @@ def returnAll(sql):
         mycursor.execute(sql)
         rezultat = mycursor.fetchall()
     except:
-        rezultat = False
+        msg={
+            'error': True,
+			'poruka': 'Neuspela veza sa bazom'
+        }
+        rezultat = msg
         print('ovo je greska ')
     finally:
         mycursor.close()
         baza.close()
         return rezultat
+
         
