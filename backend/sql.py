@@ -33,5 +33,27 @@ def returnAll(sql):
         mycursor.close()
         baza.close()
         return rezultat
+def commitBaza(sql,messages):
+    try:
+        baza = psycopg2.connect(**konekcija.konekcija)
+        mycursor = baza.cursor()
+        mycursor.execute(sql)
+        baza.commit()
+        baza.close()
+        rezultat =messages
+    except:
+        msg={
+            'error': True,
+			'poruka': 'Neuspela veza sa bazom'
+        }
+        rezultat = msg
+    finally:
+        mycursor.close()
+        baza.close()
+        return  rezultat
+
+
+
+
 
         
