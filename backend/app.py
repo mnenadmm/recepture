@@ -1,45 +1,40 @@
-from flask import request, jsonify, url_for, session 
+from flask import request, jsonify, url_for, session
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flask_login import login_user, LoginManager, login_required, logout_user, current_user
 from flask_mail import Mail, Message
 import psycopg2
 from werkzeug.security import generate_password_hash, check_password_hash
-
 import applicationSetup
-
-
-
 from konekcija import *
 import sql as sqlQuery
-
 import metode
+import modeli
+import json
+with open('./data.json', 'r') as f:
+	notification = json.load(f)
+
 
 # metoda create_app() napravi instancu aplikacije i napravi model u bazi podataka
-[app,db] = applicationSetup.create_app()
-
+[app,db,s,sender] = applicationSetup.create_app()
 mail = Mail(app)
 jwt = JWTManager(app)
-
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
 #
 # Mora da se proveri ova metoda, za sada je pod komentarima
-#
-#@login_manager.user_loader
-#def load_user(user_id):
-#    return Korisnici.query.get(int(user_id))
-
-
+# obvezna metoda za logovanje, ne moze se bez nje izlogovati
+#daje id usera, dolazi uz login_menager
+@login_manager.user_loader
+def load_user(user_id):
+    return modeli.Korisnici.query.get(int(user_id))
 #############stefaaaaa#####	
 #kreiranje modela koje je definisan u bazi
 with app.app_context():
     #create_schemas()
     db.create_all()
-
-
 @app.teardown_request
 def session_clear(exception=None):
     db.session.remove()
@@ -48,16 +43,71 @@ def session_clear(exception=None):
 ########## stefaaa kraj ##########
 
 
+@app.route('/',methods=["POST","GET"])
+def pocetak():
+	
 
+	rezultat='pocetna'
+	return notification['sirovine']['commitSirovina']
+	#return str(notification['sirovine'])
+@app.route('/sada',methods=["POST","GET"])
+def kreirajTabelu():
+			
+	return jsonify(sqlQuery.returnAll("select * from recepture;"))
 
+#Kreiranje novih korisnika react
+#Kreiranje novih korisnika react
+#Proverava dali je email zauzet
 
+@app.route('/kreirajKorisnikaReact',methods=['POST'])
+def kreirajKorisnikaReact():
+   data =request.get_json()
+   username=data['username']
+   sifra=data['password']
+   email= data['email']
+   adresa= data['adresa']
+   telefon= data['telefon']
+   proveraEmail = metode.proveriEmail(email) #Proverava da li je email zauzet
+   proveraUser = metode.proveriUser(username) #Proverava da li je user zauzet
+   if proveraUser ==True:
+      return jsonify({
+			'errorUser': True,
+	      	"poruka": f"Korisnicko ime {username} je zauzeto"
+				})
+   if proveraEmail == True:
+      return jsonify({
+			'errorEmail': True,
+	      	"poruka": f"Email {email} je zauzet."})
+   skriveniPassword = generate_password_hash(sifra) #hashuje password
+   baza = psycopg2.connect(**konekcija)
+   mycursor = baza.cursor()
+   mycursor.execute(f"""
+   		INSERT INTO public.korisnici(username,email,telefon,adresa,password)
+   		values('{username}','{email}','{telefon}','{adresa}','{skriveniPassword}')
+   	""")
+   baza.commit()
+   baza.close()
+   print(f"Uspesno ste kreirali korisnika {username}")
+   recipient =email
+   token = s.dumps(email, salt='kljuc_za_token')
+   message = f"""Verifikijte svoj nalog  http://localhost:3000/verifikujNalog?token={token}"""
+   subject = 'Verifikacioni nalog'
+   msg = Message(subject,sender=sender,recipients =[recipient] )
+   msg.body = message
+   mail.send(msg)
+   
+   rezultat={
+	   "poruka":f"""Na email {email} smo vam poslali verifikacioni token, molimo Vas da kliknete na link i time
+	   potvrdiote verifikaciju"""
+   }
+   return  jsonify(rezultat)
 ####################### LOGOVANJE ##################################	
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 	username = request.json.get("username",None)
 	password = request.json.get("password",None)
 	#trazi korisnika u bazi
-	user = Korisnici.query.filter_by(username=username).first()
+	user = modeli.Korisnici.query.filter_by(username=username).first()
 	if user:
 		#ako pronadje korisnika uporedjuje passworde	
 		if check_password_hash(user.password, password):
@@ -114,21 +164,7 @@ def logoutR():
 ########################### LOGOVANJE KRAJ##############################################
 
 # primer dodatog komentara
-@app.route('/sada',methods=["POST","GET"])
 
-def kreirajTabelu():
-	
-			baza=psycopg2.connect(**konekcija)
-			mycursor = baza.cursor()
-			mycursor.execute(f"""
-					select id_kolaca,ime_kolaca,opis_kolaca
-					from kolaci
-					where dodata_receptura =false;
-					
-				""")
-			rezultat=mycursor.fetchall()
-			baza.close()
-			return jsonify(rezultat)
 	
 
 #daje listu sirovina 
@@ -138,177 +174,79 @@ def izlistajSirovineReact():
 	if current_user.is_authenticated():
 		if current_user.block()==False:
 			if current_user.rola_1() or current_user.rola_2() or current_user.rola_3()  :
-				try:
-					baza = psycopg2.connect(**konekcija)
-					mycursor = baza.cursor()
-					mycursor.execute(f"""
+				return jsonify(sqlQuery.returnAll("""
 						select  sirovine.id_sirovine,sirovine.naziv_sirovine,sirovine.cena_sirovine,dobavljaci.ime_dobavljaca,dobavljaci.id_dobavljaca
-						from sirovine
+						from sirovine 
 						INNER JOIN dobavljaci
 						on sirovine.id_dobavljaci = dobavljaci.id_dobavljaca;
-						""")
-					rezultat = mycursor.fetchall()
-					baza.close()	
-					return jsonify(rezultat)
-				except:
-					msg={
-					'error': True,
-					'poruka': 'Nemate ovlascenje da pristupate sirovinama '
-					}
-					return jsonify(msg)
+					"""))
 			else:
-				msg={
-					'error': True,
-					'poruka': 'Morate se ulogovati da bi ste pristupili sirovinama'
-				}
-				return jsonify(msg)
+				return jsonify(notification['error']['nemaPristupa'])
 		else:
-			msg={
-					'error': True,
-					'poruka': 'Vas nalog je blokiran'
-				}
-			return jsonify(msg)
+			return jsonify(notification['error']['blockUser'])
 @app.route('/dajImeDobavljacaIdReact')
 @login_required
 def dajImeDobavljacaIdReact():
 	if current_user.block()==False:
 		if current_user.rola_1() or current_user.rola_2() or current_user.rola_3():
-			try:
-				baza = psycopg2.connect(**konekcija)
-				mycursor = baza.cursor()
-				mycursor.execute(f"""
+			return jsonify(sqlQuery.returnAll(f"""
 					select id_dobavljaca, ime_dobavljaca from public.dobavljaci;
-				""")
-				rez=mycursor.fetchall()
-				baza.close()
-				return jsonify(rez)
-			except:
-				msg={
-					'error': True,
-					'poruka': 'Neuspela konekcija sa bazom cod 252'
-					}
-				return jsonify(msg)
+				"""))
 		else:
-			msg={
-				'error': True,
-				'poruka': 'Nemate pristup ovom delu aplikacije cod 258'
-				}
-			return jsonify(msg)
+			return jsonify(notification['error']['nemaPristupa'])
 	else:
-		msg={
-			'error': True,
-			'poruka': 'Vas nalog je blokiran'
-			}
-		return jsonify(msg)
+		return jsonify(notification['error']['blockUser'])
 # daje sirovine po dobavljacu 
 @app.route('/sirovinePoDobavljacuReact/<int:idDobavljaca>',methods=['GET'])
 @login_required
 def sirovinePoDobavljacuReact(idDobavljaca):
 	if current_user.block()==False:
 		if current_user.rola_1() or current_user.rola_2() or current_user.rola_3():	
-			try:
-				baza=psycopg2.connect(**konekcija)
-				mycursor = baza.cursor()
-				mycursor.execute(f"""
-					 select sirovine.id_sirovine, sirovine.naziv_sirovine,sirovine.cena_sirovine,dobavljaci.ime_dobavljaca
-					from sirovine 
-					inner JOIN dobavljaci
-					on sirovine.id_dobavljaci = dobavljaci.id_dobavljaca
-					where sirovine.id_dobavljaci = {idDobavljaca};
-					""")
-				rez = mycursor.fetchall()
-				baza.close()
-				return jsonify(rez)
-			except:
-				msg={
-					'error': True,
-					'poruka': 'Neuspela konekcija sa bazom'
-				}
-				return jsonify(msg)
+			
+			return jsonify(sqlQuery.returnAll(f"""
+				select sirovine.id_sirovine, sirovine.naziv_sirovine,sirovine.cena_sirovine,dobavljaci.ime_dobavljaca
+				from sirovine 
+				inner JOIN dobavljaci
+				on sirovine.id_dobavljaci = dobavljaci.id_dobavljaca
+				where sirovine.id_dobavljaci = {idDobavljaca};
+				"""))
 		else:
-			msg={
-				'error': True,
-				'poruka': 'Morate se ulogovati da bi ste pristupili sirovinama'
-				}
-			return jsonify(msg)
+			return jsonify(notification['error']['nemaPristupa'])
 	else:
-		msg={
-			'error': True,
-			'poruka': 'Vas nalog je blokiran'
-			}
-		return jsonify(msg)
-
+		return jsonify(notification['error']['blockUser'])
+#########################################################
+##############sirovine<<<<<@@@@@@@@@@@@@@@@@@#######
 @app.route('/dodajSirovinuReact',methods=['POST','GET'])
 @login_required
 def dodajSirovinuReact():
 	if current_user.block()==False:
 		if current_user.rola_1() or current_user.rola_2():
-			try:
-				data = request.get_json()
-				imeSirovine=data['imeSirovine']
-				cenaSirovine= data['cenaSirovine']
-				idDobavljaca = data['idDobavljaca']
-				baza = psycopg2.connect(**konekcija)
-				mycursor = baza.cursor()
-				mycursor.execute(f"""
-					insert into public.sirovine(naziv_sirovine,cena_sirovine,id_dobavljaci)
-					values('{imeSirovine}',{cenaSirovine},{idDobavljaca});
-					""")
-				baza.commit()
-				baza.close()
-				msg='Uspesno ste dodali sirovinu ',imeSirovine,' sa cenom ',cenaSirovine,'.'
-				return jsonify(msg)
-			except:
-				msg={
-					'error': True,
-					'poruka': 'Neuspela konekcija sa bazom'
-					}
-				return jsonify(msg)
+			data = request.get_json()
+			imeSirovine=data['imeSirovine']
+			cenaSirovine= data['cenaSirovine']
+			idDobavljaca = data['idDobavljaca']
+			return  jsonify(sqlQuery.commitBaza(f"""
+				insert into public.sirovine(naziv_sirovine,cena_sirovine,id_dobavljaci)
+				values('{imeSirovine}',{cenaSirovine},{idDobavljaca});
+				""",f"{notification['sirovine']['commitSirovina']} {imeSirovine} ."))	
 		else:
-			msg={
-				'error': True,
-				'poruka': ' Niste ovlasceni da dodajete sirovine sirovinama.'
-				}
-			return jsonify(msg)
+			return jsonify(notification['error']['nemaPristupa'])
 	else:
-		msg={
-			'error': True,
-			'poruka': 'Vas nalog je blokiran'
-			}
-		return jsonify(msg)
+		return jsonify(notification['error']['blockUser'])
 #lista dobavljaca
 @app.route('/dajDobavljaceReact',methods=['GET'])
 @login_required
 def dajDobavljaceReact():
 	if current_user.block()==False:
 		if current_user.rola_1() or current_user.rola_2() or current_user.rola_3():
-			try:
-				baza = psycopg2.connect(**konekcija)
-				mycursor = baza.cursor()
-				mycursor.execute(f"""
-					select id_dobavljaca, ime_dobavljaca, telefon, email,adresa
-					from dobavljaci;
-				""") 
-				rez = mycursor.fetchall()
-				return jsonify(rez)
-			except:
-				msg={
-					'error': True,
-					'poruka': 'Neuspela konekcija sa bazom'
-				}
-				return jsonify(msg)
+			return jsonify(sqlQuery.returnAll(f"""
+				select id_dobavljaca, ime_dobavljaca, telefon, email,adresa
+				from dobavljaci;
+				"""))
 		else:
-			msg={
-				'error': True,
-				'poruka': 'Nemate pristup ovom delu aplikacije'
-				}
-			return jsonify(msg)
+			return jsonify(notification['error']['nemaPristupa'])
 	else:
-		msg={
-			'error': True,
-			'poruka': 'Vas nalog je blokiran'
-			}
-		return jsonify(msg)
+		return jsonify(notification['error']['blockUser'])
 @app.route('/dodajDobavljacaReact',methods=['POST'])
 @login_required
 def dodajDobavljacaReact():
@@ -476,22 +414,13 @@ def dajlistuKolacaReact():
 	if current_user.block()==False:
 		if current_user.rola_1() or current_user.rola_2() or current_user.rola_3():
 			try:
-				baza=psycopg2.connect(**konekcija)
-				mycursor = baza.cursor()
-				mycursor.execute(f"""
+				return jsonify(sqlQuery.returnAll(f"""
 					select id_kolaca,ime_kolaca,opis_kolaca
 					from kolaci
 					where dodata_receptura =true;	
-					""")
-				rezultat=mycursor.fetchall()
-				baza.close()
-				return jsonify(rezultat)
+					"""))
 			except :
-				msg={
-					'error': True,
-					'poruka': 'Neuspela konekcija sa bazom.'
-					}
-				return jsonify(msg)
+				print('greska')
 		else:
 			msg={
 				'error': True,
@@ -623,22 +552,13 @@ def dajlistuKolacaBezReceptureReact():
 	if current_user.block()==False:
 		if current_user.rola_1() or current_user.rola_2():
 			try:
-				baza = psycopg2.connect(**konekcija)
-				mycursor=baza.cursor()
-				mycursor.execute(f"""
+				return jsonify(sqlQuery.returnAll(f"""
 					select id_kolaca,ime_kolaca,opis_kolaca
 					from kolaci
 					where dodata_receptura =false;
-					""")
-				rez=mycursor.fetchall()
-				baza.close()
-				return jsonify(rez)
+					"""))
 			except:
-				msg={
-					'error': True,
-					'poruka': 'Neuspela konekcija sa bazom code 619'
-				}
-				return jsonify(msg)
+				print("greska")
 		else:
 			msg={
 				'error': True,
@@ -658,21 +578,12 @@ def dajImeKolacaReact(idKolaca):
 	if current_user.block()==False:
 		if current_user.rola_1() or current_user.rola_2() or current_user.rola_3():
 			try:
-				baza = psycopg2.connect(**konekcija)
-				mycursor=baza.cursor()
-				mycursor.execute(f"""
+				return jsonify(sqlQuery.returnAll(f"""
 					select ime_kolaca from kolaci
 					where id_kolaca={idKolaca};
-					""")
-				rez=mycursor.fetchall()
-				baza.close()
-				return jsonify(rez)
+					"""))
 			except:
-				msg={
-					'error': True,
-					'poruka': 'Neuspela konekcija sa bazom code 646'
-				}
-				return jsonify(msg)
+				print("greska")
 		else:
 			msg={
 				'error': True,
@@ -741,22 +652,13 @@ def dajJednuSirovinuReact(idSirovine):
 	if current_user.block()==False:
 		if current_user.rola_1():
 			try:
-				baza= psycopg2.connect(**konekcija)
-				mycursor=baza.cursor()
-				mycursor.execute(f"""
+				return jsonify(sqlQuery.returnOne(f"""
 					select id_sirovine,cena_sirovine
 					from sirovine
 					where id_sirovine={idSirovine};
-					""")
-				rez=mycursor.fetchone()
-				baza.close()
-				return jsonify(rez)
+					"""))
 			except :
-				msg={
-					'error': True,
-					'poruka': 'Neuspela konekcija sa bazom cod:725'
-				}
-				return jsonify(msg)
+				print('greska')
 		else:
 			msg={
 				'error': True,
@@ -775,21 +677,18 @@ def listaKolacaNaslovReact():
 	if current_user.block()==False:
 		if current_user.rola_1() or current_user.rola_2():
 			try:
-				baza=psycopg2.connect(**konekcija)
-				mycursor = baza.cursor()
-				mycursor.execute(f"""
-					select id_kolaca,ime_kolaca,opis_kolaca
-					from kolaci
-					where dodata_receptura =true;
-				""")
-				rez=mycursor.fetchall() #fetchall() fetchone()
-				return jsonify(rez)
+				return jsonify(sqlQuery.returnAll("""
+						select id_kolaca,ime_kolaca,opis_kolaca
+						from kolaci
+						where dodata_receptura =true;
+					"""))
+				#return jsonify(metode.returnAll(f"""
+				#	select id_kolaca,ime_kolaca,opis_kolaca
+				#	from kolaci
+				#	where dodata_receptura =true;
+				#	"""))
 			except:
-				msg={
-					'error': True,
-					'poruka' : 'Neuspela konekcija sa bazom'
-				}
-				return jsonify(msg)
+				print('greska')
 		else:
 			msg={
 				'error': True,
@@ -808,26 +707,16 @@ def dajRecepturuReact(idKolaca):
 	if current_user.block()==False:
 		if current_user.rola_1() or current_user.rola_2():
 			try:
-				baza=psycopg2.connect(**konekcija)
-				mycursor = baza.cursor()
-				mycursor.execute(f"""
+				return jsonify(sqlQuery.returnAll(f"""
 					select sirovine.naziv_sirovine,sirovine.id_sirovine,recepture.kolicina,sirovine.cena_sirovine,
 					round(cast(recepture.kolicina*(sirovine.cena_sirovine-sirovine.cena_sirovine*recepture.rabat/100)as numeric),2):: double precision,recepture.rabat
 					from recepture
 					INNER JOIN sirovine
 					on recepture.id_sirovine=sirovine.id_sirovine
 					where recepture.id_kolaca={idKolaca};
-					""")
-				rez=mycursor.fetchall()
-				baza.close()
-				return jsonify(rez)
+					"""))
 			except:
-				msg={
-					'error': True,
-					'poruka': 'Neuspela konekcija sa bazom'
-				}
-				return jsonify(msg)
-		else:
+				print("greska")
 			msg={
 				'error': True,
 				'poruka': 'Nemate pristup ovom delu aplikacije'
@@ -964,21 +853,12 @@ def dajPostupakZaRecepturu(idKolaca):
 	if current_user.block()==False:
 		if current_user.rola_1() or current_user.rola_2():
 			try:
-				baza=psycopg2.connect(**konekcija)
-				mycursor = baza.cursor()
-				mycursor.execute(f"""
+				return jsonify(sqlQuery.returnAll(f"""
 					select opis_kolaca from public.kolaci
                     where id_kolaca ={idKolaca};
-					""")
-				rez=mycursor.fetchall()
-				baza.close()
-				return jsonify(rez)
+					"""))
 			except :
-				msg={
-					'error': True,
-					'poruka': 'Neuspela konekcija sa bazom.'
-				}
-				return jsonify(msg)
+				print("greska")
 		else:
 			msg={
 				'error': True,
@@ -1076,59 +956,30 @@ def obrisiDobavljacaReact():
 @login_required
 def administrator():
 	if current_user.get_id() == 1: 
+		#vraca verifikovane, ne verifikovane i blokirane korisnike
 		try:
-			baza= psycopg2.connect(**konekcija)
-			mycursor=baza.cursor()
-			mycursor.execute(f"""
+			return jsonify(sqlQuery.returnAll("""
 				select id_korisnika,username,email,telefon,adresa,
 				prva_rola,druga_rola,treca_rola,block_user
 				from korisnici
 				where id_korisnika >1 and verification =True and block_user=False;
-				""")
-			rez = mycursor.fetchall()
-			baza.close()
-		except :
-			msg={
-			'error': True,
-			'poruka': 'Nemate pristup ovom delu aplikacije cod 943'
-		}
-			return jsonify(msg)
-		try:
-			baza= psycopg2.connect(**konekcija)
-			mycursor=baza.cursor()
-			mycursor.execute(f"""
-				select id_korisnika,username,email,telefon,adresa,
+					"""),
+					sqlQuery.returnAll("""
+						select id_korisnika,username,email,telefon,adresa,
 				block_user
 				from korisnici
 				where id_korisnika >1 and block_user =True;
-				""")
-			block=mycursor.fetchall()
-			
-			baza.close()
-		except :
-			msg={
-			'error': True,
-			'poruka': 'Neuspela konekcija sa bazom cod 961'
-				}
-			return jsonify(msg)
-		try:
-			baza= psycopg2.connect(**konekcija)
-			mycursor=baza.cursor()
-			mycursor.execute(f"""
-				select id_korisnika,username, email, telefon,adresa,block_user
+					"""
+					),
+					sqlQuery.returnAll("""
+						select id_korisnika,username, email, telefon,adresa,block_user
 				from korisnici
 				where id_korisnika >1 and verification=False and block_user=False;
-
-				""")
-			bezVerifikacije=mycursor.fetchall()
-			baza.close()
+					"""
+					))
 		except:
-			msg={
-			'error': True,
-			'poruka': 'Neuspela konekcija sa bazom cod 972'
-		}
-			return jsonify(rez)
-		return jsonify(rez,block,bezVerifikacije)
+			print('greska')
+		
 	else:
 		msg={
 			'error': True,
@@ -1253,44 +1104,7 @@ def obrisiKorisnikaAdmin():
 	
 
  ############### PITATI STEFU STA SA LINKOM ZA VERIFIKACIJU  
-#Kreiranje novih korisnika react
-#Kreiranje novih korisnika react
-#Proverava dali je email zauzet
 
-@app.route('/kreirajKorisnikaReact',methods=['POST'])
-def kreirajKorisnikaReact():
-   data =request.get_json()
-   username=data['username']
-   sifra=data['password']
-   email= data['email']
-   adresa= data['adresa']
-   telefon= data['telefon']
-   proveraEmail = metode.proveriEmail(email) #Proverava da li je email zauzet
-   proveraUser = metode.proveriUser(username) #Proverava da li je user zauzet
-   if proveraUser ==True:
-      return jsonify({"msg": "User je zauzet"}), 10
-   if proveraEmail == True:
-      return jsonify({"msg": "Email je zauzet"}), 20
-   skriveniPassword = generate_password_hash(sifra) #hashuje password
-   baza = psycopg2.connect(**konekcija)
-   mycursor = baza.cursor()
-   mycursor.execute(f"""
-   		INSERT INTO public.korisnici(username,email,telefon,adresa,password)
-   		values('{username}','{email}','{telefon}','{adresa}','{skriveniPassword}')
-   	""")
-   baza.commit()
-   baza.close()
-   print(f"Uspesno ste kreirali korisnika {username}")
-   recipient =email
-   token = s.dumps(email, salt='kljuc_za_token')
-   message = f"""Verifikijte svoj nalog  http://localhost:3000/verifikujNalog?token={token}"""
-   subject = 'Verifikacioni nalog'
-   msg = Message(subject,sender=sender,recipients =[recipient] )
-   msg.body = message
-   mail.send(msg)
-   rez=f'Poslat vam je email {username} '
-   print(rez)
-   return  jsonify(username)
 #za verifikaciju tokena
 @app.route('/verifikujNalog/<token>', methods=['POST','GET'])
 def verifikujNalog(token):
