@@ -1,5 +1,9 @@
 {   
     "error":{
+        "pogresnaLozinka":{
+            "error": true,
+			"poruka" : "Uneli ste pogresno korisnicko ime ili lozinku"
+        },
         "neuspelaKonekcija":{
             "error" : true,
             "poruka": "Neuspela konekcija sa bazom"
@@ -15,16 +19,39 @@
         "nemaVrifikacije" : {
             "error": true,
             "poruka": "Vas nalog nije verifikovan, molimo vas da potvrdite verifikaciju."
-            }
+            },
+        "imaVerifikacije":{
+            "poruka": "Nalog je vec verifikovan"
+        }
         },
     "sirovine":{
         "commitSirovina": "Uspesno ste dodali  sirovinu ",
-        "azurirajSirovinu": "Uspesno ste azurirali sirovinu"
+        "azurirajSirovinu": "Uspesno ste azurirali sirovinu",
+        "deleteSirovina": "Uspesno ste obrisali sirovinu "
         },
     
     "kolaci":{
-        "porukaKolaci" : "Ovo je poruka za kolace"
-        }
+        "commitKolac" : "Uspesno ste kreirali kolac ",
+        "updateKolac" : "Azurirali ste postupak rada za kolac ",
+        "deleteKolac" : "Uspesno ste obrisali kolac "
+        },
+    "dobavljaci":{
+        "commitDobavljac": "Uspesno ste dodali dobavljaca ",
+        "updateDobavljac": "Azurirali ste ",
+        "deleteDobavljac": "Obrisali ste dobavljaca "
+        },
+    "recepture":{
+        "commitReceptura" : "Dodali ste sirovinu u recepturu",
+        "updateRecepture": "ste promenili kolicinu u ",
+        "deleteSirovina" : "Uklonili ste iz recepture sirovinu ",
+        "commitSirovina": "Dodali ste sirovinu u recepturu. ",
+        "azurirajRabat" : " ste promenili rabat za sirovinu "
+        },
+    "admin":{
+        "updateRole": "Azurirali ste pristupne role za korisnika  ",
+        "odblokirajKorisnika": "Odblokirali ste korisnika ",
+        "deleteKorisnika" : "Obrisali ste korisnika "
+    }
     
 }
    
