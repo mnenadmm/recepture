@@ -1,8 +1,4 @@
 import sql as sqlQuery
-
-
-
-
 def proveriEmail(email):
 	if sqlQuery.returnOne(f"""select email from public.korisnici where email = '{email}'; """):
 		return True

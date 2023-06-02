@@ -44,7 +44,7 @@ class Sirovine(db.Model):
 class Dobavljaci(db.Model):
 	__tablename__ = 'dobavljaci'
 	id_dobavljaca = db.Column(db.Integer, primary_key=True)
-	ime_dobavljaca =naziv_sirovine=db.Column(db.String(250),nullable=False,  unique=True)
+	ime_dobavljaca =db.Column(db.String(250),nullable=False,  unique=True)
 	email = db.Column(db.String(250))
 	telefon = db.Column(db.Integer)
 	adresa = db.Column(db.String(250))
