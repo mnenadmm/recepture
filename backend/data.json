@@ -1,57 +1,75 @@
-{   
-    "error":{
-        "pogresnaLozinka":{
-            "error": true,
-			"poruka" : "Uneli ste pogresno korisnicko ime ili lozinku"
+{
+    "probaEmail": {
+        "errorEmail": true,
+        "poruka": "Email email.com  je zauzet"
+    },
+    "probaUser": {
+        "errorUser": true,
+        "poruka": "User nenad je zauzet"
+    },
+    "kreirajKorisnika": {
+        "poruka": "Na email ",
+        "porukaNastavak": " smo vam poslali verifikacioni token, molimo Vas da kliknete na link i time potvrdiote verifikaciju.<br />"
+    },
+    "login": {
+        "proba": "Vase ime je {ime} iz krusevca ",
+        "logout": "Odjavili ste se"
+    },
+    "error": {
+        "email": {
+            "errorEmail": true,
+            "poruka": "Email  ",
+            "porukaNastavak": " je zauzeto."
         },
-        "neuspelaKonekcija":{
-            "error" : true,
+        "pogresnaLozinka": {
+            "error": true,
+            "poruka": "Uneli ste pogresno korisnicko ime ili lozinku"
+        },
+        "neuspelaKonekcija": {
+            "error": true,
             "poruka": "Neuspela konekcija sa bazom"
-            },
-        "nemaPristupa":{
-            "error" : true,
+        },
+        "nemaPristupa": {
+            "error": true,
             "poruka": "Nemate pristupa ovom delu aplikacije ."
-            },
-        "blockUser":{
-            "error" : true,
+        },
+        "blockUser": {
+            "error": true,
             "poruka": "Vas nalog je blokiran"
-            },
-        "nemaVrifikacije" : {
+        },
+        "nemaVrifikacije": {
             "error": true,
             "poruka": "Vas nalog nije verifikovan, molimo vas da potvrdite verifikaciju."
-            },
-        "imaVerifikacije":{
+        },
+        "imaVerifikacije": {
             "poruka": "Nalog je vec verifikovan"
         }
-        },
-    "sirovine":{
+    },
+    "sirovine": {
         "commitSirovina": "Uspesno ste dodali  sirovinu ",
         "azurirajSirovinu": "Uspesno ste azurirali sirovinu",
         "deleteSirovina": "Uspesno ste obrisali sirovinu "
-        },
-    
-    "kolaci":{
-        "commitKolac" : "Uspesno ste kreirali kolac ",
-        "updateKolac" : "Azurirali ste postupak rada za kolac ",
-        "deleteKolac" : "Uspesno ste obrisali kolac "
-        },
-    "dobavljaci":{
+    },
+    "kolaci": {
+        "commitKolac": "Uspesno ste kreirali kolac ",
+        "updateKolac": "Azurirali ste postupak rada za kolac ",
+        "deleteKolac": "Uspesno ste obrisali kolac "
+    },
+    "dobavljaci": {
         "commitDobavljac": "Uspesno ste dodali dobavljaca ",
         "updateDobavljac": "Azurirali ste ",
         "deleteDobavljac": "Obrisali ste dobavljaca "
-        },
-    "recepture":{
-        "commitReceptura" : "Dodali ste sirovinu u recepturu",
+    },
+    "recepture": {
+        "commitReceptura": "Dodali ste sirovinu u recepturu",
         "updateRecepture": "ste promenili kolicinu u ",
-        "deleteSirovina" : "Uklonili ste iz recepture sirovinu ",
+        "deleteSirovina": "Uklonili ste iz recepture sirovinu ",
         "commitSirovina": "Dodali ste sirovinu u recepturu. ",
-        "azurirajRabat" : " ste promenili rabat za sirovinu "
-        },
-    "admin":{
+        "azurirajRabat": " ste promenili rabat za sirovinu "
+    },
+    "admin": {
         "updateRole": "Azurirali ste pristupne role za korisnika  ",
         "odblokirajKorisnika": "Odblokirali ste korisnika ",
-        "deleteKorisnika" : "Obrisali ste korisnika "
+        "deleteKorisnika": "Obrisali ste korisnika 123456789o"
     }
-    
 }
-   
