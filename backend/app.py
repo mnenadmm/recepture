@@ -11,10 +11,14 @@ import sql as sqlQuery
 import metode
 import modeli
 import json
+#vezba
+from messages import *
+
 with open('./data.json', 'r') as f:
 	notification = json.load(f)
 # metoda create_app() napravi instancu aplikacije i napravi model u bazi podataka
 [app,db,s,sender] = applicationSetup.create_app()
+
 mail = Mail(app)
 jwt = JWTManager(app)
 login_manager = LoginManager()
@@ -22,7 +26,6 @@ login_manager.init_app(app)
 login_manager.login_view = 'login'
 #registrujemo example)
 #iz foldera api uvozimo blueprint
-from api.example_blueprint import nesa
 from api.apiDobavljaci import apiDobavljaci
 from api.apiKolaci import apiKolaci
 from api.apiRecepture import apiRecepture
@@ -32,16 +35,15 @@ from api.admin import adminApi
 app.register_blueprint(apiDobavljaci)
 app.register_blueprint(apiSirovine)
 app.register_blueprint(apiKolaci)
-app.register_blueprint(nesa)
 app.register_blueprint(apiRecepture)
 app.register_blueprint(adminApi)
-
-#daje id usera, dolazi uz login_menager
-@login_manager.user_loader
-def load_user(user_id):
-    return modeli.Korisnici.query.get(int(user_id))
-#############stefaaaaa#####	
-#kreiranje modela koje je definisan u bazi
+mail = Mail(app)
+jwt = JWTManager(app)
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
+##############stefaaaaa#####	
+##kreiranje modela koje je definisan u bazi
 with app.app_context():
     #create_schemas()
     db.create_all()
@@ -50,68 +52,23 @@ def session_clear(exception=None):
     db.session.remove()
     if exception and db.session.is_active:
         db.session.rollback()
-########## stefaaa kraj ##########
-
-
-@app.route('/a',methods=["POST","GET"])
-def pocetak():
+##daje id usera, dolazi uz login_menager
+@login_manager.user_loader
+def load_user(user_id):
+    return modeli.Korisnici.query.get(int(user_id))
+########### stefaaa kraj ##########
+@app.route('/a')
+def index1():
 	
+	
+    
+	ime="email.com "
+	return msgOneArg(ime).errorEmail()
+	#return notification['proba'][0]['poruka']
 
-	rezultat=f'pocetna   '
-	return rezultat
-	#return str(notification['sirovine'])
-@app.route('/sada',methods=["POST","GET"])
-def kreirajTabelu():
-			
-	return jsonify(sqlQuery.returnAll("select * from recepture;"))
-
-#Kreiranje novih korisnika react
-#Kreiranje novih korisnika react
-#Proverava dali je email zauzet
-
-@app.route('/kreirajKorisnikaReact',methods=['POST'])
-def kreirajKorisnikaReact():
-   data =request.get_json()
-   username=data['username']
-   sifra=data['password']
-   email= data['email']
-   adresa= data['adresa']
-   telefon= data['telefon']
-   proveraEmail = metode.proveriEmail(email) #Proverava da li je email zauzet
-   proveraUser = metode.proveriUser(username) #Proverava da li je user zauzet
-   if proveraUser ==True:
-      return jsonify({
-			'errorUser': True,
-	      	"poruka": f"Korisnicko ime {username} je zauzeto"
-				})
-   if proveraEmail == True:
-      return jsonify({
-			'errorEmail': True,
-	      	"poruka": f"Email {email} je zauzet."})
-   skriveniPassword = generate_password_hash(sifra) #hashuje password
-   baza = psycopg2.connect(**konekcija)
-   mycursor = baza.cursor()
-   mycursor.execute(f"""
-   		INSERT INTO public.korisnici(username,email,telefon,adresa,password)
-   		values('{username}','{email}','{telefon}','{adresa}','{skriveniPassword}')
-   	""")
-   baza.commit()
-   baza.close()
-   print(f"Uspesno ste kreirali korisnika {username}")
-   recipient =email
-   token = s.dumps(email, salt='kljuc_za_token')
-   message = f"""Verifikijte svoj nalog  http://localhost:3000/verifikujNalog?token={token}"""
-   subject = 'Verifikacioni nalog'
-   msg = Message(subject,sender=sender,recipients =[recipient] )
-   msg.body = message
-   mail.send(msg)
-   
-   rezultat={
-	   "poruka":f"""Na email {email} smo vam poslali verifikacioni token, molimo Vas da kliknete na link i time
-	   potvrdiote verifikaciju"""
-   }
-   return  jsonify(rezultat)
+	
 ####################### LOGOVANJE ##################################	
+#### koristi se za logovanje ##########
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 	username = request.json.get("username",None)
@@ -144,15 +101,51 @@ def login():
 			return jsonify(notification['error']['pogresnaLozinka'])
 	else:
 		return jsonify(notification['error']['pogresnaLozinka'])
+#### logout####################
 @app.route("/logoutR", methods=["POST","GET"])
 @login_required # zakljucava ako korisnik nije ulogovan
 def logoutR():
-    response = jsonify({"msg": "Odjavili ste se"})
     #brisanje
     db.session.remove()
     #odjavljivanje usera
     logout_user()
-    return response
+    return jsonify(notification['login']['logout'])
+@app.route('/kreirajKorisnikaReact',methods=['POST'])
+def kreirajKorisnikaReact():
+   data =request.get_json()
+   username=data['username']
+   sifra=data['password']
+   email= data['email']
+   adresa= data['adresa']
+   telefon= data['telefon']
+   proveraEmail = metode.proveriEmail(email) #Proverava da li je email zauzet
+   proveraUser = metode.proveriUser(username) #Proverava da li je user zauzet
+   if proveraUser ==True:
+      return msgOneArg(username).errorUser()
+      #return jsonify({
+	#		'errorUser': notification['proba']['error'],
+	  #    	"poruka": notification['proba']['poruka']})
+   if proveraEmail == True:
+      return msgOneArg(email).errorEmail()
+      #return jsonify({
+	#		'errorEmail': notification['proba']['error'],
+	  #    	"poruka": notification['proba']['poruka']})
+   skriveniPassword = generate_password_hash(sifra) #hashuje password
+   sqlQuery.commitBaza(f"""
+   		INSERT INTO public.korisnici(username,email,telefon,adresa,password)
+   		values('{username}','{email}','{telefon}','{adresa}','{skriveniPassword}')
+   	""","ovde ide poruka")
+  
+   recipient =email
+   token = s.dumps(email, salt='kljuc_za_token')
+   message = f"""Verifikijte svoj nalog  http://localhost:3000/verifikujNalog?token={token}"""
+   subject = 'Verifikacioni nalog'
+   msg = Message(subject,sender=sender,recipients =[recipient] )
+   msg.body = message
+   mail.send(msg)
+   return jsonify(f"{notification['kreirajKorisnika']['poruka']} {email} {notification['kreirajKorisnika']['porukaNastavak']}")
+   
+
 ########################### LOGOVANJE KRAJ##############################################
  ############### PITATI STEFU STA SA LINKOM ZA VERIFIKACIJU  
 #za verifikaciju tokena
@@ -199,8 +192,7 @@ def posaljiDrugiToken(token):
 		msg = Message(subject,sender=sender,recipients =[recipient] )
 		msg.body = message
 		mail.send(msg)
-		poruka=f"Na email {email} smo vam poslali verifikacioni kod"
-		return jsonify(poruka)
+		return jsonify(f"{notification['kreirajKorisnika']['poruka']} {email} {notification['kreirajKorisnika']['porukaNastavak']}")
 #za slanje linka za promenu passworda 
 @app.route('/forgotPassword',methods=['POST','GET'])
 def forgotPassword():
@@ -233,20 +225,13 @@ def noviPassword(token):
 	mail = s.loads(token, salt='kljuc_za_token', max_age=600)
 	password = data['password']
 	skriveniPassword = generate_password_hash(password)
-	try:
-		baza= psycopg2.connect(**konekcija)
-		mycursor = baza.cursor()
-		mycursor.execute(f"""
-			update public.korisnici
-			set password='{skriveniPassword}'
-			where email='{mail}';
-			""")
-		baza.commit()
-		baza.close()
-		msg=f'Uspesno ste promenili password za korisnika {mail}'
-		return jsonify(msg)
-	except :
-		print('error cod 458')
+	sqlQuery.commitBaza(f"""
+		update public.korisnici
+		set password='{skriveniPassword}'
+		where email='{mail}';
+		""",'')
+	return jsonify(msgOneArg(mail).changePassword())
+	
 if __name__ == '__main__':
     # moze da se podesi IP adresa, port i mogucnost za automatsko cuvanje i usvajanje promena (koda)
     app.run('0.0.0.0', 5000, debug=True)

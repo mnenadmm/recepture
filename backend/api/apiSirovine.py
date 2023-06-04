@@ -6,6 +6,10 @@ with open('./data.json', 'r') as f:
 	notification = json.load(f)
 #deklarisemo blueprint koga koristimo u rutama
 apiSirovine = Blueprint('apiSirovine', __name__)
+
+	#return jsonify(a.messages(ime,prezime), a.zanimanje())
+	#return jsonify(f"{notificationuzet['login']['proba']} {ime}")
+
 #########################################################
 ##############sirovine<<<<<@@@@@@@@@@@@@@@@@@#######
 @apiSirovine.route('/dodajSirovinuReact',methods=['POST','GET'])
