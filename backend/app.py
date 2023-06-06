@@ -60,10 +60,26 @@ def load_user(user_id):
 @app.route('/a')
 def index1():
 	
+	id=6
+	ime='nenad'
+	email="mnenadmm "
+	provera=sqlQuery.returnAll(f"""
+		       select sirovine.naziv_sirovine from sirovine
+				inner join dobavljaci
+				on sirovine.id_dobavljaci = dobavljaci.id_dobavljaca
+				where sirovine.id_dobavljaci ={id};
+		       """)
+	new_list=[]
+	for i in provera:
+		new_list.append(i)
 	
-    
-	ime="email.com "
-	return msgOneArg(ime).errorEmail()
+	
+	return f"ovo je {type(result)}"
+	    
+	
+		
+		 
+	#return msgTwoArg(email,ime).changeSomething()
 	#return notification['proba'][0]['poruka']
 
 	
@@ -121,29 +137,24 @@ def kreirajKorisnikaReact():
    proveraEmail = metode.proveriEmail(email) #Proverava da li je email zauzet
    proveraUser = metode.proveriUser(username) #Proverava da li je user zauzet
    if proveraUser ==True:
-      return msgOneArg(username).errorUser()
-      #return jsonify({
-	#		'errorUser': notification['proba']['error'],
-	  #    	"poruka": notification['proba']['poruka']})
+      msgOneArg(username).errorUser()
+      return notification["probaUser"]
    if proveraEmail == True:
-      return msgOneArg(email).errorEmail()
-      #return jsonify({
-	#		'errorEmail': notification['proba']['error'],
-	  #    	"poruka": notification['proba']['poruka']})
+      msgOneArg(email).errorEmail()
+      return notification["probaEmail"]
    skriveniPassword = generate_password_hash(sifra) #hashuje password
    sqlQuery.commitBaza(f"""
    		INSERT INTO public.korisnici(username,email,telefon,adresa,password)
    		values('{username}','{email}','{telefon}','{adresa}','{skriveniPassword}')
-   	""","ovde ide poruka")
-  
+   	""",msgOneArg(email).sendEmail())
    recipient =email
    token = s.dumps(email, salt='kljuc_za_token')
    message = f"""Verifikijte svoj nalog  http://localhost:3000/verifikujNalog?token={token}"""
    subject = 'Verifikacioni nalog'
    msg = Message(subject,sender=sender,recipients =[recipient] )
    msg.body = message
-   mail.send(msg)
-   return jsonify(f"{notification['kreirajKorisnika']['poruka']} {email} {notification['kreirajKorisnika']['porukaNastavak']}")
+   mail.send(msg) 
+   return notification["kreirajKorisnika"]
    
 
 ########################### LOGOVANJE KRAJ##############################################

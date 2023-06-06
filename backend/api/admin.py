@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify,request
 import json
 import sql as sqlQuery
+from messages import *
 from flask_login import login_user, LoginManager, login_required, logout_user, current_user
 with open('./data.json', 'r') as f:
 	notification = json.load(f)
@@ -52,9 +53,9 @@ def adminAzurirajKorisnika():
 			set prva_rola={rola_1},druga_rola={rola_2},treca_rola={rola_3},
 			block_user={block_user}
 			where id_korisnika = {idKorisnika};
-			""",f"{notification['admin']['updateRole']}  {username}."))
+			""",msgOneArg(username).updateRole()))
 	else:
-		return jsonify(notification['error']['nemaPristupa'])
+		return notification['error']['nemaPristupa']
 #odblokiraj korisnika
 @adminApi.route('/adminVratiKorisnika',methods=['POST'])
 @login_required
@@ -67,20 +68,20 @@ def adminVratiKorisnika():
 			update korisnici 
 			set block_user=false
 			where id_korisnika={idKorisnika};
-			""",f"{notification['admin']['odblokirajKorisnika']} {username} ."))
+			""",msgOneArg(username).backUser()))
 	else:
-		return jsonify(notification['error']['nemaPristupa'])
+		return notification['error']['nemaPristupa']
 #za brisanje korisnika
 @adminApi.route('/obrisiKorisnikaAdmin',methods=['POST'])
 @login_required
 def obrisiKorisnikaAdmin():
-	if current_user.get_id() == 2:
+	if current_user.get_id() == 1:
 		data =request.get_json()
 		idKorisnika=data['idKorisnika']
 		username=data['username']
 		return jsonify(sqlQuery.commitBaza(f"""
 			delete from korisnici
 			where id_korisnika={idKorisnika};
-			""",f"{notification['admin']['deleteKorisnika']} {username} ."))
+			""",msgOneArg(username).deleteUser()))
 	else:
-		return jsonify(notification['error']['nemaPristupa'])
+		return notification['error']['nemaPristupa']

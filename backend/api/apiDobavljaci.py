@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify,request
 import json
 import sql as sqlQuery
+from messages import *
 from flask_login import login_user, LoginManager, login_required, logout_user, current_user
 with open('./data.json', 'r') as f:
 	notification = json.load(f)
@@ -18,7 +19,7 @@ def dajDobavljaceReact():
 				from dobavljaci;
 				"""))
 		else:
-			return jsonify(notification['error']['nemaPristupa'])
+			return notification['error']['nemaPristupa']
 	else:
 		return jsonify(notification['error']['blockUser'])
 ### daje samo ime i Id dobavljaca....
@@ -31,9 +32,9 @@ def dajImeDobavljacaIdReact():
 					select id_dobavljaca, ime_dobavljaca from public.dobavljaci;
 				"""))
 		else:
-			return jsonify(notification['error']['nemaPristupa'])
+			return notification['error']['nemaPristupa']
 	else:
-		return jsonify(notification['error']['blockUser'])
+		return notification['error']['blockUser']
 ##### Dodaje novog dobavljac
 @apiDobavljaci.route('/dodajDobavljacaReact',methods=['POST'])
 @login_required
@@ -48,12 +49,12 @@ def dodajDobavljacaReact():
 			return jsonify(sqlQuery.commitBaza(f"""
 				insert into dobavljaci(ime_dobavljaca,email,telefon,adresa)
 				values('{imeDobavljaca}','{emailDobavljaca}','{telefonDobavljaca}','{adresa}')
-				""",f"{notification['dobavljaci']['commitDobavljac']} {imeDobavljaca} ."))
+				""",msgOneArg(imeDobavljaca).addDobavljac()))
 		else:
-			return jsonify(notification['error']['nemaPristupa'])
+			return notification['error']['nemaPristupa']
 	else:
-		return jsonify(notification['error']['blockUser'])
-###### Azurira dbavljaca
+		return notification['error']['blockUser']
+###### Azurira dbavljimaca
 @apiDobavljaci.route('/azurirajDobavljacaReact',methods=['POST'])
 @login_required
 def azurirajDobavljacaReact():
@@ -70,11 +71,11 @@ def azurirajDobavljacaReact():
 				set ime_dobavljaca='{imeDobavljaca}',email='{email}',
 				telefon='{telefon}',adresa='{adresa}'
 				where id_dobavljaca ={idDobavljaca};
-						""",f"{notification['dobavljaci']['updateDobavljac']  }"))	
+						""",msgOneArg(imeDobavljaca).updateDobavljac()))	
 		else:
-			return jsonify(notification['error']['nemaPristupa'])
+			return notification['error']['nemaPristupa']
 	else:
-		return jsonify(notification['error']['blockUser'])
+		return notification['error']['blockUser']
 #### Brise dobavljaca#############
 @apiDobavljaci.route('/obrisiDobavljacaReact', methods=['POST'])
 @login_required
@@ -84,11 +85,20 @@ def obrisiDobavljacaReact():
 			data=request.get_json()
 			idDobavljaca = data['idDobavljaca']
 			imeDobavljaca = data['imeDobavljaca']
-			return jsonify(sqlQuery.commitBaza(f"""
-				delete from public.dobavljaci
-				where id_dobavljaca={idDobavljaca}
-				""",f"{notification['dobavljaci']['deleteDobavljac']} {imeDobavljaca}."))
+			provera=sqlQuery.returnAll(f"""
+		       select sirovine.naziv_sirovine from sirovine
+				inner join dobavljaci
+				on sirovine.id_dobavljaci = dobavljaci.id_dobavljaca
+				where sirovine.id_dobavljaci ={idDobavljaca};
+		       """)
+			if provera ==[]:
+				return jsonify(sqlQuery.commitBaza(f"""
+					delete from public.dobavljaci
+					where id_dobavljaca={idDobavljaca}
+					""",msgOneArg(imeDobavljaca).delDobavljac()))
+			else:
+				return msgTwoArg(True,provera).errorDobavljac()	
 		else:
-			return jsonify(notification['error']['nemaPristupa'])
+			return notification['error']['nemaPristupa']
 	else:
-		return jsonify(notification['error']['blockUser'])
+		return notification['error']['blockUser']

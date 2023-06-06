@@ -7,8 +7,7 @@ with open('./data.json', 'r') as f:
 #deklarisemo blueprint koga koristimo u rutama
 apiSirovine = Blueprint('apiSirovine', __name__)
 
-	#return jsonify(a.messages(ime,prezime), a.zanimanje())
-	#return jsonify(f"{notificationuzet['login']['proba']} {ime}")
+	
 
 #########################################################
 ##############sirovine<<<<<@@@@@@@@@@@@@@@@@@#######

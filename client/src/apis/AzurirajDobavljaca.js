@@ -32,13 +32,13 @@ const AzurirajDobavljaca = ({props,token,role})=>{
                       return  setMesages(response+`ime dobavljaca u ${ime}.`) 
                     }
                     if(telefon !== props.telefon){
-                        return   setMesages(response+` broj  telefona za dobavljaca ${ime} u ${telefon}.`)
+                        return   setMesages(response+` broj  telefona.`)
                     }
                     if(email !== props.email){
-                        return  setMesages(response+` email za dobavljaca ${ime} u ${email}`)
+                        return  setMesages(response+` email.`)
                     }
                     if(adresa !== props.adresa){
-                        return   setMesages(response+` adresu za dobavljaca ${ime} u ${adresa}`)
+                        return   setMesages(response+` adresu.`)
                     } 
                 }
             });

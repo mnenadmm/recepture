@@ -1,15 +1,15 @@
 {
     "probaEmail": {
         "errorEmail": true,
-        "poruka": "Email email.com  je zauzet"
+        "poruka": "Email mnenadmm@gmail.com je zauzet"
     },
     "probaUser": {
         "errorUser": true,
-        "poruka": "User nenad je zauzet"
+        "poruka": "Username nenad je zauzet."
     },
     "kreirajKorisnika": {
-        "poruka": "Na email ",
-        "porukaNastavak": " smo vam poslali verifikacioni token, molimo Vas da kliknete na link i time potvrdiote verifikaciju.<br />"
+        "error": false,
+        "poruka": "Na email mndenadmm@gmail.com poslat je verifikacijioni token."
     },
     "login": {
         "proba": "Vase ime je {ime} iz krusevca ",
@@ -56,9 +56,15 @@
         "deleteKolac": "Uspesno ste obrisali kolac "
     },
     "dobavljaci": {
-        "commitDobavljac": "Uspesno ste dodali dobavljaca ",
-        "updateDobavljac": "Azurirali ste ",
-        "deleteDobavljac": "Obrisali ste dobavljaca "
+        "proveraSirovine": true,
+        "poruka": [
+            [
+                "top crem"
+            ],
+            [
+                "reno crni"
+            ]
+        ]
     },
     "recepture": {
         "commitReceptura": "Dodali ste sirovinu u recepturu",
@@ -68,8 +74,6 @@
         "azurirajRabat": " ste promenili rabat za sirovinu "
     },
     "admin": {
-        "updateRole": "Azurirali ste pristupne role za korisnika  ",
-        "odblokirajKorisnika": "Odblokirali ste korisnika ",
-        "deleteKorisnika": "Obrisali ste korisnika 123456789o"
+        "backUser": "Odblokirali ste korisnika korisnikPrvaRola ."
     }
 }
