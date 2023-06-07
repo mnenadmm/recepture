@@ -60,29 +60,16 @@ def load_user(user_id):
 @app.route('/a')
 def index1():
 	
-	id=6
+	id=2123
 	ime='nenad'
 	email="mnenadmm "
 	provera=sqlQuery.returnAll(f"""
-		       select sirovine.naziv_sirovine from sirovine
-				inner join dobavljaci
-				on sirovine.id_dobavljaci = dobavljaci.id_dobavljaca
-				where sirovine.id_dobavljaci ={id};
+		      select kolaci.ime_kolaca from kolaci
+				inner join recepture
+				on kolaci.id_kolaca = recepture.id_kolaca
+				where recepture.id_sirovine ={id};
 		       """)
-	new_list=[]
-	for i in provera:
-		new_list.append(i)
-	
-	
-	return f"ovo je {type(result)}"
-	    
-	
-		
-		 
-	#return msgTwoArg(email,ime).changeSomething()
-	#return notification['proba'][0]['poruka']
-
-	
+	return provera	
 ####################### LOGOVANJE ##################################	
 #### koristi se za logovanje ##########
 @app.route('/login', methods=['GET', 'POST'])

@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify,request
 import json
 import sql as sqlQuery
+from messages import *
 from flask_login import login_user, LoginManager, login_required, logout_user, current_user
 with open('./data.json', 'r') as f:
 	notification = json.load(f)
@@ -25,9 +26,9 @@ def dodajSirovinuReact():
 				values('{imeSirovine}',{cenaSirovine},{idDobavljaca});
 				""",f"{notification['sirovine']['commitSirovina']} {imeSirovine} ."))	
 		else:
-			return jsonify(notification['error']['nemaPristupa'])
+			return notification['error']['nemaPristupa']
 	else:
-		return jsonify(notification['error']['blockUser'])
+		return notification['error']['blockUser']
 #azuriranje sirovine##########################################################
 @apiSirovine.route('/azurirajSirovinuReact',methods=['POST'])
 @login_required
@@ -47,9 +48,9 @@ def azurirajSirovinuReact():
 				where id_sirovine={idSirovine}
 				""",f"{imeSirovine}"))
 		else:
-			return jsonify(notification['error']['nemaPristupa'])
+			return notification['error']['nemaPristupa']
 	else:
-		return jsonify(notification['error']['blockUser'])
+		return notification['error']['blockUser']
 #za brisanje sirovine###########################################
 @apiSirovine.route('/obrisiSirovinu',methods=['POST'])
 @login_required
@@ -58,14 +59,23 @@ def obrisiSirovinuReact():
 		if current_user.rola_1():
 			data = request.get_json()
 			idSirovine=data['idSirovine']
-			return jsonify(sqlQuery.commitBaza(f"""
-				delete from public.sirovine
-				where id_sirovine={idSirovine};
-				""",f"{notification['sirovine']['deleteSirovina']}"))
+			provera = sqlQuery.returnAll(f"""
+					select kolaci.ime_kolaca from kolaci
+					inner join recepture
+					on kolaci.id_kolaca = recepture.id_kolaca
+					where recepture.id_sirovine ={idSirovine};
+				""")
+			if provera ==[]:
+				return jsonify(sqlQuery.commitBaza(f"""
+							delete from public.sirovine
+							where id_sirovine={idSirovine};
+							""",f"{notification['sirovine']['deleteSirovina']}"))
+			else:
+				return msgTwoArg(True,provera).errorSirovina()	
 		else:
-			return jsonify(notification['error']['nemaPristupa'])
+			return notification['error']['nemaPristupa']
 	else:
-		return jsonify(notification['error']['blockUser'])
+		return notification['error']['blockUser']
 #daje listu sirovina 
 @apiSirovine.route('/izlistaj/sirovine/react',methods=['GET','POST'])
 @login_required
@@ -80,9 +90,9 @@ def izlistajSirovineReact():
 						on sirovine.id_dobavljaci = dobavljaci.id_dobavljaca;
 					"""))
 			else:
-				return jsonify(notification['error']['nemaPristupa'])
+				return notification['error']['nemaPristupa']
 		else:
-			return jsonify(notification['error']['blockUser'])
+			return notification['error']['blockUser']
 # daje sirovine po dobavljacu 
 @apiSirovine.route('/sirovinePoDobavljacuReact/<int:idDobavljaca>',methods=['GET'])
 @login_required
@@ -97,9 +107,9 @@ def sirovinePoDobavljacuReact(idDobavljaca):
 				where sirovine.id_dobavljaci = {idDobavljaca};
 				"""))
 		else:
-			return jsonify(notification['error']['nemaPristupa'])
+			return notification['error']['nemaPristupa']
 	else:
-		return jsonify(notification['error']['blockUser'])
+		return notification['error']['blockUser']
 #daje cenu  jedne sirovinu na osnovu id-a koristi se za recepture
 @apiSirovine.route('/dajJednuSirovinuReact/<int:idSirovine>')
 @login_required
@@ -112,6 +122,6 @@ def dajJednuSirovinuReact(idSirovine):
 				where id_sirovine={idSirovine};
 				"""))
 		else:
-			return jsonify(notification['error']['nemaPristupa'])
+			return notification['error']['nemaPristupa']
 	else:
-		return jsonify(notification['error']['blockUser'])
+		return notification['error']['blockUser']

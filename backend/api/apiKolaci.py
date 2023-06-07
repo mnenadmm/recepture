@@ -19,9 +19,9 @@ def dajlistuKolacaReact():
 				where dodata_receptura =true;	
 				"""))
 		else:
-			return jsonify(notification['error']['nemaPristupa'])
+			return notification['error']['nemaPristupa']
 	else:
-		return jsonify(notification['error']['blockUser'])
+		return notification['error']['blockUser']
 #####daje listu kolaca na kojima nije napravljena receptura
 @apiKolaci.route('/dajlistuKolacaBezReceptureReact')
 @login_required
@@ -34,9 +34,9 @@ def dajlistuKolacaBezReceptureReact():
 				where dodata_receptura =false;
 				"""))
 		else:
-			return jsonify(notification['error']['nemaPristupa'])
+			return notification['error']['nemaPristupa']
 	else:
-		return jsonify(notification['error']['blockUser'])
+		return notification['error']['blockUser']
 #### vraca ime kolaca na osnovu id-a
 @apiKolaci.route('/dajImeKolacaReact/<int:idKolaca>')
 @login_required
@@ -48,9 +48,9 @@ def dajImeKolacaReact(idKolaca):
 				where id_kolaca={idKolaca};
 				"""))
 		else:
-			return jsonify(notification['error']['nemaPristupa'])
+			return notification['error']['nemaPristupa']
 	else:
-		return jsonify(notification['error']['blockUser'])
+		return notification['error']['blockUser']
 # lista kolaca na kojima je napravljena receptura
 @apiKolaci.route('/listaKolacaNaslovReact')
 @login_required
@@ -63,9 +63,9 @@ def listaKolacaNaslovReact():
 					where dodata_receptura =true;
 				"""))
 		else:
-			return jsonify(notification['error']['nemaPristupa'])
+			return notification['error']['nemaPristupa']
 	else:
-		return jsonify(notification['error']['blockUser'])
+		return notification['error']['blockUser']
 ###### kreira kolac######################################
 @apiKolaci.route('/napraviKolacReact' , methods=['POST'])
 @login_required
@@ -80,7 +80,7 @@ def napraviKolacReact():
                 values('{imeKolaca}','{postupak}');
 				""",f"{notification['kolaci']['commitKolac']} {imeKolaca}."))
 		else:
-			return jsonify(notification['error']['nemaPristupa'])
+			return notification['error']['nemaPristupa']
 	else:
 		return jsonify(notification['error']['blockUser'])
 ####AZURIRA KOLAC###########################    
@@ -99,9 +99,9 @@ def azurirajKolacReact():
 				where id_kolaca={idKolaca};
 				""",f"{notification['kolaci']['updateKolac']} {imeKolaca}."))
 		else:
-			return jsonify(notification['error']['nemaPristupa'])
+			return notification['error']['nemaPristupa']
 	else:
-		return jsonify(notification['error']['blockUser'])
+		return notification['error']['blockUser']
 ############### brise kolac#####################
 @apiKolaci.route('/obrisiKolacReact', methods=['POST'])
 @login_required
@@ -115,6 +115,6 @@ def obrisiKolacReact():
 				where id_kolaca={idKolaca};
 				""",f"{notification['kolaci']['deleteKolac']} "))
 		else:
-			return jsonify(notification['error']['nemaPristupa'])
+			return notification['error']['nemaPristupa']
 	else:
-		return jsonify(notification['error']['blockUser'])
+		return notification['error']['blockUser']

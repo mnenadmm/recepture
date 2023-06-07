@@ -39,7 +39,7 @@ const App = () =>{
   const[rola_1,setRola_1]=useState(secureLocalStorage.getItem('rola_1'));
   const[rola_2,setRola_2]=useState(secureLocalStorage.getItem('rola_2'));
   const[rola_3,setRola_3]=useState(secureLocalStorage.getItem('rola_3'));
-  console.log(rola_1)
+  console.log(verifikacija)
     return(
       <div  className="container">
         

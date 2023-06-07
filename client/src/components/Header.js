@@ -8,7 +8,6 @@ const Header = ({props,role})=>{
     const location = useLocation();
     const { pathname } = location;
     const splitLocation = pathname.split("/");
-    
     const logout=()=>{
         //brise verifikacju iz sessije
         props.setVerifikacija(secureLocalStorage.removeItem('verifikacija'));

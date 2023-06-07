@@ -101,6 +101,15 @@ class msgTwoArg:
         i = "dobavljaci"
         write_jsonOneArg(i,y)
         return  notification[i]
+    def errorSirovina(self):
+        y={
+            "proveraRecepture": self.x,
+            "poruka": self.y
+        }
+        i = "sirovine"
+        write_jsonOneArg(i,y)
+        return  notification[i]
+
             
 
 

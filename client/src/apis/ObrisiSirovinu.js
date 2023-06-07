@@ -2,15 +2,14 @@ import { useState } from "react"
 import SirovineEdit from "../components/SirovineEdit"
 const ObrisiSirovinu=({props,role,azuriraj})=>{
     const[errorMessages,setErrorMessages]=useState('')
+    const[imaRecepture, setImaRecepture]=useState('')
     const[messages, setMessages]=useState('')
-    const[stranica, setStranica]=useState(0)
-    const[poruka, setPoruka]=useState(0);   
+    const[stranica, setStranica]=useState(0) 
     const obrisi=()=>{
         const ukloni =()=>{
             fetch('/obrisiSirovinu', {
              method: 'POST',
                  headers: {
-                   
                      'Accept': 'application/json, text/plain, */*',
                      'Content-Type': 'application/json'
                  },
@@ -20,14 +19,17 @@ const ObrisiSirovinu=({props,role,azuriraj})=>{
              }).then((res)=>{
                 if(res.status===200){return res.json()}
              }).then((response)=>{
-                if(response.error){
+                if(response.proveraRecepture){
+                   
+                    setImaRecepture(response.poruka)
+                }else if(response.error){
                     return setErrorMessages(response.poruka)
                 }else{
                     return setMessages(`${response} ${azuriraj.imeSirovine}.`)
                 }
                 
              }).catch((error)=>{console.log('ERROR: ',error)})
-             setPoruka(1);//ispisuje alertporuku
+             
              setTimeout(function(){ 
                 setStranica(1) },5000);
         }  
@@ -37,7 +39,7 @@ const ObrisiSirovinu=({props,role,azuriraj})=>{
             {errorMessages ==='' ? 
         <div className="container">
             <div className="col-sm-12">
-            {poruka !== 0 ? 
+            {messages!== '' ? 
                     <div className="alert alert-danger">
                         <p className="close" data-dismiss="alert" aria-label="close">&times;</p>
                         {messages} 
@@ -52,6 +54,24 @@ const ObrisiSirovinu=({props,role,azuriraj})=>{
                     </li>
                 </ul> <br></br><br></br>
             </div>
+            {imaRecepture !==''? <>
+            <div className='col-sm-12'>
+                
+                <h3>Sirovina se nalazi u recepturama, morate azurirati ili obrisati sledece recepture kako bi ste obrisali sirovinu:</h3> 
+            <br /><br />
+            </div>
+            <div className='row'>
+                    
+                    <div className='col-sm-12'>
+                        {imaRecepture.map((item,i)=>(
+                        <ul className='list-group' key={i}>
+                            <li className='list-group-item list-group-item-danger'>{item}</li>
+                        </ul> 
+                        
+                        ))}
+                    </div>
+                </div><br /><br />
+            </>: <>
             <div className="form-group">
                     
                     <label className=" control-label">Naziv sirovine</label>
@@ -78,6 +98,8 @@ const ObrisiSirovinu=({props,role,azuriraj})=>{
                          >Obrisi
                     </button>
                 </div>
+                </>}
+
         </div>
             :
             <div className="alert alert-success alert-dismissible">

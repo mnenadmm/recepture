@@ -23,12 +23,12 @@ const ObrisiDobavljaca=({role,props})=>{
                 if(res.status===200){return res.json()}
             }).then((response)=>{
                 if(response.proveraSirovine){
-                   
+                   console.log(response.poruka)
                     setImaSirovina(response.poruka)
                     
                 }else if(response.error){return setErrorMesagges(response.poruka)
                 }else{
-                    console.log(typeof(response) )
+                   
                     setMessages(response)
                 }
             }).catch((error)=>{console.log(error)})
@@ -67,13 +67,12 @@ const ObrisiDobavljaca=({role,props})=>{
                 <br /><br />
                 </div>
                 <div className='row'>
-                    <div className='col-sm-4'></div>
-                    <div className='col-sm-4'>
+                    
+                    <div className='col-sm-12'>
                         {imaSirovina.map((item,i)=>(
-                        <>   <label  className="form-label">Ime sirovine:</label>
-                            <input key={i} className="form-control" defaultValue={item} disabled />
-                            <br /> 
-                        </>    
+                        <ul className='list-group' key={i}>
+                            <li className='list-group-item list-group-item-danger'>{item}</li>
+                        </ul> 
                         
                         ))}
                     </div>

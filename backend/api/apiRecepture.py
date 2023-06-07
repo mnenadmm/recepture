@@ -22,9 +22,9 @@ def dajRecepturuReact(idKolaca):
 				where recepture.id_kolaca={idKolaca};
 				"""))
 		else:
-			return jsonify(notification['error']['nemaPristupa'])		
+			return notification['error']['nemaPristupa']	
 	else:
-		return jsonify(notification['error']['blockUser'])
+		return notification['error']['blockUser']
 #1pravljenje recepture
 #2dodavanje potvrde da je receptura napravljena u kolace
 @apiRecepture.route('/napraviRecepturuReact', methods=['POST'])
@@ -49,7 +49,7 @@ def napraviRecepturuReact():
 				""",f"{notification['recepture']['commitReceptura']}"
 			))
 		else:
-			return jsonify(notification['error']['nemaPristupa'])
+			return notification['error']['nemaPristupa']
 	else:
 		return jsonify(notification['error']['blockUser'])
 #### daje postupak za recepturu na osnovu unetog id-a
@@ -63,9 +63,9 @@ def dajPostupakZaRecepturu(idKolaca):
                 where id_kolaca ={idKolaca};
 				"""))
 		else:
-			return jsonify(notification['error']['nemaPristupa'])
+			return notification['error']['nemaPristupa']
 	else:
-		return jsonify(notification['error']['blockUser'])
+		return notification['error']['blockUser']
 #dodaje sirovinu u potojiecu recepturu
 @apiRecepture.route('/dodajSirovinuURecepturu', methods=['POST'])
 @login_required
@@ -81,9 +81,9 @@ def dodajSirovinuURecepturu():
 				values({idKolaca},{idSirovine},{kolicina});
 				""",f" {notification['recepture']['commitSirovina']}"))
 		else:
-			return jsonify(notification['error']['nemaPristupa'])
+			return notification['error']['nemaPristupa']
 	else:
-		return jsonify(notification['error']['blockUser'])
+		return notification['error']['blockUser']
 #azurira kolicinu sirovine u recepturi za odredjeni kolac
 @apiRecepture.route('/azurirajKolicinuRecepturaReact', methods=['POST'])
 @login_required
@@ -101,9 +101,9 @@ def azurirajKolicinuRecepturaReact():
 				where id_kolaca={idKolaca} and id_sirovine={idSirovine};
 				""",f"Za sirovinu {imeSirovine} {notification['recepture']['updateRecepture']} {kolicina}"))
 		else:
-			return jsonify(notification['error']['nemaPristupa'])	
+			return notification['error']['nemaPristupa']
 	else:
-		return jsonify(notification['error']['blockUser'])
+		return notification['error']['blockUser']
 #brise sirovinu iz recepture
 @apiRecepture.route('/ukloniSirovinuRecepturaReact', methods=['POST'])
 @login_required
@@ -119,9 +119,9 @@ def ukloniSirovinuRecepturaReact():
 				where id_kolaca={idKolaca} and id_sirovine={idSirovine};
 				""",f" {notification['recepture']['deleteSirovina']}{imeSirovine}"))
 		else:
-			return jsonify(notification['error']['nemaPristupa'])
+			return notification['error']['nemaPristupa']
 	else:
-		return jsonify(notification['error']['blockUser'])
+		return notification['error']['blockUser']
 #azurira rabat za odredjenu sirovinu samo za tu recepturu
 @apiRecepture.route('/azurirajRabat', methods=['POST'])
 @login_required
@@ -140,6 +140,6 @@ def azuriraRabat():
 				where id_kolaca={idKolaca} and id_sirovine={idSirovine};
 				""",f"Za kolac {imeKolaca} {notification['recepture']['azurirajRabat']} {imeSirovine} u {rabat} %."))
 		else:
-			return jsonify(notification['error']['nemaPristupa'])
+			return notification['error']['nemaPristupa']
 	else:
-		return jsonify(notification['error']['blockUser'])
+		return notification['error']['blockUser']
