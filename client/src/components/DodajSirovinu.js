@@ -4,11 +4,12 @@ import Select from "./Select";
 
 const DodajSirovinu = ({props,role})=>{
     const[errorMesagges,setErrorMesagges]=useState('');
-    const[poruka, setPoruka]=useState(0)
+    
     const[messages, setMessages]=useState('')
     const[cena, setCena]=useState([]);
     const[ime, setIme]=useState('');
     const[idDobavljaca, setIdDobavljaca]=useState(0);
+    const[errorMesaggesSirovina, setErrorMesaggesSirovina]=useState('')
    
     const URL_Dobavljac = '/dajImeDobavljacaIdReact';
     let istorija = useNavigate();
@@ -38,12 +39,14 @@ const DodajSirovinu = ({props,role})=>{
             })
             .then((response)=>{
                 if(response.error){ setErrorMesagges(response.poruka)}
-                else{
-                  setMessages(response) 
-                  
+                else if(response.errorSirovina){
+                    setErrorMesaggesSirovina(response.poruka)
+                   
+                }else{
+                    setMessages(response)
                 }
             });
-            setPoruka(1)
+          
             
             setTimeout(function(){ 
                 istorija(-1); //vraca korak nazad u navigaciji 
@@ -55,7 +58,7 @@ const DodajSirovinu = ({props,role})=>{
                         <div className="col-sm-12 text-center">
                             <h2>Dodaj sirovinu</h2>
                         </div>
-                {poruka !== 0? 
+                {errorMesagges !== ''? 
                     <div className="col-sm-12">
                         <br />
                         <div className="alert alert-success alert-dismissible">
@@ -68,6 +71,9 @@ const DodajSirovinu = ({props,role})=>{
                     <div className="col-sm-4">
                         <label>Unesite ime sirovine</label>
                         <input type="text" value={ime}  className="form-control" onChange={(e)=>{setIme(e.target.value)}}></input>
+                      
+                    
+                    {errorMesaggesSirovina!== ''? <p style={{color:'red'}}>{errorMesaggesSirovina}</p>  : null}  
                     </div>
                     </div>
                     <br></br><br></br>

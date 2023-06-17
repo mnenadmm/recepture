@@ -2,6 +2,7 @@ import React ,{useState,  useEffect}from "react";
 import Select from "./Select";
 function IzlistajSirovine({props,role}) {
     const[data, getData] = useState([])
+    const [filteredData,setFilteredData] = useState(data);
     const[errorMesagges,setErrorMesagges]=useState('');
     const URL_Dobavljac = '/dajImeDobavljacaIdReact';
     const[showSelect, setshowSelect]=useState(0) // javlja se problem sa selektom
@@ -22,6 +23,7 @@ function IzlistajSirovine({props,role}) {
                    }
                         getData(response);
                         setshowSelect(1); // prikazuje select
+                        setFilteredData(response)
                 })
                 .catch(error=>{
                     console.log('ovo je greska ',error)
@@ -43,6 +45,7 @@ function IzlistajSirovine({props,role}) {
                 if(response.error){ return setErrorMesagges(response.poruka)}
                 else{
                     getData(response); 
+                    setFilteredData(response)
                 } 
             })
             .catch(error=>{
@@ -53,6 +56,16 @@ function IzlistajSirovine({props,role}) {
             getData([])
         }
     }
+    const handleSearch = (event) =>{
+        let value = event.target.value.toLowerCase();
+        let result = [];
+        result = data.filter((data) => {
+            
+            return data[1].search(value) !== -1;
+        });
+        setFilteredData(result);
+                }
+
     const lista=()=>{
         
     return(
@@ -62,7 +75,9 @@ function IzlistajSirovine({props,role}) {
             <Select  role={role} promena={promena} options={URL_Dobavljac}setErrorMesagges={setErrorMesagges} ime='Izlistaj po Dobavljacu...' />
                : null }
             <br></br>
-           
+           <div>
+            <input className="form-control" placeholder="Search" onChange={(event) =>handleSearch(event)} />
+           </div>
             <table className="table table-hover">
             <tbody>
                 <tr>
@@ -72,7 +87,7 @@ function IzlistajSirovine({props,role}) {
                     <th>Proizvodjac</th>
 
                 </tr>
-                {data.map((item, i) => (
+                {filteredData.map((item, i) => (
                     <tr key={i}>
                         
                         <td>{item[1]}</td>

@@ -4,6 +4,8 @@
   "homepage": "",
   "private": true,
   "dependencies": {
+    "jspdf-autotable":"3.5.29",
+    "jspdf": "^2.5.1",
     "@testing-library/jest-dom": "^5.16.1",
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.5.0",

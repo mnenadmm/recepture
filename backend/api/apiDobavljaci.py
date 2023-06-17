@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify,request
 import json
 import sql as sqlQuery
+import metode
 from messages import *
 from flask_login import login_user, LoginManager, login_required, logout_user, current_user
 with open('./data.json', 'r') as f:
@@ -46,6 +47,9 @@ def dodajDobavljacaReact():
 			emailDobavljaca=data['emailDobavljaca']
 			telefonDobavljaca=data['telefonDobavljaca']
 			adresa=data['adresa']
+			proveriDobavljaca=metode.proveriDobavljaca(imeDobavljaca)
+			if proveriDobavljaca:
+				return msgOneArg(imeDobavljaca).errorDobavljac()
 			return jsonify(sqlQuery.commitBaza(f"""
 				insert into dobavljaci(ime_dobavljaca,email,telefon,adresa)
 				values('{imeDobavljaca}','{emailDobavljaca}','{telefonDobavljaca}','{adresa}')

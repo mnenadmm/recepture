@@ -2,6 +2,7 @@ from flask import Blueprint, jsonify,request
 import json
 import sql as sqlQuery
 from messages import *
+import metode
 from flask_login import login_user, LoginManager, login_required, logout_user, current_user
 with open('./data.json', 'r') as f:
 	notification = json.load(f)
@@ -21,10 +22,13 @@ def dodajSirovinuReact():
 			imeSirovine=data['imeSirovine']
 			cenaSirovine= data['cenaSirovine']
 			idDobavljaca = data['idDobavljaca']
+			proveriSirovinu=metode.proveriSirovinu(imeSirovine)
+			if proveriSirovinu:
+				return msgOneArg(imeSirovine).errorSirovina()
 			return  jsonify(sqlQuery.commitBaza(f"""
 				insert into public.sirovine(naziv_sirovine,cena_sirovine,id_dobavljaci)
 				values('{imeSirovine}',{cenaSirovine},{idDobavljaca});
-				""",f"{notification['sirovine']['commitSirovina']} {imeSirovine} ."))	
+				""",msgOneArg(imeSirovine).addSirovina()))	
 		else:
 			return notification['error']['nemaPristupa']
 	else:
@@ -59,6 +63,7 @@ def obrisiSirovinuReact():
 		if current_user.rola_1():
 			data = request.get_json()
 			idSirovine=data['idSirovine']
+			imeSirovine=data['imeSirovine']
 			provera = sqlQuery.returnAll(f"""
 					select kolaci.ime_kolaca from kolaci
 					inner join recepture
@@ -69,7 +74,7 @@ def obrisiSirovinuReact():
 				return jsonify(sqlQuery.commitBaza(f"""
 							delete from public.sirovine
 							where id_sirovine={idSirovine};
-							""",f"{notification['sirovine']['deleteSirovina']}"))
+							""",msgOneArg(imeSirovine).delSirovina()))
 			else:
 				return msgTwoArg(True,provera).errorSirovina()	
 		else:

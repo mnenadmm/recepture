@@ -5,6 +5,7 @@ const ObrisiSirovinu=({props,role,azuriraj})=>{
     const[imaRecepture, setImaRecepture]=useState('')
     const[messages, setMessages]=useState('')
     const[stranica, setStranica]=useState(0) 
+    
     const obrisi=()=>{
         const ukloni =()=>{
             fetch('/obrisiSirovinu', {
@@ -14,7 +15,8 @@ const ObrisiSirovinu=({props,role,azuriraj})=>{
                      'Content-Type': 'application/json'
                  },
                  body: JSON.stringify({ //moramo poslati u JSON formatu
-                     idSirovine : azuriraj.idSirovine
+                     idSirovine : azuriraj.idSirovine,
+                     imeSirovine: azuriraj.imeSirovine
                  })
              }).then((res)=>{
                 if(res.status===200){return res.json()}
@@ -25,7 +27,7 @@ const ObrisiSirovinu=({props,role,azuriraj})=>{
                 }else if(response.error){
                     return setErrorMessages(response.poruka)
                 }else{
-                    return setMessages(`${response} ${azuriraj.imeSirovine}.`)
+                    return setMessages(response)
                 }
                 
              }).catch((error)=>{console.log('ERROR: ',error)})

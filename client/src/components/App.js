@@ -9,11 +9,7 @@ import SirovineEdit from "./SirovineEdit";
 import NaruciSirovine from "../apis/NaruciSirovine";
 import Kalkulacije from "./Kalkulacije";
 import Header from "./Header";
-import {
-    BrowserRouter,
-    Routes,
-    Route  
-  } from "react-router-dom";
+import {BrowserRouter,Routes, Route  } from "react-router-dom";
 import DajKolace from "../apis/DajKolace";
 import KreirajKolac from "../apis/KreirajKolac";
 import DobavljaciEdit from "../apis/DobavljaciEdit";
@@ -39,24 +35,26 @@ const App = () =>{
   const[rola_1,setRola_1]=useState(secureLocalStorage.getItem('rola_1'));
   const[rola_2,setRola_2]=useState(secureLocalStorage.getItem('rola_2'));
   const[rola_3,setRola_3]=useState(secureLocalStorage.getItem('rola_3'));
-  console.log(verifikacija)
+  // ime,prezime,email i adresa
+  const[infoKorisnika,setInfoKorisnika]=useState(secureLocalStorage.getItem('infoKorisnika'))
+
     return(
       <div  className="container">
         
         <CartProvider>
           <BrowserRouter >
-            <Header role={{rola_1,rola_2,rola_3}}    props={{verifikacija,setVerifikacija,idKorisnika,korisnik,setKorisnik,setIdKorisnika,setRola_1,setRola_2,setRola_3}} />
+            <Header role={{rola_1,rola_2,rola_3}}    props={{verifikacija,setVerifikacija,idKorisnika,korisnik,setKorisnik,setIdKorisnika,setRola_1,setRola_2,setRola_3,setInfoKorisnika}} />
           <Routes>
-            <Route path="/" element={<Pocetna />}/>
+            
             <Route path="/createAccount" element={<CreateNewAccount />}></Route>
 
-            <Route path="/login" element={<Login props={{setVerifikacija,setIdKorisnika,setKorisnik,setRola_1,setRola_2,setRola_3}} />}></Route>
+            <Route path="/login" element={<Login props={{setVerifikacija,setIdKorisnika,setKorisnik,setRola_1,setRola_2,setRola_3,setInfoKorisnika}} />}></Route>
             <Route path="/ChangePassword" element={<ChangePassword />}></Route>
             <Route path="/verifikujNalog" element={<VerifikujNalog />}></Route> 
           </Routes>        
         
         <Routes> 
-          <Route path="/" element={<Pocetna/>}/>
+          <Route path="/" element={<Pocetna props={{infoKorisnika}} />}/>
           <Route path="/sirovine" element={<Sirovine role={{rola_1,rola_2,rola_3,idKorisnika}} />} />
           <Route path="/kolaci" element={<Kolaci role={{rola_1,rola_2,rola_3,idKorisnika}} />} />
           <Route path="/izlistajSirovine" element={<IzlistajSirovine role={{rola_1,rola_2,rola_3}}  props={{idKorisnika}} />}></Route>
@@ -68,7 +66,7 @@ const App = () =>{
           <Route path="/dobavljaciEdit"  element={<DobavljaciEdit role={{rola_1,rola_2,rola_3,idKorisnika}} />}></Route>
           <Route path="/napraviRecepturu" element={<NapraviRecepturu role={{rola_1,rola_2,rola_3,idKorisnika}} />}></Route>
           <Route path="/azurirajRecepturu" element={<AzurirajRecepturu role={{rola_1,rola_2,rola_3,idKorisnika}} />}></Route>
-          <Route path="/kalkulacije" element={<Kalkulacije role={{rola_1,rola_2,rola_3,idKorisnika}}  />}></Route>
+          <Route path="/kalkulacije" element={<Kalkulacije role={{rola_1,rola_2,rola_3,idKorisnika,infoKorisnika}}   />}></Route>
           <Route path="/administrator" element={<Administrator props={{idKorisnika}} role={{rola_1,rola_2,rola_3,idKorisnika}} /> }></Route>
         </Routes> 
     </BrowserRouter>

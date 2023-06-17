@@ -39,14 +39,32 @@ def commitBaza(sql,messages):
         mycursor = baza.cursor()
         mycursor.execute(sql)
         baza.commit()
-        baza.close()
+       
         rezultat =messages
+    except:
+        msg={
+            'error': True,
+			'poruka': 'Neuspela veza sa bazom sql'
+        }
+        rezultat = msg
+    finally:
+        mycursor.close()
+        baza.close()
+        return  rezultat
+def vezba(sql):
+    try:
+        baza = psycopg2.connect(**konekcija.konekcija)
+        mycursor = baza.cursor()
+        mycursor.execute(sql)
+        baza.commit()
+        
+        rezultat =True
     except:
         msg={
             'error': True,
 			'poruka': 'Neuspela veza sa bazom'
         }
-        rezultat = msg
+        rezultat = False
     finally:
         mycursor.close()
         baza.close()

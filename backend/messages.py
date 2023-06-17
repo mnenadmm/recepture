@@ -34,6 +34,23 @@ class msgOneArg:
         i="probaUser"
         write_jsonOneArg(i,y)
         return notification[i]
+    def errorSirovina(self):
+        y ={
+            "errorSirovina": True,
+            "poruka": "Sirovina "+self.x+" postoji u bazi."
+        }
+        i="probaSirovina"
+        write_jsonOneArg(i,y)
+        return notification[i]
+    def errorDobavljac(self):
+        y={
+            "errorDobavljac": True,
+            "poruka": "Dobavljac "+self.x+"  postoji u bazi"
+        }
+        i="probaDobavljac"
+        write_jsonOneArg(i,y)
+        return notification[i]
+
    
     def sendEmail(self):
         y = {
@@ -69,8 +86,17 @@ class msgOneArg:
             "deleteDobavljac": "Obrisali ste dobavljaca "+self.x+" ."
         }
         i = "dobavljaci"
+        
         write_jsonOneArg(i,y) 
         return notification[i]["deleteDobavljac"]
+    def delSirovina(self):
+        y={
+            "deleteSirovina":"Obrisali ste sirovinu "+self.x+" ."
+        }
+        i="sirovine"
+       
+        write_jsonOneArg(i,y)
+        return notification[i]["deleteSirovina"]
     def addDobavljac(self):
         y = {
             "commitDobavljac": "Dodali ste dobavljaca "+self.x+" ."
@@ -78,6 +104,13 @@ class msgOneArg:
         i = "dobavljaci"
         write_jsonOneArg(i,y) 
         return notification[i]["commitDobavljac"]
+    def addSirovina(self):
+        y={
+            "commitSirovina": "Dodali ste sirovinu "+self.x+" ."
+        }
+        i="sirovine"
+        write_jsonOneArg(i,y)
+        return notification[i]["commitSirovina"]
     def updateDobavljac(self):
         y ={
             "updateDobavljac":"Za dobavljaca "+self.x+" ste promenili "
@@ -85,6 +118,8 @@ class msgOneArg:
         i = "dobavljaci"
         write_jsonOneArg(i,y)
         return notification[i]["updateDobavljac"]
+    
+        
       
  #clasa za messages koja uzima dva argumenta   
 class msgTwoArg:

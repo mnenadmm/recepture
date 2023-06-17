@@ -3,13 +3,21 @@
         "errorEmail": true,
         "poruka": "Email mnenadmm@gmail.com je zauzet"
     },
+    "probaSirovina": {
+        "errorSirovina": true,
+        "poruka": "Sirovina top crem vec postoji u bazi."
+    },
+    "probaDobavljac": {
+        "errorDobavljac": true,
+        "poruka": "Dobavljac makro  postoji u bazi"
+    },
     "probaUser": {
         "errorUser": true,
         "poruka": "Username nenad je zauzet."
     },
     "kreirajKorisnika": {
         "error": false,
-        "poruka": "Na email mndenadmm@gmail.com poslat je verifikacijioni token."
+        "poruka": "Na email korisnikPrvaRola@gmail.com poslat je verifikacijioni token."
     },
     "login": {
         "proba": "Vase ime je {ime} iz krusevca ",
@@ -37,21 +45,19 @@
             "error": true,
             "poruka": "Vas nalog je blokiran"
         },
-        "nemaVrifikacije": {
-            "error": true,
-            "poruka": "Vas nalog nije verifikovan, molimo vas da potvrdite verifikaciju."
-        },
-        "imaVerifikacije": {
-            "poruka": "Nalog je vec verifikovan"
+        "nemaVerifikacije": {
+            "poruka": "Nalog nije verifikovan"
         }
     },
+    "imaVerifikacije": {
+        "poruka": "Nalog je vec verifikovan, mozete se ulogovati"
+    },
+    "nemaVric": {
+        "error": true,
+        "poruka": "Vas nalog nije verifikovan, molimo vas da potvrdite verifikaciju."
+    },
     "sirovine": {
-        "proveraRecepture": true,
-        "poruka": [
-            [
-                "oreo"
-            ]
-        ]
+        "commitSirovina": "Dodali ste sirovinu nova ."
     },
     "kolaci": {
         "commitKolac": "Uspesno ste kreirali kolac ",
@@ -59,7 +65,7 @@
         "deleteKolac": "Uspesno ste obrisali kolac "
     },
     "dobavljaci": {
-        "deleteDobavljac": "Obrisali ste dobavljaca novi dobavljac ."
+        "commitDobavljac": "Dodali ste dobavljaca Lidl ."
     },
     "recepture": {
         "commitReceptura": "Dodali ste sirovinu u recepturu",
@@ -69,6 +75,6 @@
         "azurirajRabat": " ste promenili rabat za sirovinu "
     },
     "admin": {
-        "deleteUser": "Obrisali ste korisnika nenadasdfghjk, ."
+        "updateRole": "Azurirali ste role za korisnika bojan ."
     }
 }

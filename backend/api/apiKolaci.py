@@ -51,6 +51,20 @@ def dajImeKolacaReact(idKolaca):
 			return notification['error']['nemaPristupa']
 	else:
 		return notification['error']['blockUser']
+	
+#daje nutritivnu tabeli kolaca
+@apiKolaci.route('/dajNutritivnuVrednostKolaca/<int:idKolaca>', methods=['GET'])
+def dajNutritivnuVrednostKolaca(idKolaca):
+	return sqlQuery.returnAll(f"""select sirovine.naziv_sirovine,sirovine.id_sirovine,recepture.kolicina,
+							sirovine.kcal/0.1*recepture.kolicina,sirovine.kj/0.1*recepture.kolicina,
+			   				sirovine.masti/0.1*recepture.kolicina,sirovine.zasicene_masti/0.1*recepture.kolicina,
+			   				sirovine.ugljeni_hidrati/0.1*recepture.kolicina,sirovine.so/0.1*recepture.kolicina,
+			   				sirovine.seceri_ugljeni_hidrati/0.1*recepture.kolicina,
+			   				sirovine.proteini/0.1*recepture.kolicina
+							from recepture
+							INNER JOIN sirovine
+							on recepture.id_sirovine=sirovine.id_sirovine
+							where recepture.id_kolaca={idKolaca};""")
 # lista kolaca na kojima je napravljena receptura
 @apiKolaci.route('/listaKolacaNaslovReact')
 @login_required

@@ -5,6 +5,7 @@ const DodajDobavljaca=({token,role})=>{
     const[list, setList]=useState(1)
     const[mesages, setMesages]=useState('')
     const[errorMesagges,setErrorMesagges]=useState('');
+    const[errorMesaggesDobavljac,setErrorMesaggesDobavljac]=useState('')
     const[imeDobavljaca, setImeDobavljaca]=useState('')
     const[emailDobavljaca, setEmailDobavljaca]=useState('')
     const[adresa,setAdresa]=useState('')
@@ -26,6 +27,9 @@ const DodajDobavljaca=({token,role})=>{
             if(res.status===200){ return res.json()}
             }).then((response)=>{
                 if(response.error){return setErrorMesagges(response.poruka)}
+                else if(response.errorDobavljac){
+                    setErrorMesaggesDobavljac(response.poruka)
+                }
                 else{
                     setMesages(response)
                 }
@@ -62,6 +66,7 @@ const DodajDobavljaca=({token,role})=>{
                 <div className="col-sm-4">
                     <label>Unesiteime dobavljaca</label>
                     <input onChange={(e)=>setImeDobavljaca(e.target.value)} id='imeDobavljaca' className="form-control" />
+                    {errorMesaggesDobavljac!== ''? <p style={{color:'red'}}>{errorMesaggesDobavljac}</p>  : null} 
                 </div>
             </div>
             <br /><br />

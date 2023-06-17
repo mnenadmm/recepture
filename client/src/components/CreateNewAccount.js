@@ -4,6 +4,8 @@ import './CreateNewAccount.css';
 const CreateNewAccount=()=>{
     //document.getElementById("myBtn").disabled = true;
     const[stranica,setStranica]=useState(0)
+    const[ime, setIme]=useState('')
+    const[prezime, setPrezime]=useState('')
     const[userName,setUserName]=useState('');
     const[email,setEmail]=useState('');
     const[password,setPassword]=useState('')
@@ -122,6 +124,8 @@ const kreiraj=()=>{
               'Content-Type': 'application/json'
             },
             body: JSON.stringify({
+               'ime':ime,
+               'prezime': prezime, 
               'username':userName,
               'password':password,
               'email' : email,
@@ -176,6 +180,27 @@ const kreiraj=()=>{
             null}
         </div>
         <form onSubmit={(e)=>promeni(e)}>
+        <div className="row">
+                <div className="col-sm-4"></div>
+                <div className="col-sm-4">
+                    <br/>
+                    <label  className="form-label">Ime:</label>
+                    <input  className='form-control' type="text"
+                        placeholder="Enter Your name" 
+                        onChange={e => setIme(e.target.value)}   />  
+                </div>       
+            </div>
+            <div className="row">
+                <div className="col-sm-4"></div>
+                <div className="col-sm-4">
+                    <br/>
+                    <label  className="form-label">Prezime:</label>
+                    <input  className='form-control' type="text"
+                        placeholder="Enter surname" 
+                        onChange={e => setPrezime(e.target.value)}   />  
+                </div>       
+            </div>
+
             <div className="row">
                 <div className="col-sm-4"></div>
                 <div className="col-sm-4">
@@ -244,7 +269,7 @@ const kreiraj=()=>{
                     <label>
                         <p>Telefon:</p>
                     </label>
-                    <input className='form-control' type="number"
+                    <input className='form-control' type="tel"
                         onChange={e => setTelefon(e.target.value)}
                     />  
                 </div>

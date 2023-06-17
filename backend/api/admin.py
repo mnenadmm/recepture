@@ -85,3 +85,63 @@ def obrisiKorisnikaAdmin():
 			""",msgOneArg(username).deleteUser()))
 	else:
 		return notification['error']['nemaPristupa']
+@adminApi.route('/dajNutritivnuVrSirovine/<int:idSirovine>',methods=['GET'])
+@login_required
+def dajNutritivnuVrSirovine(idSirovine):
+	if current_user.get_id() == 1:
+		response=sqlQuery.returnAll(f"""
+				    select sirovine.naziv_sirovine,sirovine.cena_sirovine,dobavljaci.ime_dobavljaca, sirovine.KCAL ,
+					sirovine.kj, sirovine.masti, sirovine.zasicene_masti,sirovine.ugljeni_hidrati,
+					sirovine.seceri_ugljeni_hidrati,sirovine.so,sirovine.proteini
+					from sirovine
+					INNER JOIN dobavljaci
+					on sirovine.id_dobavljaci=dobavljaci.id_dobavljaca
+					where id_sirovine={idSirovine};
+				""")
+		
+		return jsonify(response)
+	else:
+		return notification['error']['nemaPristupa']
+@adminApi.route('/azurirajNutritivnuVrednostSirovine',methods=['POST'])
+@login_required
+def azurirajNutritivnuVrednostSirovine():
+	if current_user.get_id() == 1:
+		data =request.get_json()
+		idSirovine =data['idSirovine']
+		imeSirovine=data['imeSirovine']
+		kcal=data['kcal']
+		Kj=data['Kj']
+		masti=data['masti']
+		zasMasti=data['zasMasti']
+		uh=data['uh']
+		seceri=data['seceri']
+		so=data['so']
+		proteini=data['proteini']
+		if kcal==None:
+			kcal='null'
+		if Kj ==None:
+			Kj='null'
+		if masti ==None:
+			masti='null'
+		if zasMasti ==None:
+			zasMasti='null'
+		if uh ==None:
+			uh='null'
+		if seceri==None:
+			seceri='null'
+		if so==None:
+			so='null'
+		if proteini==None:
+			proteini='null'
+		return jsonify(sqlQuery.commitBaza(f"""
+				update public.sirovine
+				set kcal={kcal},Kj={Kj},masti={masti},
+				zasicene_masti={zasMasti},ugljeni_hidrati={uh},
+				seceri_ugljeni_hidrati={seceri},so={so},
+				proteini={proteini}
+				where id_sirovine={idSirovine};
+			""",'sve je proslo bravooooooooooooooo'))
+	else:
+		return notification['error']['nemaPristupa']
+
+		

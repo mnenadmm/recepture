@@ -4,7 +4,7 @@ import { useSearchParams } from "react-router-dom";//moze da pokupi parametre sa
 const VerifikujNalog=()=>{
     const[data,getData]=useState('')
     let [search, setSearch] = useSearchParams();
-    console.log(setSearch)
+    
     const token=search.get('token')
     console.log(token)
     const[errorMessages, setErrorMessages]=useState('')
@@ -12,7 +12,7 @@ const VerifikujNalog=()=>{
     const[proveraTokena, setProveraTokena]=useState(null)
     
     const sendNewToken=()=>{
-        fetch(`http://localhost:5000/posaljiDrugiToken/${token}`)
+        fetch(`/posaljiDrugiToken/${token}`)
         .then(res=>{
             if(res.status===200){return res.json()}
         }).then(response=>{
@@ -25,23 +25,26 @@ const VerifikujNalog=()=>{
         }).catch(error=>{console.log('ovo je ', error)})
     }
     useEffect(()=>{
-        fetch(`http://localhost:5000/verifikujNalog/${token}`)
+        fetch(`/verifikujNalog/${token}`)
         .then(res=>{
             if(res.status===200){return res.json()}
-            if(res.status===500){return setErrorMessages('Vas verifikacioni token je istekao ')}
-          
-
+           if(res.status ===500){return setErrorMessages('vas nalog nije verifikovan')}
         })
         .then(response=>{
-        
+       
+          
             getData(response)
+            console.log('res',response)
+           
+         
             
-        })
+           
+      })
         .catch(error=>{
-            console.log('ovo je',error)
+            console.log('ovo je greska',error)
         })
     },[token])
-    console.log(proveraTokena)
+    
     const verifikuj=()=>{
         
         return(

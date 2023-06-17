@@ -7,7 +7,7 @@ const Kalkulacije = ({role})=>{
     const [filteredData,setFilteredData] = useState(ime); //ovo je pocetno stanje kolaca i dobija vrednost iz search
     const[imeKolaca, setImeKolaca]=useState('');
     const[idKolaca, setIdKolaca]=useState(0);
-   
+  
     useEffect(() => {
         fetch('/listaKolacaNaslovReact',{
             method: "GET",
@@ -68,7 +68,7 @@ const Kalkulacije = ({role})=>{
         <div>
             {errorMesagges ==='' ?
                 <div>
-                    {stranica===0? dajKolace(): <DajKalkulaciju role={role} props={{idKolaca, imeKolaca}} />}
+                    {stranica===0? dajKolace(): <DajKalkulaciju role={role}  props={{idKolaca, imeKolaca}} />}
                 </div>:
                 <div className="alert alert-success alert-dismissible">
                     <p  className="close" data-dismiss="alert" aria-label="close">&times;</p>

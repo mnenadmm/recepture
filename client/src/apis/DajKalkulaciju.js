@@ -1,24 +1,25 @@
 import { useState, useEffect } from "react";
 import Kalkulacije from "../components/Kalkulacije";
 import AzurirajRabat from "./AzurirajRabat";
-
-const DajKalkulaciju =({props,token,role})=>{
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable'
+const DajKalkulaciju =({props,role})=>{
     
+    const current = new Date();
+    var datum =`${current.getDate()}.${current.getMonth()+1},${current.getFullYear()}`
     const[stranica, setStranica]=useState(1)
     const [data,setData]=useState([])
     const[zbir, setZbir]=useState(0)
     const[errorMessages, setErrorMessages]=useState('')
     const[items, setItems]=useState()//koristi se za azuriranje rabata
-    
-    
-    
-
+    const[postupak,setPostupak]=useState([])
+    const[print, setPrint]=useState(false)
+   
     useEffect(() => {
         const proba=()=>{
         fetch(`/dajRecepturuReact/${props.idKolaca}`,{
             method: "GET",
-            headers: {
-              
+            headers: { 
               }
         })
             .then((res) =>{
@@ -28,34 +29,144 @@ const DajKalkulaciju =({props,token,role})=>{
                 if(response.error){return setErrorMessages(response.poruka)}
                 else{
                     setData(response)
+                    
                  // sabira vrednostri    
                 const cena=response.map(item => item[4]).reduce((saberi, sab)=>saberi+sab);
                  setZbir(cena.toFixed(2)) 
-                }  
+                } 
+                fetch(`/dajPostupakZaRecepturu/${props.idKolaca}`,{
+                    method: "GET",
+                    headers: {
+                      }
+                })
+                .then((res) =>{
+                 if(res.status===200){return res.json()}   
+                })
+                .then((response) => { 
+                     if(response.error){return setErrorMessages(response.poruka)
+                    }else{
+                        return setPostupak(response);
+                        
+                    }  
+                }).catch((error)=>{
+                    console.log('ERROR: ',error)
+                }) 
             })}
         proba()
     },[props.idKolaca]);
     
-        
-            
-    
-    
- 
- 
     const promeniRabat=(items)=>{
-        
         setItems(items)
-        setStranica(2)
-        
+        setStranica(2)  
     }
-    const prikaziKalkulaciju = ()=>{
+    const createPdf=()=>{
+       
         
+       
+        var doc = new jsPDF()
+        const velikoSlovo = str => {
+            return (
+              str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
+            );
+          };
+          // daje sirinu i visinu stranice
+          var width = doc.internal.pageSize.getWidth()
+          var height=doc.internal.pageSize.getHeight()
+          //naslov 
+          doc.text( velikoSlovo(props.imeKolaca), width/2, 10, { align: 'center' })
+          // head od tabele
+          var head = [['Ime','Kolicina','Cena','Zbir','Rabat']]
+          // body
+          var body=[]
+          var a= [
+            data.map((item,i)=>(
+                body.push([velikoSlovo(item[0]),item[2],item[3],item[4],item[5]])
+           ))]
+           // creiranje tabele
+           doc.autoTable({
+            columnStyles: { 
+                0 : {   fontSize:14},
+                1 : {   fontSize:14},
+                2:  { fontSize:14},
+                3 : { fontSize:14},
+                4 : { fontSize:14},
+              },
+              head:head,
+              body: body,
+              startY: 20// odakle krece tabela
+             // theme: 'grid', ovde idu teme
+                       })
+        // vraca mesto gde se tabela zavrsava
+        let krajTabele = doc.previousAutoTable.finalY;
+        doc.setFontSize(14);
+        // sbira cene
+        const cena=data.map(item => item[4]).reduce((saberi, sab)=>saberi+sab);
+        var ukupno =`Ukupno : ${cena.toFixed(2)}`;
+        doc.text(ukupno, 20, krajTabele + 10)
+        // ovde moramo tek uvesti postupak
+        
+        var msgPostupak=doc.splitTextToSize(`${postupak}`,180)
+        const footer =()=>{
+            if(currentpage < doc.internal.getNumberOfPages()){
+              doc.setFontSize(8);
+              var line =doc.line(10, height-5, 200, height-5)
+              var infoIme = doc.text(`${role.infoKorisnika[0]} ${role.infoKorisnika[1]}`,width/8,height-2);
+              var infoEmail=doc.text(`${role.infoKorisnika[2]}`,width/4,height-2);
+              var infoAdresa =doc.text(`${role.infoKorisnika[3]}`,width/2.2,height-2);
+              var infoDatum =doc.text(`datum: ${datum}`,width-45,height-2);
+              var telefon=doc.text(`${role.infoKorisnika[4]}`,width-75,height-2); 
+              return line,infoIme,infoEmail,infoAdresa,infoDatum,telefon
+            }
+          }
+          var currentpage = 0;
+          const strana =()=>{
+            if(currentpage < doc.internal.getNumberOfPages()){
+              var str="Page " + doc.internal.getNumberOfPages();
+              return str
+            }
+          }
+          footer()
+          doc.text(strana(),width-15,height-7 , { align: 'center' })
+         var y =krajTabele+10+20;
+         for (var i = 0; i < msgPostupak.length; i++){
+          if (y > 280) {
+            y = 20;
+            doc.addPage(); 
+            footer()
+            doc.text(strana(),width-15,height-7 , { align: 'center' })
+        }   
+            doc.setFontSize(14);
+            doc.text(20, y, msgPostupak[i]);
+        y = y + 10;
+         }
+            doc.autoPrint();
+            doc.output('dataurlnewwindow');
+            setPrint(false)
+            doc.save(`Receptura ${props.imeKolaca}`);
+        
+         
+        
+        
+    };
+    
+    const prikaziKalkulaciju = ()=>{   
     return(
         <div>
             {errorMessages ==='' ?
         <div className="row">
             <div className="col-sm-12 text-center"><h2>{props.imeKolaca}</h2></div>
             <br /><br />
+            <div>
+            <div className="col-sm-2">
+                <button onClick={()=>createPdf()} className="btn btn-primary btn-sm">CreatePdf</button>
+                
+            </div>
+            <div className="col-sm-2">
+                
+                <button onClick={()=>{setPrint(true);createPdf()}} className="btn btn-primary btn-sm">Print</button>
+            </div>
+            
+            </div>
             <div className="col-sm-12">
                 <table className="table table-hover">
                     <thead>

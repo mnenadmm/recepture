@@ -24,7 +24,7 @@ def create_app():
 
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-    #CORS(app)
+    #CORS(app)supports_credentials,
     CORS(app, supports_credentials=True)
     app.config['SQLALCHEMY_DATABASE_URI'] =string_za_konekciju
     app.config["SECRET_KEY"] = "thisisseacretkey"

@@ -59,17 +59,25 @@ def load_user(user_id):
 ########### stefaaa kraj ##########
 @app.route('/a')
 def index1():
+	imeDobavljaca="zelandija"
 	
-	id=2123
-	ime='nenad'
-	email="mnenadmm "
-	provera=sqlQuery.returnAll(f"""
-		      select kolaci.ime_kolaca from kolaci
-				inner join recepture
-				on kolaci.id_kolaca = recepture.id_kolaca
-				where recepture.id_sirovine ={id};
-		       """)
-	return provera	
+	return sqlQuery.returnAll(f"""select sirovine.naziv_sirovine,sirovine.id_sirovine,recepture.kolicina,
+							sirovine.kcal/0.1*recepture.kolicina,sirovine.kj/0.1*recepture.kolicina,
+			   				sirovine.masti/0.1*recepture.kolicina,sirovine.zasicene_masti/0.1*recepture.kolicina,
+			   				sirovine.ugljeni_hidrati/0.1*recepture.kolicina,sirovine.so/0.1*recepture.kolicina,
+			   				sirovine.seceri_ugljeni_hidrati/0.1*recepture.kolicina,
+			   				sirovine.proteini/0.1*recepture.kolicina
+							from recepture
+							INNER JOIN sirovine
+							on recepture.id_sirovine=sirovine.id_sirovine
+							where recepture.id_kolaca=1;""")
+	
+	    
+	
+		
+
+
+	
 ####################### LOGOVANJE ##################################	
 #### koristi se za logovanje ##########
 @app.route('/login', methods=['GET', 'POST'])
@@ -95,7 +103,8 @@ def login():
 						  'username' : current_user.username,
 						  'rola_1'   : current_user.rola_1(),
 						  'rola_2'   : current_user.rola_2(),
-						  'rola_3'   : current_user.rola_3()
+						  'rola_3'   : current_user.rola_3(),
+						  'infoKorisnika':current_user.infoKorisnika()
 						}
 				return jsonify(response)
 			else:
@@ -116,6 +125,8 @@ def logoutR():
 @app.route('/kreirajKorisnikaReact',methods=['POST'])
 def kreirajKorisnikaReact():
    data =request.get_json()
+   ime=data['ime']
+   prezime=data['prezime']
    username=data['username']
    sifra=data['password']
    email= data['email']
@@ -124,16 +135,16 @@ def kreirajKorisnikaReact():
    proveraEmail = metode.proveriEmail(email) #Proverava da li je email zauzet
    proveraUser = metode.proveriUser(username) #Proverava da li je user zauzet
    if proveraUser ==True:
-      msgOneArg(username).errorUser()
-      return notification["probaUser"]
+      
+      return msgOneArg(username).errorUser()
    if proveraEmail == True:
-      msgOneArg(email).errorEmail()
-      return notification["probaEmail"]
+      #vrcamo medotu koja kreira data.json i vraca ga
+      return msgOneArg(email).errorEmail()
    skriveniPassword = generate_password_hash(sifra) #hashuje password
    sqlQuery.commitBaza(f"""
-   		INSERT INTO public.korisnici(username,email,telefon,adresa,password)
-   		values('{username}','{email}','{telefon}','{adresa}','{skriveniPassword}')
-   	""",msgOneArg(email).sendEmail())
+   		INSERT INTO public.korisnici(username,email,telefon,adresa,password,ime_korisnika,prezime_korisnika)
+   		values('{username}','{email}','{telefon}','{adresa}','{skriveniPassword}','{ime}','{prezime}')
+   	""",'')
    recipient =email
    token = s.dumps(email, salt='kljuc_za_token')
    message = f"""Verifikijte svoj nalog  http://localhost:3000/verifikujNalog?token={token}"""
@@ -141,56 +152,44 @@ def kreirajKorisnikaReact():
    msg = Message(subject,sender=sender,recipients =[recipient] )
    msg.body = message
    mail.send(msg) 
-   return notification["kreirajKorisnika"]
+   return msgOneArg(email).sendEmail()
    
 
 ########################### LOGOVANJE KRAJ##############################################
  ############### PITATI STEFU STA SA LINKOM ZA VERIFIKACIJU  
 #za verifikaciju tokena
+
 @app.route('/verifikujNalog/<token>', methods=['POST','GET'])
 def verifikujNalog(token):
-	token=s.loads(token, salt='kljuc_za_token', max_age=600)
-	provera=proveriToken(token)
+	token=s.loads(token, salt='kljuc_za_token', max_age=600)#vrati na 600
+	provera=metode.proveriToken(token)
 	if provera==True:
-		return jsonify(notification['imaVerifikacije']['poruka'])
+		return jsonify(notification['imaVerifikacije']['poruka']) 
 	else:
-		msg ='Nalog je verifokovan'
+		
 		return jsonify(sqlQuery.commitBaza(f"""
 			update public.korisnici
 			set verification=True
 			where email='{token}';
-			""",f"{notification['imaVerifikacije']['poruka']} ."))
-#metoda za proveru verifikacije
-def proveriToken(email):
-	odgovor = False
-	rezultat=sqlQuery.commitBaza(f"""
-			select verification
-			from public.korisnici
-			where email='{email}' and verification =True;
-			""","")
-	if rezultat:
-		odgovor=True
-		return odgovor
-	else:
-		odgovor=False
-		return odgovor
+			""",notification['imaVerifikacije']['poruka'])) 
+
 #ukoliko istekne vreme zaverifikaciju
 @app.route('/posaljiDrugiToken/<token>',methods=['POST','GET'])
 def posaljiDrugiToken(token):
 	token=s.loads(token, salt='kljuc_za_token')#ovde otkljucavamo token
 	email=token
-	provera=proveriToken(email)
+	provera=metode.proveriToken(email)
 	if provera==True:
 		return jsonify(notification['imaVerifikacije']['poruka'])
 	else:
 		recipient =email
 		token = s.dumps(token, salt='kljuc_za_token')#zakljucavamo token
-		message = f"""Verifikijte svoj nalog  http://localhost:8080/verifikujNalog?token={token}"""
+		message = f"""Verifikijte svoj nalog  http://localhost:3000/verifikujNalog?token={token}"""
 		subject = 'Verifikacioni nalog'
 		msg = Message(subject,sender=sender,recipients =[recipient] )
 		msg.body = message
 		mail.send(msg)
-		return jsonify(f"{notification['kreirajKorisnika']['poruka']} {email} {notification['kreirajKorisnika']['porukaNastavak']}")
+		return jsonify(f"Na vas email smo vam poslali drugi verifikacioni token")
 #za slanje linka za promenu passworda 
 @app.route('/forgotPassword',methods=['POST','GET'])
 def forgotPassword():

@@ -60,6 +60,10 @@ const Login=({props})=>{
             // dodeljuje rolu 3
             secureLocalStorage.setItem('rola_3',response.rola_3)
             props.setRola_3(secureLocalStorage.getItem('rola_3')) 
+            //informacije o korisniku ime,prezime email i adresa
+            secureLocalStorage.setItem('infoKorisnika',response.infoKorisnika)
+            props.setInfoKorisnika(secureLocalStorage.getItem('infoKorisnika'))
+            
             navigate('/');//preusmerava napocetnu stranu
             }
           }  

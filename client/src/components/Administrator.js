@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import AdminKorisnici from "./AdminKorisnici";
 import AzurirajKorisnika from "./AzurirajKorisnika";
 import BezVerifikacije from "./BezVerifikacije";
-
+import AdminSirovine from "./AdminSirovine";
 const Administrator = ({ props, role }) => {
     const [stranica, setStranica] = useState(0)
     const [errorMesagges, setErrorMesagges] = useState('')
@@ -53,6 +53,14 @@ const Administrator = ({ props, role }) => {
                         </button>
                     </div>
                 </div><br />
+                <div className="row">
+                    <div className="col-sm-4"></div>
+                    <div className="col-sm-4">
+                        <button onClick={() => setStranica(4)} className='btn btn-default btn-lg  btn-block'>
+                           Sirovine
+                        </button>
+                    </div>
+                </div><br />
                 </> : 
                     <div className="alert alert-success alert-dismissible">
                     <p className="close" data-dismiss="alert" aria-label="close">&times;</p>
@@ -70,7 +78,7 @@ const Administrator = ({ props, role }) => {
             {stranica === 2 ? <AdminKorisnici func={{ data, errorMesagges }} props={props} /> : null}
             {stranica === 1 ? <AzurirajKorisnika props={props} azuriraj={role} /> : null}
             {stranica === 3 ? <BezVerifikacije func={{ blockUser, errorMesagges, noVerification }} props={props} /> : null}
-            
+            {stranica === 4 ? <AdminSirovine />: null}
         </div>
     )
 }

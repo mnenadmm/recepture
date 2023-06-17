@@ -19,6 +19,7 @@ const Header = ({props,role})=>{
         props.setRola_1(secureLocalStorage.removeItem('rola_1'))
         props.setRola_2(secureLocalStorage.removeItem('rola_2'))
         props.setRola_3(secureLocalStorage.removeItem('rola_3'))
+        props.setInfoKorisnika(secureLocalStorage.removeItem('infoKorisnika'))
         
         const opt={method: 'POST',
         headers: {
