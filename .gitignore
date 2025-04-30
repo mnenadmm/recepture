@@ -1,3 +1,4 @@
+.env
 # Za backend
 backend/__pycache__
 

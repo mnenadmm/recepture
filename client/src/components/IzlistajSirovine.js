@@ -24,6 +24,7 @@ function IzlistajSirovine({props,role}) {
                         getData(response);
                         setshowSelect(1); // prikazuje select
                         setFilteredData(response)
+                       
                 })
                 .catch(error=>{
                     console.log('ovo je greska ',error)
@@ -46,6 +47,7 @@ function IzlistajSirovine({props,role}) {
                 else{
                     getData(response); 
                     setFilteredData(response)
+                    
                 } 
             })
             .catch(error=>{
@@ -69,7 +71,7 @@ function IzlistajSirovine({props,role}) {
     const lista=()=>{
         
     return(
-        <div className="col-sm-12">
+        <div className="container">
             {errorMesagges === '' ? <> 
             {showSelect === 1 ? 
             <Select  role={role} promena={promena} options={URL_Dobavljac}setErrorMesagges={setErrorMesagges} ime='Izlistaj po Dobavljacu...' />

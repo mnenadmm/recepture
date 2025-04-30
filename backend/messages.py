@@ -118,8 +118,14 @@ class msgOneArg:
         i = "dobavljaci"
         write_jsonOneArg(i,y)
         return notification[i]["updateDobavljac"]
-    
-        
+    def updateNutriSirovine(self):
+        y={
+            "updateNutritValue": "Za sirovinu "+self.x+" ste azurirali nutritivne vrednosti."
+        }
+        i="admin"
+        write_jsonOneArg(i,y)
+        return notification[i]["updateNutritValue"]
+         
       
  #clasa za messages koja uzima dva argumenta   
 class msgTwoArg:

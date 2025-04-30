@@ -28,13 +28,11 @@ const DajKolace = ({role})=>{
         setImeKolaca(imeKolaca)
         setIdKolaca(id)
         setStranica(1)
-        
       }
       const handleSearch = (event) =>{
         let value = event.target.value.toLowerCase();
         let result = [];
         result = data.filter((data) => {
-            
             return data[1].search(value) !== -1;
         });
         setFilteredData(result);
@@ -47,20 +45,16 @@ const DajKolace = ({role})=>{
                     <input className="form-control" onChange={(event) =>handleSearch(event)} id="myInput" type="text" placeholder="Search.."></input>
                     </div>
                 </div>
-
                 <table className="table table-hover">
                 <tbody>
                     <tr>
                         <th>Id kolaca</th>
-                        <th>Ime kolaca</th>
-                        
-                        
+                        <th>Ime kolaca</th>  
                     </tr>
                     {filteredData.map((item, i) => (
                         <tr key={i}>
                             <td>{item[0]}</td>
-                            <td onClick={()=>{postupak(item[0],item[1])}}>{item[1]}</td>
-                            
+                            <td onClick={()=>{postupak(item[0],item[1])}}>{item[1]}</td>  
                         </tr>
                     ))}
                 </tbody>

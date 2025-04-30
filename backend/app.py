@@ -13,11 +13,17 @@ import modeli
 import json
 #vezba
 from messages import *
+from time import localtime, strftime
+
 
 with open('./data.json', 'r') as f:
 	notification = json.load(f)
 # metoda create_app() napravi instancu aplikacije i napravi model u bazi podataka
 [app,db,s,sender] = applicationSetup.create_app()
+###################################
+
+
+
 
 mail = Mail(app)
 jwt = JWTManager(app)
@@ -57,21 +63,21 @@ def session_clear(exception=None):
 def load_user(user_id):
     return modeli.Korisnici.query.get(int(user_id))
 ########### stefaaa kraj ##########
-@app.route('/a')
-def index1():
-	imeDobavljaca="zelandija"
-	
-	return sqlQuery.returnAll(f"""select sirovine.naziv_sirovine,sirovine.id_sirovine,recepture.kolicina,
-							sirovine.kcal/0.1*recepture.kolicina,sirovine.kj/0.1*recepture.kolicina,
-			   				sirovine.masti/0.1*recepture.kolicina,sirovine.zasicene_masti/0.1*recepture.kolicina,
-			   				sirovine.ugljeni_hidrati/0.1*recepture.kolicina,sirovine.so/0.1*recepture.kolicina,
-			   				sirovine.seceri_ugljeni_hidrati/0.1*recepture.kolicina,
-			   				sirovine.proteini/0.1*recepture.kolicina
-							from recepture
-							INNER JOIN sirovine
-							on recepture.id_sirovine=sirovine.id_sirovine
-							where recepture.id_kolaca=1;""")
-	
+@app.route('/index', methods=['GET', 'POST'])
+def index():
+    if current_user.is_authenticated():
+        useri=sqlQuery.returnAll(f"""
+        			select id_korisnika, username from korisnici
+	    		     where id_korisnika !={current_user.get_id()};
+        
+        			""")
+        return jsonify(useri)
+	##return jsonify(sqlQuery.returnAll("""
+	#					select  sirovine.id_sirovine,sirovine.naziv_sirovine,sirovine.cena_sirovine,dobavljaci.ime_dobavljaca,dobavljaci.id_dobavljaca
+	#					from sirovine
+	#					INNER JOIN dobavljaci
+	#					on sirovine.id_dobavljaci = dobavljaci.id_dobavljaca;
+	#				"""))
 	    
 	
 		
@@ -113,14 +119,15 @@ def login():
 			return jsonify(notification['error']['pogresnaLozinka'])
 	else:
 		return jsonify(notification['error']['pogresnaLozinka'])
-#### logout####################
-@app.route("/logoutR", methods=["POST","GET"])
+#### logout#####cur###############
+@app.route("/logoutR", methods=["POST"])
 @login_required # zakljucava ako korisnik nije ulogovan
 def logoutR():
     #brisanje
     db.session.remove()
     #odjavljivanje usera
     logout_user()
+    #allUsers.remove(current_user.username)
     return jsonify(notification['login']['logout'])
 @app.route('/kreirajKorisnikaReact',methods=['POST'])
 def kreirajKorisnikaReact():
@@ -228,7 +235,105 @@ def noviPassword(token):
 		where email='{mail}';
 		""",'')
 	return jsonify(msgOneArg(mail).changePassword())
+
+###################################
+from flask_cors import CORS
+from flask_socketio import SocketIO, emit,send,join_room, leave_room
+#vidi sa Stefom sta je odobreno na corsu za socketio
+socketio = SocketIO(app,logger=True, engineio_logger=True,cors_allowed_origins='*')
+allUsers=[]
+onlineUsers = [] 
+offlineUsers= []
+#konekcija
+
+@socketio.on("connect")
+def connect():
+    if current_user.is_authenticated():
+        join_room(current_user.id_usera())
+        emit('conn',f'Connect {current_user.username}')
+	#ako se id.value nalazi u dictionari u listi vratice true
+    if any(current_user.id_usera()  in id.values() for id  in onlineUsers)==False:
+		#ako nije u listi onda ce ga ubciti
+        users={
+			'id' : current_user.id_usera(),
+			'username':current_user.username
+		}
+        onlineUsers.append(users)
+    emit('connectUsers',onlineUsers,broadcast=True)
+@socketio.on('disconnect')
+def disconnect():
+    #brisemo iz liste konektovanih korisnika
+    for item in onlineUsers:
+        if item.get('id')== current_user.id_usera():
+            onlineUsers.remove(item)
+            emit('connectUsers',onlineUsers,broadcast=True)
 	
+    
+#prima evente sa fronta
+#kada se koristi send(data) rezervisani event na fronut je messages
+# emit su prilagodjeni eventi, i na frontu se tako i primaju
+#prvi argument je naziv emita
+def ack():
+    emit('isporuceno','poruka je isporucena',room=current_user.id_usera())
+@socketio.on('message')
+def message(data):
+	if current_user.is_authenticated():
+		emit('messageResponse',data,room=data['room'])
+		sqlQuery.commitBaza(f"""
+					INSERT INTO messages(id_usera,id_primalac,poruka,soba,datum,online)
+			    	values({data['idKorisnika']},{data['room']},'{data['messages']}',{data['idKorisnika']+data['room']},'{data['vreme']}',true);
+						""","")
+		#Ako user nije online onda abdejtujemo poruku [online=false] u bazi
+		if any(data['room']  in id.values() for id  in onlineUsers)==False:
+
+			#update kolonu online=false zato sto je korisnik ofline 
+			sqlQuery.commitBaza(f"""
+					update messages
+				    set online =false
+				    where soba={data['idKorisnika']+data['room']} and poruka='{data['messages']}';
+					""","")	
+@socketio.on('typing')
+def typing(data):
+	emit('typingResponse', data['msg'],room=data['room'])
+@app.route('/last_100/<int:soba>/<int:idKorisnika>/<int:primalac>', methods=['GET', 'POST'])
+def last_100(soba,idKorisnika,primalac):
+    if current_user.is_authenticated():
+	#selektuje odredjenu sobu koja je zbir id-a posiljalaca i primalaca
+	#takodje selektuje id posiljalaca i primalaca
+        last_100=sqlQuery.returnAll(f"""
+            		select id_usera,id_primalac, poruka,datum from messages
+				  		where soba ={soba} and (id_usera ={idKorisnika} or id_usera ={primalac})
+	    			    order by id_message NULLS LAST;
+            			""")   
+        return jsonify(last_100)
+#primamo obavestenje za ofline poruke
+@app.route('/porukaZaOfflineUsera/<int:idPrimalac>')
+#@login_required
+def porukaZaOfflineUsera(idPrimalac):
+	if current_user.is_authenticated():
+		offlinePoruka=sqlQuery.returnAll(f"""
+   				select messages.id_usera,messages.id_primalac,
+				korisnici.username from messages
+				inner join korisnici
+				on messages.id_usera=korisnici.id_korisnika
+				where messages.online =false and messages.id_primalac={idPrimalac};
+    	    			""") 
+
+		return jsonify(offlinePoruka)
+@app.route('/azurirajOfflinePoruke/<int:idPrimalac>')
+def azurirajOfflinePoruke(idPrimalac):
+	if current_user.is_authenticated():
+		return jsonify(sqlQuery.commitBaza(f"""
+   				update messages
+			     set online=true
+			     where id_primalac={idPrimalac};
+    	    			""","sve je ok"))
+		
+
+
 if __name__ == '__main__':
     # moze da se podesi IP adresa, port i mogucnost za automatsko cuvanje i usvajanje promena (koda)
     app.run('0.0.0.0', 5000, debug=True)
+	#socketio.run(app,'0.0.0.0', 5000, debug=True) #umotali smo celu aplikaciju u sockerio
+  #mora da se koristi flask-socketio==5.2.0 zato sto druge verizje imaju gresku
+  

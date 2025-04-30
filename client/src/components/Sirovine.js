@@ -6,51 +6,39 @@ const Sirovine = ({role})=>{
     
     const SirovineMenu=()=>{return(
         <div className="container">
-       
-            <div className='row'></div>
             <br></br>
-            <div className="col-sm-4">
-            </div>
-                <div className="col-sm-4 ">
+                <div className="col-sm-12 text-center">
                     <Link to='/izlistajSirovine'>
-                        <button className='btn btn-default btn-lg  btn-block'>
+                        <button className='btn btn-primary btn-block btn-lg'>
                             IzlistajSirovine
                         </button>
                     </Link>
                 </div>
                  {/*  */}
             {role.rola_1 ? <>
-                <div className='row'></div>
                 <br></br>
                 <br></br>
-                <div className='col-sm-4'></div>
-                <div className='col-sm-4'>
+                <div className='col-sm-12 text-center'>
                     <Link to='/dodajSirovinu'>
-                        <button className='btn btn-default btn-lg  btn-block'>
+                        <button className='btn btn-primary btn-lg  btn-block'>
                             Dodaj sirovinu
                         </button>
                     </Link>
-
                 </div>
                 </>: null}
-                <div className='row'></div>
                 <br></br>
                 <br></br>
-                <div className='col-sm-4'></div>
-                <div className='col-sm-4'>
+                <div className='col-sm-12 text-center'>
                     <Link to='/dobavljaciEdit'>
-                        <button className='btn btn-default btn-lg  btn-block'>
+                        <button className='btn btn-outline-secondary btn-lg   btn-block'>
                             Dobavljaci edit
                         </button>
                     </Link>
-
                 </div>
                 {role.rola_1 === true ? <>
-                <div className='row'></div>
                 <br></br>
                 <br></br>
-                <div className='col-sm-4'></div>
-                <div className='col-sm-4'>
+                <div className='col-sm-12 text-center'>
                     <Link to='/sirovineEdit'>
                         <button className='btn btn-default btn-lg  btn-block'>
                             Sirovine edit
@@ -61,8 +49,8 @@ const Sirovine = ({role})=>{
                 <div className='row'></div>
                 <br></br>
                 <br></br>
-                <div className='col-sm-4'></div>
-                <div className='col-sm-4'>
+                
+                <div className='col-sm-12 text-center'>
                     <Link to='/naruciSirovine'>
                     <button className='btn btn-default btn-lg  btn-block'>
                         Naruci sirovine

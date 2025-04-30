@@ -140,7 +140,7 @@ def azurirajNutritivnuVrednostSirovine():
 				seceri_ugljeni_hidrati={seceri},so={so},
 				proteini={proteini}
 				where id_sirovine={idSirovine};
-			""",'sve je proslo bravooooooooooooooo'))
+			""",msgOneArg(imeSirovine).updateNutriSirovine()))
 	else:
 		return notification['error']['nemaPristupa']
 

@@ -5,10 +5,6 @@ services:
     hostname: postgres
     image: postgres:15
     restart: unless-stopped
-    environment:
-      POSTGRES_USER: nenad
-      POSTGRES_PASSWORD: 781022Sone
-      POSTGRES_DB: app_magacin
     ports:
       - "5433:5432"
     volumes: 
@@ -16,9 +12,12 @@ services:
       #- ./baza:/postgres
     networks:
       - mreza2
+    env_file:
+      - .env
   
   backend:
-    build: 
+    build: # sudo docker build -f Dockerfile.novi  -t flask-backend .
+
       context: ./backend
       dockerfile: Dockerfile.novi
     image: flask-backend
@@ -59,18 +58,21 @@ services:
       - postgres
     ports:
       - "5555:80"
-    environment:
-      PGADMIN_DEFAULT_EMAIL: mnenadmm@gmail.com
-      PGADMIN_DEFAULT_PASSWORD: 781022Sone
     restart: unless-stopped
     networks:
-      - mreza2  
+      - mreza1   # Dodaj ovu mrežu
+      - mreza2 
+    env_file:
+      - .env 
 
 networks:
   mreza1:
     name: mreza1
   mreza2:
     name: mreza2
+
+
+
     
   
 

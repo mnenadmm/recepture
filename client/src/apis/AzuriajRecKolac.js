@@ -29,8 +29,8 @@ const AzuriajRecKolac=({props,token,role})=>{
         .then((response) => { 
             if(response.error){return setErrorMessages(response.poruka)
             }else{
-                setData(response);  
-                setFilteredData(response);
+                setData(response[2]);  
+                setFilteredData(response[2]);
             }
             
            

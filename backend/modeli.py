@@ -17,7 +17,8 @@ class Korisnici(db.Model):
 	block_user = db.Column(db.Boolean,server_default="False")
 	ime_korisnika =db.Column(db.String(250))
 	prezime_korisnika =db.Column(db.String(250))
-	
+	def id_usera(self):#korisnimo za chet
+		return self.id_korisnika
 	def rola_1(self): #ime funkcije se mora razlikovati od vrednosti
 		return self.prva_rola # prva_rola se povlaci iz baze
 	def rola_2(self):

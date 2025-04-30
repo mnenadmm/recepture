@@ -6,9 +6,14 @@ const DajPostupak = ({props,role})=>{
     const[nazad,setNazad]=useState(0);// vraca nazad
     const[errorMessages,setErrorMessages]=useState('');
     const[postupak, setPostupak]=useState(false)//da li se prikazuje postupak
+
+    const[nutTabela, setNutTabela]=useState(false)//prikazuje tabelu nutritivnih vrednosti
     const[objasnjenje,setObjasnjenje]=useState([])//objasnjenje kolaca
     const[recept, setRecept]=useState([])//receptura
-    
+    const [bezNut, setBezNut]=useState([])//bez nut. vrednosti
+    const[respon1, setRespon1]=useState([])
+    const[respon2, setRespon2]=useState([])
+    const [vratiRecept, setVratiRecept]=useState([])
   const [kcal, getKcal]=useState(null)
   const [kolicina,setKolicina]=useState(0)
   const [kj, setKj]=useState(null)
@@ -18,16 +23,25 @@ const DajPostupak = ({props,role})=>{
   const [so, setSo]=useState(null)
   const [seceri, setSeceri]=useState(null)
   const [proteini, setProteini]=useState(null)
+  
     
     
     useEffect(()=>{
         const proba=()=>{// pokusavam d otklonim error
+            
         fetch(`/dajRecepturuReact/${props.idKolaca}`,{
             method: "GET",
             headers: {  
             }}).then((res) =>{if(res.status===200){return res.json()}}).then((response) => { 
             if(response.error){return setErrorMessages(response.poruka)
-            }else{return setRecept(response)}  
+            }else{
+                
+                 setRecept(response[2])//normalna receptura
+                 setRespon1(response[0])//sa vrednosti
+                 setRespon2(response[1])//bez vrednosti
+                 setVratiRecept(response[2])
+                 
+            }
         }).catch((error)=>{console.log('ERROR: ',error)});
         fetch(`/dajPostupakZaRecepturu/${props.idKolaca}`,{
             method: "GET",
@@ -96,53 +110,16 @@ const DajPostupak = ({props,role})=>{
             </div>
         )
     }
-    const Receptura=()=>{
-        const prikazi=()=>{
-           
-            setPostupak(a=>!a)//ovo znaci suprotno od postojeceg
-        }
-        return(
-            <div>
-                {errorMessages ==="" ?
-            <div className="container">
-                <ul className="nav nav-tabs actions-nav">
-                <li>
-                    <button className="btn btn-default" onClick={()=>setNazad(1)}>List</button>
-                </li>
-                <li className="active">
-                    <button className="btn btn-default">Objasnjenje</button>
-                </li>
-                </ul>
-                <div className="row">
-                <br></br><br></br>
-                <div className="col-sm-4"></div>
-                <div className="col-sm-4 text-center">
-                    <h2>{props.imeKolaca}</h2>
-                </div>
-            </div>
-            <br />
-            <br /><br />
-            <table className="table table-striped  table-bordered">
-                <thead>
-                  <tr>
-                    <th scope="col">Sirovina</th>
-                    <th scope="col">Kolicina</th>
-                  </tr>
-                </thead>
-            {recept.map((item, i) => (
-                <tbody key={i}>
-                  <tr>
-                    <td>{item[0]}</td>
-                    <td>{item[2]}</td>
-                  </tr>
-                </tbody>  
-            ))}
-           </table>
+    const nutritivnaTabela=()=>{
 
-           <table className="table table-striped  table-bordered">
+      return(
+        <div className="container">
+            {errorMessages ==='' ?
+            <div>
+               <table className="table table-striped  table-bordered">
                 <thead>
                   <tr>
-                    <th scope="col">Suplemen</th>
+                    <th scope="col">Nutritivna vrednost proizvoda na 100gr</th>
                     <th scope="col">Kolicina</th>
                   </tr>
                 </thead>
@@ -183,8 +160,90 @@ const DajPostupak = ({props,role})=>{
                 </tbody>  
            
            </table>
-            <button type="button"onClick={()=>prikazi()} className="btn btn-info">Postupak</button>
+                <br /><br />
+            </div>
+            :
+            <div className="alert alert-success alert-dismissible">
+                <p  className="close" data-dismiss="alert" aria-label="close">&times;</p>
+                    <strong>{errorMessages}</strong>   
+            </div>
+        }
+        </div>
+      )
+    }
+    const Receptura=()=>{
+        const prikaziNutr=()=>{
+
+          if(respon2 !==[]){
+            setRecept(respon1)
+            setBezNut(respon2)
+          } 
+          setNutTabela(a=>!a)
+          if(nutTabela){
+            setRecept(vratiRecept)
+            setBezNut([])  
+          }
+        }
+        const prikazi=()=>{
+           
+            setPostupak(a=>!a)//ovo znaci suprotno od postojeceg
+        }
+        return(
+            <div>
+                {errorMessages ==="" ?
+            <div className="container">
+                <ul className="nav nav-tabs actions-nav">
+                <li>
+                    <button className="btn btn-default" onClick={()=>setNazad(1)}>List</button>
+                </li>
+                <li className="active">
+                    <button className="btn btn-default">Objasnjenje</button>
+                </li>
+                </ul>
+                <div className="row">
+                <br></br><br></br>
+                <div className="col-sm-4"></div>
+                <div className="col-sm-4 text-center">
+                    <h2>{props.imeKolaca}</h2>
+                </div>
+            </div>
+            <br />
+            <br /><br />
+            <table className="table table-striped  table-bordered">
+                <thead>
+                  <tr>
+                    <th scope="col">Sirovina</th>
+                    <th scope="col">Kolicina</th>
+                  </tr>
+                </thead>
+            {recept.map((item, i) => (
+                <tbody key={i}>
+                  <tr>
+                    <td>{item[0]}</td>
+                    <td>{item[2]}</td>
+                  </tr>
+                </tbody>  
+            ))}
+            {bezNut.map((item, i) => (
+                <tbody key={i}>
+                  <tr>
+                    <td style={{'color':'red'}}>{item[0]}</td>
+                    <td>{item[2]}</td>
+                  </tr>
+                </tbody>  
+            ))}
+           </table>
+           
+           <div className="col-sm-6">
+              <button type="button"onClick={()=>prikazi()} className="btn btn-info">Postupak</button>
+           </div>
+           <div className="col-sm-6">
+              <button  type="button"onClick={()=>(prikaziNutr())} className="btn btn-info">Tabela Nutritivnih vrednosti</button>
+           </div>
+           
                 {postupak ===true? pokazi() : null}
+                <br></br><br></br><br></br><br></br>
+                {nutTabela === true ? nutritivnaTabela() : null}
                 <br></br><br></br><br></br><br></br>
             </div>
                 :
@@ -193,6 +252,9 @@ const DajPostupak = ({props,role})=>{
                     <strong>{errorMessages}</strong>
                 </div>
                 }
+                
+              
+              <br />
             </div>
         )
     }

@@ -83,34 +83,36 @@ const Login=({props})=>{
       </div>
       
       <form onSubmit={(e)=>promeni(e)}>
-      
-        <div className='row'>
-          <div className='col-sm-4'></div>
-          <div className='col-sm-4'>
-            <label>
-              <p>Username</p>
-              <input  className='form-control' type="text" onChange={e => setUserName(e.target.value)} />
-            </label>
-            </div>
+      <div className="row">
+          <div className="col-sm-4"></div>
+          <div className="col-sm-4">
+              <br/>
+              <label  className="form-label">Ime:</label>
+              <input  className='form-control' type="text" onChange={e => setUserName(e.target.value)} />  
+          </div>       
         </div>
+        <div className="row">
+          <div className="col-sm-4"></div>
+          <div className="col-sm-4">
+              <br/>
+              <label  className="form-label">Password:</label>
+              <input className='form-control' type="password" onChange={e => setPassword(e.target.value)} /> 
+          </div>
+        </div><br />
         <div className='row'>
           <div className='col-sm-4'></div>
           <div className='col-sm-4'>
-            <label>
-              <p>Password</p>
-              <input className='form-control' type="password" onChange={e => setPassword(e.target.value)} />
-              
-            </label>
-            <p onClick={()=>setStranica(1)}>Forgot password???</p>
+          <p onClick={()=>setStranica(1)}>Forgot password???</p>    
+
           </div>
         </div>
-        <br />
+        <br /><br /><br />
         <br /><br />
         <div className='col-sm-12 text-center'>
           <button className='btn btn-primary' onClick={(e)=>promeni(e)}type="submit">Submit</button>
         </div>
       </form>
-     
+      
     </div>
   )
     }

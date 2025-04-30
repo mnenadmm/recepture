@@ -13,14 +13,39 @@ apiRecepture = Blueprint('apiRecepture', __name__)
 def dajRecepturuReact(idKolaca):
 	if current_user.block()==False:
 		if current_user.rola_1() or current_user.rola_2():
-			return jsonify(sqlQuery.returnAll(f"""
+			bezVr= sqlQuery.returnAll(f"""
 				select sirovine.naziv_sirovine,sirovine.id_sirovine,recepture.kolicina,sirovine.cena_sirovine,
 				round(cast(recepture.kolicina*(sirovine.cena_sirovine-sirovine.cena_sirovine*recepture.rabat/100)as numeric),2):: double precision,recepture.rabat
 				from recepture
 				INNER JOIN sirovine
 				on recepture.id_sirovine=sirovine.id_sirovine
-				where recepture.id_kolaca={idKolaca};
-				"""))
+				where recepture.id_kolaca={idKolaca} and sirovine.kcal IS not NULL and sirovine.kj IS not NULL
+				and sirovine.masti IS not null and sirovine.zasicene_masti IS not null
+				and sirovine.ugljeni_hidrati IS not NULL and seceri_ugljeni_hidrati IS not NULL
+				and sirovine.proteini IS not null
+				order by recepture.id_recepture  NULLS LAST;
+				""")
+			saVr=sqlQuery.returnAll(f"""
+				select sirovine.naziv_sirovine,sirovine.id_sirovine,recepture.kolicina,sirovine.cena_sirovine,
+				round(cast(recepture.kolicina*(sirovine.cena_sirovine-sirovine.cena_sirovine*recepture.rabat/100)as numeric),2):: double precision,recepture.rabat
+				from recepture
+				INNER JOIN sirovine
+				on recepture.id_sirovine=sirovine.id_sirovine
+				where recepture.id_kolaca={idKolaca} and sirovine.kcal IS NULL and sirovine.kj IS  NULL
+				and sirovine.masti IS null and sirovine.zasicene_masti IS  null
+				and sirovine.ugljeni_hidrati IS NULL and seceri_ugljeni_hidrati IS NULL
+				and sirovine.proteini IS  null
+				order by recepture.id_recepture  NULLS LAST;
+				""")
+			kalk=sqlQuery.returnAll(f"""
+				select sirovine.naziv_sirovine,sirovine.id_sirovine,recepture.kolicina,sirovine.cena_sirovine,
+				round(cast(recepture.kolicina*(sirovine.cena_sirovine-sirovine.cena_sirovine*recepture.rabat/100)as numeric),2):: double precision,recepture.rabat
+				from recepture
+				INNER JOIN sirovine
+				on recepture.id_sirovine=sirovine.id_sirovine
+				where recepture.id_kolaca={idKolaca}
+				order by recepture.id_recepture  NULLS LAST;""")
+			return jsonify(bezVr,saVr,kalk)
 		else:
 			return notification['error']['nemaPristupa']	
 	else:

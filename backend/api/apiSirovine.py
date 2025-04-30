@@ -90,7 +90,7 @@ def izlistajSirovineReact():
 			if current_user.rola_1() or current_user.rola_2() or current_user.rola_3()  :
 				return jsonify(sqlQuery.returnAll("""
 						select  sirovine.id_sirovine,sirovine.naziv_sirovine,sirovine.cena_sirovine,dobavljaci.ime_dobavljaca,dobavljaci.id_dobavljaca
-						from sirovine 
+						from sirovine
 						INNER JOIN dobavljaci
 						on sirovine.id_dobavljaci = dobavljaci.id_dobavljaca;
 					"""))

@@ -8,7 +8,7 @@ def returnOne(sql):
         mycursor = baza.cursor()
         mycursor.execute(sql)
         rezultat = mycursor.fetchone()
-    except:
+    except Exception as e:
         rezultat = False
         print('ovo je greska ')
     finally:
@@ -22,10 +22,10 @@ def returnAll(sql):
         mycursor = baza.cursor()
         mycursor.execute(sql)
         rezultat = mycursor.fetchall()
-    except:
+    except  Exception as e:
         msg={
             'error': True,
-			'poruka': 'Neuspela veza sa bazom'
+			'poruka': "Neuspela veza sa bazom "+(e.pgcode)
         }
         rezultat = msg
         print('ovo je greska ')
@@ -41,10 +41,10 @@ def commitBaza(sql,messages):
         baza.commit()
        
         rezultat =messages
-    except:
+    except Exception as e:
         msg={
             'error': True,
-			'poruka': 'Neuspela veza sa bazom sql'
+			'poruka': 'Neuspela veza sa bazom sql '+(e.pgcode)
         }
         rezultat = msg
     finally:
@@ -59,10 +59,10 @@ def vezba(sql):
         baza.commit()
         
         rezultat =True
-    except:
+    except Exception as e:
         msg={
             'error': True,
-			'poruka': 'Neuspela veza sa bazom'
+			'poruka': 'Neuspela veza sa bazom '+(e.pgcode)
         }
         rezultat = False
     finally:

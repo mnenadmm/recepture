@@ -1,0 +1,13 @@
+#landing{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 10px;
+}
+#chat {
+    width: 50%;
+}
+#chat input {
+    width: 99%;
+}

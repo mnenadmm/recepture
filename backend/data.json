@@ -1,7 +1,7 @@
 {
     "probaEmail": {
         "errorEmail": true,
-        "poruka": "Email mnenadmm@gmail.com je zauzet"
+        "poruka": "Email korisnikPrvaRola@gmail.com je zauzet"
     },
     "probaSirovina": {
         "errorSirovina": true,
@@ -17,7 +17,7 @@
     },
     "kreirajKorisnika": {
         "error": false,
-        "poruka": "Na email korisnikPrvaRola@gmail.com poslat je verifikacijioni token."
+        "poruka": "Na email korisnikDrugaRola@gmail.com poslat je verifikacijioni token."
     },
     "login": {
         "proba": "Vase ime je {ime} iz krusevca ",
@@ -57,7 +57,7 @@
         "poruka": "Vas nalog nije verifikovan, molimo vas da potvrdite verifikaciju."
     },
     "sirovine": {
-        "commitSirovina": "Dodali ste sirovinu nova ."
+        "deleteSirovina": "Obrisali ste sirovinu proba ."
     },
     "kolaci": {
         "commitKolac": "Uspesno ste kreirali kolac ",
@@ -65,7 +65,15 @@
         "deleteKolac": "Uspesno ste obrisali kolac "
     },
     "dobavljaci": {
-        "commitDobavljac": "Dodali ste dobavljaca Lidl ."
+        "proveraSirovine": true,
+        "poruka": [
+            [
+                "spzp"
+            ],
+            [
+                "kikica 123"
+            ]
+        ]
     },
     "recepture": {
         "commitReceptura": "Dodali ste sirovinu u recepturu",
@@ -75,6 +83,6 @@
         "azurirajRabat": " ste promenili rabat za sirovinu "
     },
     "admin": {
-        "updateRole": "Azurirali ste role za korisnika bojan ."
+        "updateRole": "Azurirali ste role za korisnika ja sam drugi ."
     }
 }

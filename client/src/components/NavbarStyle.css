@@ -1,0 +1,133 @@
+.NavbarItems{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.2rem;
+    padding: 0 30px;/*od vrvha ka dnu 0 levi i desni 30*/
+    background-color: #222;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25);
+    width: 100%;
+    height: 60px;
+    border-radius: 13px;
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%); 
+    z-index: 2;
+}
+.logo{
+    color: #fff;
+    justify-self: start;
+     cursor: pointer;
+     padding-top: 12px;
+     
+ }
+ /*Ikonica react*/
+.fa-react{
+    margin-left: 0.2rem;
+    font-size: 1.6rem;
+ }
+ .nav-menu{
+    display: grid;
+    grid-template-columns: repeat(6,auto);
+    grid-gap: 10px;
+    list-style: none;
+    align-items: center;
+    text-align: center;
+    margin-top: 18px;
+    justify-content: end;
+      
+ }
+ .nav-links{
+    text-decoration: none;
+    color: #fff;
+    padding: 0.7rem 1rem;
+    white-space: nowrap;
+ }
+ .nav-links i{
+    padding-right: 10px;
+ }
+ /*Kaga se misem predje preko menije*/
+.nav-links:hover{
+    background: rgb(188, 188, 195); /*Boja hovera, ne svidja mi se, treba je promeniti*/
+    border-radius: 4px;
+    transition: all 0.2s ease-in-out;
+ }
+ /*Ikonica menija(hamburger)*/
+.fa-bars,
+.fa-times{
+    color: #fff;
+}
+/*Sakrivamo ikonicu menija*/
+.menu-icons{
+    display: none;
+ }
+ .nav-links-mobile{
+    padding: 0.5rem 1rem;
+    white-space: nowrap;
+    background-color: #fafafa;
+    border-radius: 3px;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #222;
+ }
+ /*Aktivira se kada je ekran manji od 850px*/
+@media screen and (max-width: 850px){
+    .NavbarItems{
+        z-index: 99;
+    }
+    .nav-menu{
+        /*Vraca meni u kolnu*/
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;/*sve se nalazi u jednoj koloni*/
+           /*Boja menija i da meni bude transparentan .25*/
+        background: rgba(255,255,255, .25);
+           /*Pravimo senku*/
+        box-shadow: 0 8px 32px 0 rgba(31,38,135, .37);
+        backdrop-filter: blur(4px);
+        border-radius: 13px;
+        width: 100%;
+        height: auto;
+        position: absolute;
+        top: 0;
+        left: -110%; /*sakrivamo meni*/
+        align-items: stretch;
+        padding: 80px 0 30px 0;
+        margin: 0;
+        z-index: -1;
+        transition: all 0.3s ease-in-out;
+    }
+      /*otkljucali smo meni zato sto je dodato klasi active*/
+    .nav-menu.active{
+    left: 0%;
+   }
+
+    .nav-links{
+        display: block;
+        widows:100%;
+        padding: 2rem 0;
+        color: #222;
+       }
+    .nav-links:hover{
+      background: rgb(159,116,116);
+      background: radial-gradient(circle, rgba(159,116,116,1) 0%, rgba(255,255,255,1) 0%);
+     
+        }
+     /*Otkljucavamo ikonicu menija*/
+   .menu-icons{
+    display: block;
+ }
+ .nav-links-mobile{
+    padding: 1.5rem;
+    display: block;
+    text-align: center;
+    font-size: 1.3rem;
+    font-weight: bold;
+    width: 80%;
+    margin: auto;
+ }
+
+
+}

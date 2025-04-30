@@ -5,7 +5,6 @@ from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 from datetime import timedelta
 from konekcija import *
-
 def create_app():
     app = Flask(__name__)
 
@@ -19,7 +18,7 @@ def create_app():
     app.config['MAIL_USE_TLS'] = True
     app.config['MAIL_USE_SSL'] = False
     sender = 'mnenadmm@gmail.com'
-    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=48)#token ce trajati 100 sati i nakon toga se se uz pomoc funkcije osveziti
+    #app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=48)#token ce trajati 100 sati i nakon toga se se uz pomoc funkcije osveziti
     app.permanent_session_lifetime = timedelta(minutes=1000)
 
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -28,8 +27,9 @@ def create_app():
     CORS(app, supports_credentials=True)
     app.config['SQLALCHEMY_DATABASE_URI'] =string_za_konekciju
     app.config["SECRET_KEY"] = "thisisseacretkey"
+    
 
     from modeli import db
     db.init_app(app)
-
+    
     return [app, db,s,sender]

@@ -51,7 +51,7 @@ const velikoSlovo = str => {
         
          i=document.getElementById(i);
          x=document.getElementById(x);
-        if (x.checked == true){
+        if (x.checked === true){
             i.disabled = false;
         }else{
             i.disabled = true;
