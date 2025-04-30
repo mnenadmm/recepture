@@ -64,6 +64,21 @@ services:
       - mreza2 
     env_file:
       - .env 
+  nginx:
+    image: nginx:latest
+    container_name: nginx_proxy
+    restart: unless-stopped
+    ports:
+      - "80:80"  # Preusmerava port 80 ka NGINX
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf  # Tvoj nginx.conf fajl
+      - ./client/build:/usr/share/nginx/html  # React build fajlovi
+    depends_on:
+      - front  # Frontend zavisi od React aplikacije
+      - backend  # Backend zavisi od Flask aplikacije
+    networks:
+      - mreza1
+      - mreza2
 
 networks:
   mreza1:
