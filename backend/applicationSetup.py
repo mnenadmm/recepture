@@ -25,6 +25,7 @@ def create_app():
     app.permanent_session_lifetime = timedelta(minutes=1000)
 
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    SQLALCHEMY_DATABASE_URI = 'postgresql://nenad:781022Sone@postgres:5432/app_magacin'
 
     #CORS(app)supports_credentials,
     CORS(app, supports_credentials=True)
