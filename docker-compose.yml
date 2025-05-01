@@ -12,8 +12,10 @@ services:
       #- ./baza:/postgres
     networks:
       - mreza2
-    env_file:
-      - .env
+    environment:
+      POSTGRES_USER: nenad
+      POSTGRES_PASSWORD: 781022Sone
+      POSTGRES_DB: app_magacin
   
   backend:
     build: # sudo docker build -f Dockerfile.novi  -t flask-backend .
@@ -62,8 +64,9 @@ services:
     networks:
       - mreza1   # Dodaj ovu mrežu
       - mreza2 
-    env_file:
-      - .env 
+    environment:
+      PGADMIN_DEFAULT_EMAIL: mnenadmm@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: 781022Sone 
   nginx:
     image: nginx:latest
     container_name: nginx_proxy
