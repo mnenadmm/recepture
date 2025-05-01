@@ -1,4 +1,4 @@
-from flask import request, jsonify, url_for, session
+from flask import request, jsonify, session
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flask_login import login_user, LoginManager, login_required, logout_user, current_user
@@ -11,7 +11,7 @@ import sql as sqlQuery
 import metode
 import modeli
 import json
-#vezba
+#vezba url_quote
 from messages import *
 from time import localtime, strftime
 
