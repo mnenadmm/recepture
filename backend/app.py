@@ -1,6 +1,6 @@
 from flask import request, jsonify, session
 from flask_cors import CORS
-from flask_jwt_extended import JWTManager
+#from flask_jwt_extended import JWTManager
 from flask_login import login_user, LoginManager, login_required, logout_user, current_user
 from flask_mail import Mail, Message
 import psycopg2
@@ -27,7 +27,7 @@ with open('./data.json', 'r') as f:
 
 
 mail = Mail(app)
-jwt = JWTManager(app)
+#jwt = JWTManager(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
@@ -45,7 +45,7 @@ app.register_blueprint(apiKolaci)
 app.register_blueprint(apiRecepture)
 app.register_blueprint(adminApi)
 mail = Mail(app)
-jwt = JWTManager(app)
+#jwt = JWTManager(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
