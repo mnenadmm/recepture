@@ -5,6 +5,10 @@ services:
     hostname: postgres
     image: postgres:15
     restart: unless-stopped
+    environment:
+      POSTGRES_USER: nenad
+      POSTGRES_PASSWORD: 781022Sone
+      POSTGRES_DB: app_magacin
     ports:
       - "5433:5432"
     volumes: 
@@ -12,10 +16,7 @@ services:
       #- ./baza:/postgres
     networks:
       - mreza2
-    environment:
-      POSTGRES_USER: nenad
-      POSTGRES_PASSWORD: 781022Sone
-      POSTGRES_DB: app_magacin
+    
   
   backend:
     build: # sudo docker build -f Dockerfile.novi  -t flask-backend .
