@@ -1,4 +1,7 @@
 from flask import Flask
+
+from werkzeug.urls import url_quote
+
 from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Mail
 from flask_jwt_extended import JWTManager
