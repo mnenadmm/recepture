@@ -329,7 +329,16 @@ def azurirajOfflinePoruke(idPrimalac):
 			     where id_primalac={idPrimalac};
     	    			""","sve je ok"))
 		
-
+@app.route('/proba')
+def proba():
+    return """
+        <html>
+            <body>
+                <h1>Ovo je test stranica</h1>
+                <p>Backend radi i ovaj HTML je vraćen iz Flask-a.</p>
+            </body>
+        </html>
+    """
 
 if __name__ == '__main__':
     # moze da se podesi IP adresa, port i mogucnost za automatsko cuvanje i usvajanje promena (koda)
