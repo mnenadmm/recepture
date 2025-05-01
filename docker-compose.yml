@@ -71,8 +71,8 @@ services:
     ports:
       - "80:80"  # Preusmerava port 80 ka NGINX
     volumes:
-           - /home/nenad/Desktop/aida1/nginx.conf:/etc/nginx/nginx.conf  # Tvoj nginx.conf fajl
-           - ./client/build:/usr/share/nginx/html  # React build fajlovi
+           - ./nginx.conf:/etc/nginx/nginx.conf
+           - ./client/build:/usr/share/nginx/html
     depends_on:
       - front  # Frontend zavisi od React aplikacije
       - backend  # Backend zavisi od Flask aplikacije
