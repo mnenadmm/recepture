@@ -11,7 +11,7 @@ import sql as sqlQuery
 import metode
 import modeli
 import json
-#vezba url_quote
+#vezba 
 from messages import *
 from time import localtime, strftime
 
