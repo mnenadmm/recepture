@@ -14,7 +14,7 @@ import json
 #vezba 
 from messages import *
 from time import localtime, strftime
-from urllib.parse import quote as url_quote
+
 
 
 with open('./data.json', 'r') as f:
