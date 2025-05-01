@@ -26,3 +26,5 @@ MarkupSafe
 python-engineio
 python-socketio
 six
+flask-jwt-extended
+
