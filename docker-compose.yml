@@ -16,11 +16,9 @@ services:
       #- ./baza:/postgres
     networks:
       - mreza2
-    
   
   backend:
-    build: # sudo docker build -f Dockerfile.novi  -t flask-backend .
-
+    build: 
       context: ./backend
       dockerfile: Dockerfile.novi
     image: flask-backend
@@ -61,79 +59,15 @@ services:
       - postgres
     ports:
       - "5555:80"
-    restart: unless-stopped
-    networks:
-      - mreza1   # Dodaj ovu mrežu
-      - mreza2 
     environment:
       PGADMIN_DEFAULT_EMAIL: mnenadmm@gmail.com
-      PGADMIN_DEFAULT_PASSWORD: 781022Sone 
-  nginx:
-    image: nginx:latest
-    container_name: nginx_proxy
+      PGADMIN_DEFAULT_PASSWORD: 781022Sone
     restart: unless-stopped
-    ports:
-      - "8080:80"  # Preusmerava port 80 ka NGINX
-    volumes:
-           - ./nginx.conf:/etc/nginx/nginx.conf
-           - ./client/build:/usr/share/nginx/html
-    depends_on:
-      - front  # Frontend zavisi od React aplikacije
-      - backend  # Backend zavisi od Flask aplikacije
     networks:
-      - mreza1
-      - mreza2
+      - mreza2  
 
 networks:
   mreza1:
     name: mreza1
   mreza2:
     name: mreza2
-
-
-
-    
-  
-
-  
-      
-
-    
-
-  
-   
-  
-  
-
-  
-
-    
-
-
-
-
-
-
-
-
-   
-  
-    
-
-
-
-  
-
-    
-
-
-
-
-
-
-
-
-   
-  
-    
-
