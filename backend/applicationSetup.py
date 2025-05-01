@@ -4,7 +4,7 @@ from flask import Flask
 
 from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Mail
-from flask_jwt_extended import JWTManager
+#from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 from datetime import timedelta
 from konekcija import *
