@@ -1,5 +1,6 @@
 from flask import Flask
-
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 
 
 from itsdangerous import URLSafeTimedSerializer
@@ -10,7 +11,7 @@ from datetime import timedelta
 from konekcija import *
 def create_app():
     app = Flask(__name__)
-
+    
     app.config["JWT_SECRET_KEY"] = "super-secret"
     s = URLSafeTimedSerializer('Thisisasecret!')
     app.config['MAIL_SERVER']='smtp.gmail.com'
@@ -26,7 +27,10 @@ def create_app():
 
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     SQLALCHEMY_DATABASE_URI = 'postgresql://nenad:781022Sone@postgres:5432/app_magacin'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://nenad:781022Sone@postgres:5432/app_magacin'
 
+    db = SQLAlchemy(app)
+    migrate = Migrate(app, db)
     #CORS(app)supports_credentials,
     CORS(app, supports_credentials=True)
     app.config['SQLALCHEMY_DATABASE_URI'] =string_za_konekciju
