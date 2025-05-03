@@ -50,8 +50,8 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 ##############stefaaaaa#####	
-##kreiranje modela koje je definisan u bazi
-#with app.app_context():
+##kreiranje modela koje je definisan u bazi aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+#with app.app_context(): ovo mora da se ispravi 
 #    #create_schemas()
 #    db.create_all()
 @app.teardown_request
