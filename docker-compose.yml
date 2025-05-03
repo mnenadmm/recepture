@@ -12,7 +12,8 @@ services:
     ports:
       - "5433:5432"
     volumes: 
-      - ./baza/data:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data
+     # - ./baza/data:/var/lib/postgresql/data ovo je bilo straro
       #- ./baza:/postgres
     networks:
       - mreza2
@@ -71,3 +72,5 @@ networks:
     name: mreza1
   mreza2:
     name: mreza2
+volumes:
+  pgdata:
