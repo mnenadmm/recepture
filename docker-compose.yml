@@ -11,7 +11,7 @@ services:
       POSTGRES_DB: app_magacin
     ports:
       - "5433:5432"
-    volumes: 
+    #volumes: 
       #- ./baza/data:/var/lib/postgresql/data
       #- ./baza:/postgres
     networks:
