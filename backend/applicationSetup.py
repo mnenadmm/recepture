@@ -29,8 +29,8 @@ def create_app():
     SQLALCHEMY_DATABASE_URI = 'postgresql://nenad:781022Sone@postgres:5432/app_magacin'
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://nenad:781022Sone@postgres:5432/app_magacin'
 
-    db = SQLAlchemy(app)
-    migrate = Migrate(app, db)
+    #db = SQLAlchemy(app)
+    
     #CORS(app)supports_credentials,
     CORS(app, supports_credentials=True)
     app.config['SQLALCHEMY_DATABASE_URI'] =string_za_konekciju
@@ -39,5 +39,8 @@ def create_app():
 
     from modeli import db
     db.init_app(app)
-    
+    migrate = Migrate(app, db)
+    with app.app_context(): 
+   # create_schemas()
+        db.create_all()
     return [app, db,s,sender]

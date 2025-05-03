@@ -51,9 +51,7 @@ login_manager.init_app(app)
 login_manager.login_view = 'login'
 ##############stefaaaaa#####	
 ##kreiranje modela koje je definisan u bazi aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-with app.app_context(): 
-   # create_schemas()
-    db.create_all()
+
 @app.teardown_request
 def session_clear(exception=None):
     db.session.remove()
