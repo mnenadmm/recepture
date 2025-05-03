@@ -1,7 +1,8 @@
 .env
 # Za backend
 backend/__pycache__
-
+# brisemo binarno slanje baze podataka
+baza/data/
 # Za frontend
 
 client/package-lock.json
