@@ -13,7 +13,8 @@ from konekcija import *
 def create_app():
     app = Flask(__name__)
     # Konfiguracija mail servera
-  
+    # Zameni pozive `url_quote` sa `quote` iz `urllib.parse`
+   
     app.config["SECRET_KEY"] = "thisisseacretkey"
     app.config['MAIL_SERVER']='smtp.gmail.com'
     app.config['MAIL_PORT'] = 587
