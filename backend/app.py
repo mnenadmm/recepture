@@ -14,7 +14,7 @@ import json
 #vezba 
 from messages import *
 from time import localtime, strftime
-
+from sqlalchemy import text
 
 
 with open('./data.json', 'r') as f:
@@ -330,14 +330,13 @@ def azurirajOfflinePoruke(idPrimalac):
 		
 @app.route('/proba')
 def proba():
-    return """
-        <html>
-            <body>
-                <h1>Ovo je test stranica</h1>
-                <p>Backend radi i ovaj HTML je vraćen iz Flask-a.</p>
-            </body>
-        </html>
-    """
+    try:
+        with app.app_context():
+            db.session.execute(text('SELECT 1'))
+		
+    except Exception as e:
+        return  f"❌ Konekcija sa bazom nije uspela: {str(e)}", 500
+            
 
 if __name__ == '__main__':
     # moze da se podesi IP adresa, port i mogucnost za automatsko cuvanje i usvajanje promena (koda)
