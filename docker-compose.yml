@@ -72,3 +72,5 @@ networks:
     name: mreza1
   mreza2:
     name: mreza2
+volumes:
+  pgdata:

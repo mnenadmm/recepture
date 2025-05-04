@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
+#from flask_migrate import Migrate
 from modeli import db, Korisnici, Sirovine, Dobavljaci, Kolaci, Recepture
 
 
@@ -35,7 +35,7 @@ def create_app():
     CORS(app, supports_credentials=True)
     # Inicijalizacija ekstenzija
     db.init_app(app)
-    migrate = Migrate(app, db)
+    #migrate = Migrate(app, db)
     
     
     
