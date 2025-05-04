@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-
+from modeli import db, Korisnici
 
 from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Mail
@@ -11,36 +11,50 @@ from datetime import timedelta
 from konekcija import *
 def create_app():
     app = Flask(__name__)
-    
-    app.config["JWT_SECRET_KEY"] = "super-secret"
-    s = URLSafeTimedSerializer('Thisisasecret!')
+    # Konfiguracija mail servera
+    app.config["SECRET_KEY"] = "thisisseacretkey"
     app.config['MAIL_SERVER']='smtp.gmail.com'
     app.config['MAIL_PORT'] = 587
     app.config['MAIL_USERNAME'] = 'mnenadmm@gmail.com'
-    # use the app password created 
     app.config['MAIL_PASSWORD'] = 'wognlvxeopcbdnid'#ovo je sifra koju smo pokupili sa googla i radi samo za racunare
     app.config['MAIL_USE_TLS'] = True
     app.config['MAIL_USE_SSL'] = False
     sender = 'mnenadmm@gmail.com'
-    #app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=48)#token ce trajati 100 sati i nakon toga se se uz pomoc funkcije osveziti
+
+    # Konfiguracija aplikacije
+    app.config["JWT_SECRET_KEY"] = "super-secret"
+    app.config['SQLALCHEMY_DATABASE_URI'] =string_za_konekciju
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.permanent_session_lifetime = timedelta(minutes=1000)
 
-    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    SQLALCHEMY_DATABASE_URI = 'postgresql://nenad:781022Sone@postgres:5432/app_magacin'
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://nenad:781022Sone@postgres:5432/app_magacin'
-
-    #db = SQLAlchemy(app)
-    
-    #CORS(app)supports_credentials,
-    CORS(app, supports_credentials=True)
-    app.config['SQLALCHEMY_DATABASE_URI'] =string_za_konekciju
-    app.config["SECRET_KEY"] = "thisisseacretkey"
-    
-
-    from modeli import db
+    # Inicijalizacija ekstenzija
     db.init_app(app)
     migrate = Migrate(app, db)
+    mail = Mail(app)
+    s = URLSafeTimedSerializer('Thisisasecret!')
+    
+    # Omogućavanje CORS-a
+    CORS(app, supports_credentials=True)
+
+    # Kreiranje svih tabela u bazi ako ne postoje
     with app.app_context(): 
-   # create_schemas()
         db.create_all()
-    return [app, db,s,sender]
+    
+    return app, db, s, sender
+    
+
+    
+    #SQLALCHEMY_DATABASE_URI = 'postgresql://nenad:781022Sone@postgres:5432/app_magacin'
+    
+
+    
+    
+    
+    
+    
+
+    
+    
+    
+    
+    

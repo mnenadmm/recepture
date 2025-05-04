@@ -25,43 +25,59 @@ with open('./data.json', 'r') as f:
 
 
 
-
+# Konfiguracija login-a
 mail = Mail(app)
-#jwt = JWTManager(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
-#registrujemo example)
-#iz foldera api uvozimo blueprint
+
+# Registrovanje blueprintova
 from api.apiDobavljaci import apiDobavljaci
 from api.apiKolaci import apiKolaci
 from api.apiRecepture import apiRecepture
 from api.apiSirovine import apiSirovine
 from api.admin import adminApi
-#registrujemo blueprint
+
+# Registrovanje blueprintova u aplikaciju
 app.register_blueprint(apiDobavljaci)
 app.register_blueprint(apiSirovine)
 app.register_blueprint(apiKolaci)
 app.register_blueprint(apiRecepture)
 app.register_blueprint(adminApi)
-mail = Mail(app)
-#jwt = JWTManager(app)
+
+# Konfiguracija login-a
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
-##############stefaaaaa#####	
-##kreiranje modela koje je definisan u bazi aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 
+# Teardown session
 @app.teardown_request
 def session_clear(exception=None):
     db.session.remove()
     if exception and db.session.is_active:
         db.session.rollback()
-##daje id usera, dolazi uz login_menager
+# Load user za login
 @login_manager.user_loader
 def load_user(user_id):
     return modeli.Korisnici.query.get(int(user_id))
-########### stefaaa kraj ##########
+# Ruta za sve tabele u bazi
+@app.route('/tables', methods=['GET'])
+def get_tables():
+    try:
+        inspector = inspect(db.engine)
+        tables = inspector.get_table_names()
+        return jsonify({"tables": tables}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+@app.route('/proba')
+def proba():
+    try:
+        db.session.execute(text('SELECT 1'))
+        return "✅ Konekcija uspešna!", 200
+    except Exception as e:
+        return f"❌ Konekcija sa bazom nije uspela: {str(e)}", 500
+	
+
 @app.route('/index', methods=['GET', 'POST'])
 def index():
     if current_user.is_authenticated():
@@ -327,25 +343,8 @@ def azurirajOfflinePoruke(idPrimalac):
 			     set online=true
 			     where id_primalac={idPrimalac};
     	    			""","sve je ok"))
-@app.route('/tables')
-def tables():
-    try:
-        inspector = inspect(db.engine)
-        tables = inspector.get_table_names()
-        
-        return '<br>123456', 200
-        
-            
-    except Exception:
-        return 'Greška prilikom pristupa bazi.', 500	
-@app.route('/proba')
-def proba():
-    try:
-        with app.app_context():
-            db.session.execute(text('SELECT 1'))
-		
-    except Exception as e:
-        return  f"❌ Konekcija sa bazom nije uspela: {str(e)}", 500
+
+
             
 
 if __name__ == '__main__':
