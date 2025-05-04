@@ -82,12 +82,12 @@ def proba():
 
 @app.route('/index', methods=['GET', 'POST'])
 def index():
-    if current_user.is_authenticated():
-        useri=sqlQuery.returnAll(f"""
+    
+    useri=sqlQuery.returnAll(f"""
         			select * from test_tabela;
         
         			""")
-        return jsonify(useri)
+    return jsonify(useri)
 	##return jsonify(sqlQuery.returnAll("""
 	#					select  sirovine.id_sirovine,sirovine.naziv_sirovine,sirovine.cena_sirovine,dobavljaci.ime_dobavljaca,dobavljaci.id_dobavljaca
 	#					from sirovine
