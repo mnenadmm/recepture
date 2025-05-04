@@ -333,7 +333,7 @@ def list_tables():
         inspector = inspect(db.engine)
         tables = inspector.get_table_names()
         if tables:
-            return '<br>'.join(tables), 200
+            return '<br>123456', 200
         else:
             return 'Nema tabela u bazi.', 200
     except Exception:
