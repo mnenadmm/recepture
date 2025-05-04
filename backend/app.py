@@ -328,7 +328,7 @@ def azurirajOfflinePoruke(idPrimalac):
 			     where id_primalac={idPrimalac};
     	    			""","sve je ok"))
 @app.route('/tables')
-def list_tables():
+def tables():
     try:
         inspector = inspect(db.engine)
         tables = inspector.get_table_names()
