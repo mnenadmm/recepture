@@ -84,8 +84,7 @@ def proba():
 def index():
     if current_user.is_authenticated():
         useri=sqlQuery.returnAll(f"""
-        			select id_korisnika, username from korisnici
-	    		     where id_korisnika !={current_user.get_id()};
+        			select * from test_tabela;
         
         			""")
         return jsonify(useri)
