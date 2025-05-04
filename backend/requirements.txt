@@ -10,7 +10,7 @@ SQLAlchemy
 Flask-SQLAlchemy
 Flask-Mail==0.9.1
 Flask-Moment==1.0.5
-Werkzeug
+Werkzeug==2.2.2
 Flask-WTF==1.1.1
 PyJWT==2.5.0
 Flask-Bcrypt==1.0.1

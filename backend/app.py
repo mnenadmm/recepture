@@ -88,7 +88,7 @@ def index():
         
         			"""
     return jsonify(useri)
-@app.route("/moja-ruta")
+@app.route(" ")
 def moja_ruta():
     return "<html><body><h1>Ovo je običan string u HTML-u</h1></body></html>"
 	    
