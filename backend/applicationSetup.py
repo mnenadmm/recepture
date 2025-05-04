@@ -2,7 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 #from flask_migrate import Migrate
 from modeli import db, Korisnici, Sirovine, Dobavljaci, Kolaci, Recepture
-from urllib.parse import quote as url_quote
+
 
 
 from itsdangerous import URLSafeTimedSerializer
@@ -14,7 +14,7 @@ from konekcija import *
 def create_app():
     app = Flask(__name__)
     # Konfiguracija mail servera
-    encoded_url = url_quote('neki string')
+    
    
     app.config["SECRET_KEY"] = "thisisseacretkey"
     app.config['MAIL_SERVER']='smtp.gmail.com'
