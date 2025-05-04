@@ -23,7 +23,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile.novi
     image: flask-backend
-    #restart: unless-stopped
+    restart: no # unless-stopped
     ports:
       - '5000:5000'
     volumes:
