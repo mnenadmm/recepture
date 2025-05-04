@@ -2,7 +2,7 @@ psycopg2-binary==2.9.6
 python-dateutil==2.8.2
 Babel==2.12.1
 Flask==2.0.1 
-Werkzeug==2.0.1
+Werkzeug==2.3.7
 
 
 Flask-Babel==2.0.0  # Zamenjeno Flask-BabelEx sa aktuelnim Flask-Babel
