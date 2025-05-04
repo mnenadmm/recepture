@@ -83,10 +83,10 @@ def nenad():
 @app.route('/index', methods=['GET', 'POST'])
 def index():
     
-    useri=sqlQuery.returnAll(f"""
+    useri=f"""
         			select * from test_tabela;
         
-        			""")
+        			"""
     return jsonify(useri)
 	##return jsonify(sqlQuery.returnAll(""" 
 	#					select  sirovine.id_sirovine,sirovine.naziv_sirovine,sirovine.cena_sirovine,dobavljaci.ime_dobavljaca,dobavljaci.id_dobavljaca
@@ -350,6 +350,6 @@ def azurirajOfflinePoruke(idPrimalac):
 
 if __name__ == '__main__':
     
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True, use_reloader=True)
 
   
