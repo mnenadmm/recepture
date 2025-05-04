@@ -332,10 +332,10 @@ def tables():
     try:
         inspector = inspect(db.engine)
         tables = inspector.get_table_names()
-        if tables:
-            return '<br>123456', 200
-        else:
-            return 'Nema tabela u bazi.', 200
+        
+        return '<br>123456', 200
+        
+            
     except Exception:
         return 'Greška prilikom pristupa bazi.', 500	
 @app.route('/proba')
