@@ -13,6 +13,8 @@ from konekcija import *
 def create_app():
     app = Flask(__name__)
     # Konfiguracija mail servera
+    app.config['DEBUG'] = True
+    app.config['ENV'] = 'development'
     app.config["SECRET_KEY"] = "thisisseacretkey"
     app.config['MAIL_SERVER']='smtp.gmail.com'
     app.config['MAIL_PORT'] = 587
