@@ -71,8 +71,8 @@ def get_tables():
         return jsonify({"tables": tables}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-@app.route('/pr')
-def pr():
+@app.route('/nenad')
+def nenad():
     try:
         db.session.execute(text('SELECT 1'))
         return "✅ Konekcija uspešna!", 200
