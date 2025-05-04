@@ -13,13 +13,8 @@ services:
       - "5433:5432"
     volumes: 
       - pgdata:/var/lib/postgresql/data
-     # - ./baza/data:/var/lib/postgresql/data ovo je bilo straro
+     # - ./baza/data:/var/lib/postgresql/data ovo
       #- ./baza:/postgres
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U nenad"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
     networks:
       - mreza2
   
@@ -36,13 +31,7 @@ services:
     links:
       - postgres
     depends_on:
-      postgres:
-        condition: service_healthy
-    environment:
-      - FLASK_APP=main.py
-      - FLASK_ENV=development
-    command: flask run --host=0.0.0.0 --port=5000
-      
+      - postgres
     networks:
       - mreza1 
       - mreza2
@@ -83,5 +72,3 @@ networks:
     name: mreza1
   mreza2:
     name: mreza2
-volumes:
-  pgdata:
