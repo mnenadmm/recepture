@@ -1,4 +1,5 @@
 from flask import request, jsonify, session
+from applicationSetup import create_app
 from flask_cors import CORS
 #from flask_jwt_extended import JWTManager
 from flask_login import login_user, LoginManager, login_required, logout_user, current_user
@@ -348,8 +349,7 @@ def azurirajOfflinePoruke(idPrimalac):
             
 
 if __name__ == '__main__':
-    # moze da se podesi IP adresa, port i mogucnost za automatsko cuvanje i usvajanje promena (koda)
-    app.run('0.0.0.0', 5000, debug=True)
-	#socketio.run(app,'0.0.0.0', 5000, debug=True) #umotali smo celu aplikaciju u sockerio
-  #mora da se koristi flask-socketio==5.2.0 zato sto druge verizje imaju gresku
+    app, _, _, _ = create_app()
+    app.run(host='0.0.0.0', port=5000, debug=True)
+
   
