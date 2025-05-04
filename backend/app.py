@@ -329,9 +329,15 @@ def azurirajOfflinePoruke(idPrimalac):
     	    			""","sve je ok"))
 @app.route('/tables')
 def list_tables():
-    inspector = inspect(db.engine)
-    tables = inspector.get_table_names()
-    return '<br>'.join(tables), 200		
+    try:
+        inspector = inspect(db.engine)
+        tables = inspector.get_table_names()
+        if tables:
+            return '<br>'.join(tables), 200
+        else:
+            return 'Nema tabela u bazi.', 200
+    except Exception:
+        return 'Greška prilikom pristupa bazi.', 500	
 @app.route('/proba')
 def proba():
     try:
