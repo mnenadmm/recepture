@@ -38,7 +38,11 @@ def create_app():
 
     # Kreiranje svih tabela u bazi ako ne postoje
     with app.app_context(): 
-        db.create_all()
+        try:
+            db.create_all()
+            print("✔️ Tabele su uspešno kreirane.")
+        except Exception as e:
+            print(f"❌ Greška pri kreiranju tabela: {e}")
     
     return app, db, s, sender
     
