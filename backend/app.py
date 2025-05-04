@@ -71,8 +71,8 @@ def get_tables():
         return jsonify({"tables": tables}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-@app.route('/proba')
-def proba():
+@app.route('/pr')
+def pr():
     try:
         db.session.execute(text('SELECT 1'))
         return "✅ Konekcija uspešna!", 200
@@ -88,7 +88,7 @@ def index():
         
         			""")
     return jsonify(useri)
-	##return jsonify(sqlQuery.returnAll("""
+	##return jsonify(sqlQuery.returnAll(""" 
 	#					select  sirovine.id_sirovine,sirovine.naziv_sirovine,sirovine.cena_sirovine,dobavljaci.ime_dobavljaca,dobavljaci.id_dobavljaca
 	#					from sirovine
 	#					INNER JOIN dobavljaci
