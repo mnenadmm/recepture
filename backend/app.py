@@ -14,7 +14,7 @@ import json
 #vezba 
 from messages import *
 from time import localtime, strftime
-from sqlalchemy import text
+from sqlalchemy import inspect, text
 
 
 with open('./data.json', 'r') as f:
@@ -327,7 +327,11 @@ def azurirajOfflinePoruke(idPrimalac):
 			     set online=true
 			     where id_primalac={idPrimalac};
     	    			""","sve je ok"))
-		
+@app.route('/tables')
+def list_tables():
+    inspector = inspect(db.engine)
+    tables = inspector.get_table_names()
+    return '<br>'.join(tables), 200		
 @app.route('/proba')
 def proba():
     try:
