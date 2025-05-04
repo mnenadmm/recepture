@@ -15,6 +15,11 @@ services:
       - pgdata:/var/lib/postgresql/data
      # - ./baza/data:/var/lib/postgresql/data ovo je bilo straro
       #- ./baza:/postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nenad"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     networks:
       - mreza2
   
@@ -31,7 +36,13 @@ services:
     links:
       - postgres
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+    environment:
+      - FLASK_APP=main.py
+      - FLASK_ENV=development
+    command: flask run --host=0.0.0.0 --port=5000
+      
     networks:
       - mreza1 
       - mreza2
