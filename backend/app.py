@@ -349,7 +349,7 @@ def azurirajOfflinePoruke(idPrimalac):
             
 
 if __name__ == '__main__':
-    app, _, _, _ = create_app()
+    
     app.run(host='0.0.0.0', port=5000, debug=True)
 
   
