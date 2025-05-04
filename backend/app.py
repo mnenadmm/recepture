@@ -75,7 +75,7 @@ def get_tables():
 def nenad():
     try:
         db.session.execute(text('SELECT 1'))
-        return "✅ Konekcija uspešna!", 200
+        return "✅ Konekcija uspešnaxxzxzxzxxxxxxxxzzzzzzzzzzz!", 200
     except Exception as e:
         return f"❌ Konekcija sa bazom nije uspela: {str(e)}", 500
 	
