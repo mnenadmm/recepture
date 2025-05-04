@@ -88,12 +88,9 @@ def index():
         
         			"""
     return jsonify(useri)
-	##return jsonify(sqlQuery.returnAll(""" 
-	#					select  sirovine.id_sirovine,sirovine.naziv_sirovine,sirovine.cena_sirovine,dobavljaci.ime_dobavljaca,dobavljaci.id_dobavljaca
-	#					from sirovine
-	#					INNER JOIN dobavljaci
-	#					on sirovine.id_dobavljaci = dobavljaci.id_dobavljaca;
-	#				"""))
+@app.route("/moja-ruta")
+def moja_ruta():
+    return "<html><body><h1>Ovo je običan string u HTML-u</h1></body></html>"
 	    
 	
 		
