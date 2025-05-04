@@ -23,7 +23,9 @@ def create_app():
 
     # Konfiguracija aplikacije
     app.config["JWT_SECRET_KEY"] = "super-secret"
-    app.config['SQLALCHEMY_DATABASE_URI'] =string_za_konekciju
+    app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://nenad:781022Sone@postgres:5432/app_magacin"
+
+    #app.config['SQLALCHEMY_DATABASE_URI'] =string_za_konekciju
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.permanent_session_lifetime = timedelta(minutes=1000)
 

@@ -1,5 +1,6 @@
 from flask import request, jsonify, session
 from applicationSetup import create_app
+from modeli import db
 from flask_cors import CORS
 #from flask_jwt_extended import JWTManager
 from flask_login import login_user, LoginManager, login_required, logout_user, current_user
