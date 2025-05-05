@@ -19,3 +19,4 @@ Jinja2
 WTForms==3.0.1
 flask_session
 Flask-Migrate
+psycopg2-binary==2.9.9
