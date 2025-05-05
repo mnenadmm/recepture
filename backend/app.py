@@ -1,4 +1,5 @@
 from flask import request, jsonify, session
+
 from applicationSetup import create_app
 from modeli import db
 from flask_cors import CORS
