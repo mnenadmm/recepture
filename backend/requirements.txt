@@ -9,7 +9,7 @@ Flask-Login
 Flask-SQLAlchemy==2.5.1
 SQLAlchemy==1.4.46
 Flask-Mailman==1.1.1
-
+Flask-Mail==0.9.1
 Flask-Moment==1.0.5
 Flask-WTF==1.1.1
 PyJWT==2.5.0
