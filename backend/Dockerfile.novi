@@ -2,10 +2,7 @@
 FROM python:3.8-slim-buster
 WORKDIR /app
 COPY requirements.txt requirements.txt
-RUN pip install --upgrade pip && \
-    pip install Werkzeug==2.0.2 && \
-    pip install -r requirements.txt
-
+RUN pip install --upgrade pip && pip install -r requirements.txt
 COPY . .
 #ENTRYPOINT ["gunicorn", "-b", "0.0.0.0:5000", "-w", "9", "app:app"]
 CMD [ "python", "app.py" ]
