@@ -16,7 +16,7 @@ import json
 #vezba 
 from messages import *
 from time import localtime, strftime
-from sqlalchemy import inspect, text
+
 
 
 with open('./data.json', 'r') as f:
@@ -63,31 +63,10 @@ def session_clear(exception=None):
 def load_user(user_id):
     return modeli.Korisnici.query.get(int(user_id))
 # Ruta za sve tabele u bazi
-@app.route('/tables', methods=['GET'])
-def get_tables():
-    try:
-        inspector = inspect(db.engine)
-        tables = inspector.get_table_names()
-        return jsonify({"tables": tables}), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-@app.route('/nenad')
-def nenad():
-    try:
-        db.session.execute(text('SELECT 1'))
-        return "✅ Konekcija uspešnaxxzxzxzxxxxxxxxzzzzzzzzzzz!", 200
-    except Exception as e:
-        return f"❌ Konekcija sa bazom nije uspela: {str(e)}", 500
+
 	
 
-@app.route('/index', methods=['GET', 'POST'])
-def index():
-    
-    useri=f"""
-        			select * from test_tabela;
-        
-        			"""
-    return jsonify(useri)
+
 @app.route("/ruta")
 def ruta():
     return "<html><body><h1>Ovo je običan string u HTML-u</h1></body></html>"
