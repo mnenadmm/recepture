@@ -1,10 +1,20 @@
+# Ignorišemo env fajlove
 .env
-# Za backend
-backend/__pycache__
-# brisemo binarno slanje baze podataka
-baza/data/
-# Za frontend
 
+# Ignorišemo pycache i .pyc fajlove globalno
+__pycache__/
+*.pyc
+
+# Ignorišemo backend pycache rekurzivno
+backend/**/__pycache__/
+
+# Ignorišemo virtuelno okruženje
+venv/
+
+# Ignorišemo celu bazu (ako ne želiš da se šalje u git)
+baza/
+
+# Frontend
 client/package-lock.json
 
 # dependencies
@@ -13,10 +23,10 @@ client/.pnp
 client/.pnp.js
 
 # testing
-/client/coverage
+client/coverage/
 
 # production
-client/build
+client/build/
 
 # misc
 client/.DS_Store
