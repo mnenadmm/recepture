@@ -6,7 +6,7 @@ from modeli import db, Korisnici, Sirovine, Dobavljaci, Kolaci, Recepture
 
 
 from itsdangerous import URLSafeTimedSerializer
-from flask_mail import Mail
+from flask_mail import Mail, Message
 #from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 from datetime import timedelta
