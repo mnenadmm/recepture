@@ -47,7 +47,7 @@ const App = () =>{
 
 return(
       <div  className="App">
-        
+        <p>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
         <CartProvider>
           <BrowserRouter >
           <Navbar role={{rola_1,rola_2,rola_3}}   props={{verifikacija,setVerifikacija,idKorisnika,korisnik,setKorisnik,setIdKorisnika,setRola_1,setRola_2,setRola_3,setInfoKorisnika}} />
