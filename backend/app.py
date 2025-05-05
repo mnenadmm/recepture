@@ -6,7 +6,7 @@ from flask_cors import CORS
 #from flask_jwt_extended import JWTManager ssh root@5.75.164.111
 from flask_login import login_user, LoginManager, login_required, logout_user, current_user
 from flask_mail import Mail, Message
-import psycopg2
+
 from werkzeug.security import generate_password_hash, check_password_hash
 import applicationSetup
 from konekcija import *
