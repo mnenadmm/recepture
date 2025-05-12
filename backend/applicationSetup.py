@@ -20,7 +20,8 @@ def create_app():
     app.config['MAIL_SERVER']='smtp.gmail.com'
     app.config['MAIL_PORT'] = 587
     app.config['MAIL_USERNAME'] = 'mnenadmm@gmail.com'
-    app.config['MAIL_PASSWORD'] = 'wognlvxeopcbdnid'#ovo je sifra koju smo pokupili sa googla i radi samo za racunare
+    app.config['MAIL_DEFAULT_SENDER'] = 'mnenadmm@gmail.com'
+    app.config['MAIL_PASSWORD'] = 'nvks pgdp hsyx pwki'#ovo je sifra koju smo pokupili sa googla i radi samo za racunare
     app.config['MAIL_USE_TLS'] = True
     app.config['MAIL_USE_SSL'] = False
     sender = 'mnenadmm@gmail.com'
@@ -50,7 +51,7 @@ def create_app():
         except Exception as e:
             print(f"❌ Greška pri kreiranju tabela: {e}")
     
-    return app, db, s, sender
+    return app, db, s, sender, mail
     
 
     

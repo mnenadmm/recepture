@@ -23,13 +23,13 @@ from time import localtime, strftime
 with open('./data.json', 'r') as f:
 	notification = json.load(f)
 # metoda create_app() napravi instancu aplikacije i napravi model u bazi podataka
-[app,db,s,sender] = applicationSetup.create_app()
+[app,db,s,sender,mail] = applicationSetup.create_app()
 ###################################
 
 
 
 # Konfiguracija login-a
-mail = Mail(app)
+
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
