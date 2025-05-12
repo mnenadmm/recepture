@@ -147,7 +147,7 @@ def kreirajKorisnikaReact():
    	""",'')
    recipient =email
    token = s.dumps(email, salt='kljuc_za_token')
-   message = f"""Verifikijte svoj nalog  http://localhost:3000/verifikujNalog?token={token}"""
+   message = f"""Verifikijte svoj nalog  http://5.75.164.111:3000/verifikujNalog?token={token}"""
    subject = 'Verifikacioni nalog'
    msg = Message(subject,sender=sender,recipients =[recipient] )
    msg.body = message
