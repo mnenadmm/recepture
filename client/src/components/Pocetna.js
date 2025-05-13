@@ -1,13 +1,13 @@
 import React from 'react'
 
 
-function Pocetna({props}) {
+function Pocetna() {
 
-console.log(typeof(props.idKorisnika))
+
   
   return (
-    <div>cao
-      {props.idKorisnika}
+    <div>
+     <h3>Pocetna stranica</h3>
     </div>
   );
   }

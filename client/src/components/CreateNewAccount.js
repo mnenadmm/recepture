@@ -17,7 +17,6 @@ const CreateNewAccount=()=>{
     const[errorMesaggesEmail, setErrorMesaggesEmail]=useState('')
     const[errorMesaggesUser,setErrorMesaggesUser]=useState('')
     const[errorMesaggesPassword,setErrorMesaggesPassword]=useState('')
-    
     const[irregularAdress,setIregularAdress]=useState('')//ispisuje poruku 
     const[irregularUser,setIrregularUser]=useState('')//ispisuje poruku 
     const[irregularPassword, setIrregularPassword]=useState('')
