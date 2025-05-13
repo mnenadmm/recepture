@@ -1,188 +1,141 @@
-import { useState,useEffect } from "react"
-import ObrisiDobavljaca from "./ObrisiDobavljaca"
-import AzurirajDobavljaca from "./AzurirajDobavljaca"
-import DodajDobavljaca from "./DodajDobavljaca"
+import { useState, useEffect } from "react";
+import ObrisiDobavljaca from "./ObrisiDobavljaca";
+import AzurirajDobavljaca from "./AzurirajDobavljaca";
+import DodajDobavljaca from "./DodajDobavljaca";
 
-const DobavljaciEdit = ({role})=>{
-    const[errorMesagges,setErrorMesagges]=useState('');
-    const[list, setList]=useState(0)
-    const[data,setData]=useState([])
-    const[idDobavljaca, setIdDobavljaca]=useState(0)
-    const[imeDobavljaca, setImeDobavljaca]=useState('')
-    const[telefon, setTelefon]=useState('')
-    const[email, setEmail]=useState('') 
-    const[adresa, setAdresa]=useState('')
+const DobavljaciEdit = ({ role }) => {
+    const [errorMesagges, setErrorMesagges] = useState('');
+    const [list, setList] = useState(0);
+    const [data, setData] = useState([]);
+    const [idDobavljaca, setIdDobavljaca] = useState(0);
+    const [imeDobavljaca, setImeDobavljaca] = useState('');
+    const [telefon, setTelefon] = useState('');
+    const [email, setEmail] = useState('');
+    const [adresa, setAdresa] = useState('');
+
     useEffect(() => {
-        fetch('/dajDobavljaceReact',{
+        fetch('/dajDobavljaceReact', {
             method: "GET",
-            headers: {
-              }
+            headers: {}
         })
-            .then((res) =>{
-                if(res.status===200){ return res.json()}
-            })   
-            .then((response) => { 
-                if(response.error){return setErrorMesagges(response.poruka)}
-                setData(response); 
+            .then((res) => {
+                if (res.status === 200) return res.json();
             })
-            .catch(error=>{
-                console.log('ovo je greska ',error)
-                setErrorMesagges('Neuspela konekcija sa bazom, proverite internet konekciju')
+            .then((response) => {
+                if (response?.error) {
+                    return setErrorMesagges(response.poruka);
+                }
+                setData(response);
             })
+            .catch(error => {
+                console.log('ovo je greska ', error);
+                setErrorMesagges('Neuspela konekcija sa bazom, proverite internet konekciju');
+            });
     }, []);
-    
-        
-            
-    
-    const prikaziDobavljaca=()=>{
-      return(
+
+    const prikaziDobavljaca = () => (
         <div className="container">
-        
-            <div className="row">
-                <div className="col-sm-12">
-                    <ul className="nav nav-tabs actions-nav">
-                        <li className="active">
-                            <button className="btn btn-default"  onClick={()=>setList(0)}>Lista</button>
-                        </li>
-                        {/* samo prva rola moze da azurira i brise dobavljace*/}
-                        {role.rola_1 ===true ? <>
-                        <li>
-                            <button className="btn btn-default" onClick={()=>setList(3)} >Azuriraj</button>
-                        </li>
-                        <li>
-                            <button className="btn btn-default" style={{'color':'red'}} onClick={()=>setList(4)}>Obrisi </button>
-                        </li>
-                        </>:null}
-                    </ul>
+            <div className="d-flex flex-wrap gap-2 mb-3">
+                <button className="btn btn-secondary" onClick={() => setList(0)}>Lista</button>
+                {role.rola_1 === true && (
+                    <>
+                        <button className="btn btn-warning" onClick={() => setList(3)}>Ažuriraj</button>
+                        <button className="btn btn-danger" onClick={() => setList(4)}>Obriši</button>
+                    </>
+                )}
+            </div>
+
+            <div>
+                <button onClick={() => setList(0)} className="btn btn-primary">Nazad</button>
+            </div>
+
+            <div className="text-center my-4">
+                <h1>{imeDobavljaca}</h1>
+            </div>
+
+            <div className="row justify-content-center mb-3">
+                <div className="col-sm-6 col-md-4">
+                    <label>Id</label>
+                    <input className="form-control" value={idDobavljaca} disabled />
                 </div>
             </div>
-            <br />
-            <div >
-                <button onClick={()=>setList(0)} 
-                        type='button' 
-                        className='btn btn-primary'>
-                            Back
-                </button>
-            </div>
-            <br />
-            <div className="row">
-                <div className="col-sm-12 text-center">
-                    <h1>{imeDobavljaca}</h1>
+            <div className="row justify-content-center mb-3">
+                <div className="col-sm-6 col-md-4">
+                    <label>Telefon</label>
+                    <input className="form-control" value={telefon} disabled />
                 </div>
             </div>
-            <br />
-                <div className="row">
-                    <div className="col-sm-4"></div>
-                    <div className="col-sm-4">
-                        <label>Id</label>
-                        <input className="form-control" defaultValue={idDobavljaca} disabled />
-                    </div>
-                </div>
-                <br />
-                <div className="row">
-                <div className="col-sm-4"></div>
-                    <div className="col-sm-4">
-                        <label>Telefon</label>
-                        <input className="form-control" defaultValue={telefon} disabled />
-                    </div>
-                </div>
-                <br />
-                <div className="row">
-                    <div className="col-sm-4"></div>
-                    <div className="col-sm-4">
-                        <label>Email</label>
-                        <input className="form-control" defaultValue={email} disabled />
-                    </div>
-                </div>
-                <br />
-                <div className="row">
-                    <div className="col-sm-4"></div>
-                    <div className="col-sm-4">
-                        <label>Adresa</label>
-                        <input className="form-control" defaultValue={adresa} disabled />
-                    </div>
-                </div>
-                <br /><br />
-                </div>
-      )  
-    }
-    const dajDobavljaca=(event)=>{
-        setIdDobavljaca(event[0])
-        setImeDobavljaca(event[1])
-        setTelefon(event[2])
-        setEmail(event[3])
-        setList(2)
-        setAdresa(event[4])
-    }
-    const dobavljaci=()=>{
-    return(
-        <div>
-            <div className="row">
-                <div className="col-sm-12">
-                    <ul className="nav nav-tabs actions-nav">
-                        <li className="active">
-                            <button className="btn btn-default">Lista</button>
-                        </li>
-                        {/* prva i druga rola mogu da kreiraju dobavljaca*/}
-                        {role.rola_1===true || role.rola_2===true ? 
-                        <li>
-                            <button className="btn btn-default" onClick={()=>setList(1)}>Kreiraj</button>
-                        </li>
-                        : null}
-                    </ul>
+            <div className="row justify-content-center mb-3">
+                <div className="col-sm-6 col-md-4">
+                    <label>Email</label>
+                    <input className="form-control" value={email} disabled />
                 </div>
             </div>
-            <br /><br />
-            <div className="row">
-                <div className="col-sm-4"></div>
-                <div className="col-sm-4">
-                    {data.map((item, i) =>(
+            <div className="row justify-content-center mb-5">
+                <div className="col-sm-6 col-md-4">
+                    <label>Adresa</label>
+                    <input className="form-control" value={adresa} disabled />
+                </div>
+            </div>
+        </div>
+    );
+
+    const dajDobavljaca = (event) => {
+        setIdDobavljaca(event[0]);
+        setImeDobavljaca(event[1]);
+        setTelefon(event[2]);
+        setEmail(event[3]);
+        setAdresa(event[4]);
+        setList(2);
+    };
+
+    const dobavljaci = () => (
+        <div className="container">
+            <div className="d-flex flex-wrap gap-2 mb-4">
+                <button className="btn btn-secondary">Lista</button>
+                {(role.rola_1 === true || role.rola_2 === true) && (
+                    <button className="btn btn-success" onClick={() => setList(1)}>Kreiraj</button>
+                )}
+            </div>
+
+            <div className="row justify-content-center">
+                <div className="col-sm-8 col-md-6">
+                    {data.map((item, i) => (
                         <p key={i}>
-                            <button type="button" 
-                                onClick={()=>dajDobavljaca(item)}
-                                className="btn btn-default btn-lg  btn-block">
-                                    {item[1]}
+                            <button
+                                type="button"
+                                onClick={() => dajDobavljaca(item)}
+                                className="btn btn-outline-dark btn-block mb-2"
+                            >
+                                {item[1]}
                             </button>
-                            <br />
                         </p>
                     ))}
                 </div>
-            </div> 
-            <br />
+            </div>
         </div>
-    )
-    }
-    return(
-        <div>
-            {errorMesagges === '' ? 
-                <div>
-                {list===0 ? dobavljaci() : null}
-                {list ===2 ? prikaziDobavljaca() : null}
-                {list ===1 ? <DodajDobavljaca role={role}    /> : null} 
-            
-               {list ===3 ?
-                    
-                        <AzurirajDobavljaca role={role}  props={{idDobavljaca,imeDobavljaca,telefon,email,adresa}} />
-                        
-                        
-                    
-                       
-                : null
-                }
-                {list ===4 ?
-                        <ObrisiDobavljaca role={role}  props={{idDobavljaca, imeDobavljaca, adresa}} />
+    );
 
-                 : null} 
-            </div> 
-            :
-            <div className="alert alert-success alert-dismissible">
-                <p  className="close" data-dismiss="alert" aria-label="close">&times;</p>
+    return (
+        <div className="container mt-4">
+            {errorMesagges === '' ? (
+                <>
+                    {list === 0 && dobavljaci()}
+                    {list === 1 && <DodajDobavljaca role={role} />}
+                    {list === 2 && prikaziDobavljaca()}
+                    {list === 3 && <AzurirajDobavljaca role={role} props={{ idDobavljaca, imeDobavljaca, telefon, email, adresa }} />}
+                    {list === 4 && <ObrisiDobavljaca role={role} props={{ idDobavljaca, imeDobavljaca, adresa }} />}
+                </>
+            ) : (
+                <div className="alert alert-danger alert-dismissible fade show" role="alert">
                     <strong>{errorMesagges}</strong>
-           </div>
-            }
+                    <button type="button" className="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            )}
         </div>
-        
-    )
+    );
+};
 
-}
 export default DobavljaciEdit;
