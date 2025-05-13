@@ -55,10 +55,8 @@ const SirovineEdit = ({props,role})=>{
     }
     const handleSearch = (event) =>{
         let value = event.target.value.toLowerCase();
-        let result = [];
-        result = data.filter((data) => {
-           
-            return data[1].search(value) !== -1;
+        let result = data.filter((data) => {
+            return data[1].toLowerCase().includes(value);
         });
         setFilteredData(result);
                 }
