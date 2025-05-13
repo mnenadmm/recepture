@@ -144,6 +144,10 @@ const DodajSirovinu = ({props, role}) => {
                         </button>
                     ) : null}
                 </div>
+                <br /><br />
+                    <button className="btn btn-secondary" onClick={() => istorija(-1)}>
+                        Nazad
+                    </button>
             </div>
         );
     };
