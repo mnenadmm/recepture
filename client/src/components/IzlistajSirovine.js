@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useHistory } from "react-router-dom";  // Importuj useHistory za navigaciju
+import { useNavigate } from 'react-router-dom';
+
 import Select from "./Select";
 
 function IzlistajSirovine({ props, role }) {
@@ -8,7 +9,7 @@ function IzlistajSirovine({ props, role }) {
     const [errorMessages, setErrorMessages] = useState('');
     const [showSelect, setShowSelect] = useState(0); // Prikazivanje Select-a
     const URL_Dobavljac = '/dajImeDobavljacaIdReact';
-    const history = useHistory();  // Kreiranje istorije za navigaciju
+    const navigate = useNavigate();  // Inicijalizacija navigate  // Kreiranje istorije za navigaciju
 
     // Učitavanje podataka
     useEffect(() => {
@@ -54,10 +55,7 @@ function IzlistajSirovine({ props, role }) {
         }
     };
 
-    // Povratak na prethodnu stranicu
-    const handleBack = () => {
-        history.goBack();  // Vraća se na prethodnu stranicu
-    };
+ 
 
     // Lista proizvoda
     const lista = () => {
@@ -108,7 +106,10 @@ function IzlistajSirovine({ props, role }) {
                         )}
                         <br />
                         {/* Dodaj dugme za povratak */}
-                        <button className="btn btn-secondary" onClick={handleBack}>Back</button>
+                        <button className="btn btn-secondary" onClick={() => navigate(-1)}>
+                            Back
+                        </button>
+
                     </>
                 ) : (
                     <div className="alert alert-success alert-dismissible">
