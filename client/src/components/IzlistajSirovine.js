@@ -60,11 +60,11 @@ function IzlistajSirovine({props,role}) {
     }
     const handleSearch = (event) =>{
         let value = event.target.value.toLowerCase();
-        let result = [];
-        result = data.filter((data) => {
-            
-            return data[1].search(value) !== -1;
-        });
+        let result =data.filter((item=>{
+            const naziv = item[1] ? String(item[1]).toLowerCase() : '';
+            return naziv.includes(value);
+        }))
+        
         setFilteredData(result);
                 }
 
@@ -113,7 +113,7 @@ function IzlistajSirovine({props,role}) {
 
 return(
     <div>
-        {data !==[]  ? lista() : null}
+        {data.length > 0 ? lista() : null}
     </div>
 )
 }
