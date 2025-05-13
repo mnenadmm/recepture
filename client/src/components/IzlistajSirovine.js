@@ -5,8 +5,8 @@ function IzlistajSirovine({ props, role }) {
     const [originalData, setOriginalData] = useState([]);  // Drži celu listu sirovina
     const [filteredData, setFilteredData] = useState([]);  // Drži filtrirane podatke
     const [errorMessages, setErrorMessages] = useState('');
-    const URL_Dobavljac = '/dajImeDobavljacaIdReact';
     const [showSelect, setShowSelect] = useState(0); // Prikazivanje Select-a
+    const URL_Dobavljac = '/dajImeDobavljacaIdReact';
 
     // Učitavanje podataka
     useEffect(() => {
@@ -43,14 +43,12 @@ function IzlistajSirovine({ props, role }) {
                     if (response.error) {
                         return setErrorMessages(response.poruka);
                     } else {
-                        setOriginalData(response); // Osveži celu listu na osnovu dobavljača
-                        setFilteredData(response); // Ažuriraj filtrirane podatke
+                        setFilteredData(response); // Ažuriraj filtrirane podatke prema dobavljaču
                     }
                 })
                 .catch(error => { console.log('ovo je greška ', error); });
         } else {
-            setOriginalData([]); // Resetuj listu
-            setFilteredData([]); // Resetuj filtrirane podatke
+            setFilteredData(originalData); // Ako nema odabranog dobavljača, vrati sve podatke
         }
     };
 
